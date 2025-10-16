@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backtracking</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin: 40px 0;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+
+        .visualization-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .maze {
+            display: grid;
+            gap: 2px;
+            background: #ddd;
+            padding: 2px;
+            border-radius: 8px;
+            justify-content: center;
+        }
+
+        .maze-cell {
+            width: 40px;
+            height: 40px;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .maze-cell.wall { background: #333; }
+        .maze-cell.path { background: #667eea; color: white; }
+        .maze-cell.solution { background: #28a745; color: white; }
+        .maze-cell.visited { background: #ffc107; }
+        .maze-cell.current { background: #dc3545; color: white; animation: pulse 0.5s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover { background: #5568d3; }
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .queens-board {
+            display: grid;
+            gap: 2px;
+            background: #333;
+            padding: 2px;
+            border-radius: 8px;
+            width: fit-content;
+            margin: 20px auto;
+        }
+
+        .queen-cell {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            transition: all 0.3s;
+        }
+
+        .queen-cell.light { background: #f0d9b5; }
+        .queen-cell.dark { background: #b58863; }
+        .queen-cell.queen::after { content: '♛'; }
+        .queen-cell.attack { background: #ffcccc; }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Backtracking</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Backtracking ist eine algorithmische Technik zur systematischen
+            Suche nach Lösungen. Es probiert mögliche Lösungen aus und macht einen Schritt zurück
+            (backtrack), wenn eine Sackgasse erreicht wird. Typische Anwendungen sind das N-Damen-Problem,
+            Sudoku-Solver und Labyrinth-Lösungen.
+        </div>
+
+        <div class="section">
+            <h2>1. Labyrinth lösen</h2>
+
+            <div class="info-box">
+                <h3>Algorithmus:</h3>
+                <ol style="margin-left: 20px; line-height: 2;">
+                    <li>Starte an der Startposition</li>
+                    <li>Versuche alle vier Richtungen (oben, rechts, unten, links)</li>
+                    <li>Wenn eine Richtung gültig ist, gehe einen Schritt weiter</li>
+                    <li>Wenn Ziel erreicht: Fertig!</li>
+                    <li>Wenn Sackgasse: Gehe zurück (Backtrack) und versuche andere Richtung</li>
+                </ol>
+            </div>
+
+            <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">solveMaze</span>(maze, x, y, path) {
+    <span class="code-comment">// Basisfall: Ziel erreicht</span>
+    <span class="code-keyword">if</span> (x === endX && y === endY) {
+        <span class="code-keyword">return</span> <span class="code-number">true</span>;
+    }
+
+    <span class="code-comment">// Prüfe ob Position gültig ist</span>
+    <span class="code-keyword">if</span> (!<span class="code-function">isValid</span>(x, y)) {
+        <span class="code-keyword">return</span> <span class="code-number">false</span>;
+    }
+
+    <span class="code-comment">// Markiere als besucht</span>
+    visited[x][y] = <span class="code-number">true</span>;
+    path.push({x, y});
+
+    <span class="code-comment">// Versuche alle 4 Richtungen</span>
+    <span class="code-keyword">const</span> directions = [[<span class="code-number">0</span>,<span class="code-number">1</span>], [<span class="code-number">1</span>,<span class="code-number">0</span>], [<span class="code-number">0</span>,-<span class="code-number">1</span>], [-<span class="code-number">1</span>,<span class="code-number">0</span>]];
+
+    <span class="code-keyword">for</span> (<span class="code-keyword">const</span> [dx, dy] <span class="code-keyword">of</span> directions) {
+        <span class="code-keyword">if</span> (<span class="code-function">solveMaze</span>(maze, x+dx, y+dy, path)) {
+            <span class="code-keyword">return</span> <span class="code-number">true</span>;  <span class="code-comment">// Lösung gefunden!</span>
+        }
+    }
+
+    <span class="code-comment">// Backtrack: Dieser Weg führt nicht zur Lösung</span>
+    path.pop();
+    <span class="code-keyword">return</span> <span class="code-number">false</span>;
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>Interaktive Labyrinth-Visualisierung</h3>
+
+                <div class="controls">
+                    <button onclick="solveMazeDemo()">Labyrinth lösen</button>
+                    <button onclick="resetMaze()">Reset</button>
+                    <label>
+                        <input type="checkbox" id="slowMode"> Langsame Animation
+                    </label>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="mazeSteps">0</div>
+                        <div class="stat-label">Schritte</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="mazeBacktracks">0</div>
+                        <div class="stat-label">Backracks</div>
+                    </div>
+                </div>
+
+                <div class="maze" id="mazeGrid"></div>
+
+                <div style="margin-top: 15px; text-align: center;">
+                    <span style="display: inline-block; margin: 0 10px;"><span style="background: #28a745; padding: 5px 10px; border-radius: 5px; color: white;">S</span> Start</span>
+                    <span style="display: inline-block; margin: 0 10px;"><span style="background: #dc3545; padding: 5px 10px; border-radius: 5px; color: white;">E</span> Ende</span>
+                    <span style="display: inline-block; margin: 0 10px;"><span style="background: #333; padding: 5px 10px; border-radius: 5px; color: white;">■</span> Wand</span>
+                    <span style="display: inline-block; margin: 0 10px;"><span style="background: #ffc107; padding: 5px 10px; border-radius: 5px;">■</span> Besucht</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. N-Damen-Problem</h2>
+
+            <div class="info-box">
+                <h3>Problem:</h3>
+                <p>Platziere N Damen auf einem N×N Schachbrett, so dass keine Dame eine andere angreifen kann.
+                Eine Dame kann horizontal, vertikal und diagonal angreifen.</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">solveNQueens</span>(row, board, n) {
+    <span class="code-comment">// Alle Damen platziert - Lösung gefunden!</span>
+    <span class="code-keyword">if</span> (row === n) {
+        <span class="code-keyword">return</span> <span class="code-number">true</span>;
+    }
+
+    <span class="code-comment">// Versuche Dame in jeder Spalte zu platzieren</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> col = <span class="code-number">0</span>; col &lt; n; col++) {
+        <span class="code-keyword">if</span> (<span class="code-function">isSafe</span>(board, row, col, n)) {
+            <span class="code-comment">// Platziere Dame</span>
+            board[row][col] = <span class="code-number">1</span>;
+
+            <span class="code-comment">// Rekursiv nächste Zeile lösen</span>
+            <span class="code-keyword">if</span> (<span class="code-function">solveNQueens</span>(row + <span class="code-number">1</span>, board, n)) {
+                <span class="code-keyword">return</span> <span class="code-number">true</span>;
+            }
+
+            <span class="code-comment">// Backtrack: Dame entfernen</span>
+            board[row][col] = <span class="code-number">0</span>;
+        }
+    }
+
+    <span class="code-keyword">return</span> <span class="code-number">false</span>;  <span class="code-comment">// Keine Lösung in diesem Pfad</span>
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>4-Damen-Problem Visualisierung</h3>
+
+                <div class="controls">
+                    <button onclick="solveQueens()">Lösung finden</button>
+                    <button onclick="resetQueens()">Reset</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="queensTries">0</div>
+                        <div class="stat-label">Versuche</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="queensBacktracks">0</div>
+                        <div class="stat-label">Backtracks</div>
+                    </div>
+                </div>
+
+                <div class="queens-board" id="queensBoard"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Maze data (0 = path, 1 = wall)
+        const mazeData = [
+            [2, 0, 1, 0, 0],
+            [0, 0, 1, 0, 1],
+            [1, 0, 0, 0, 1],
+            [0, 0, 1, 0, 0],
+            [1, 0, 0, 0, 3]
+        ];
+
+        let mazeSteps = 0;
+        let mazeBacktracks = 0;
+
+        function renderMaze() {
+            const grid = document.getElementById('mazeGrid');
+            grid.innerHTML = '';
+            grid.style.gridTemplateColumns = `repeat(${mazeData[0].length}, 40px)`;
+
+            mazeData.forEach((row, i) => {
+                row.forEach((cell, j) => {
+                    const cellDiv = document.createElement('div');
+                    cellDiv.className = 'maze-cell';
+                    cellDiv.dataset.row = i;
+                    cellDiv.dataset.col = j;
+
+                    if (cell === 1) cellDiv.classList.add('wall');
+                    else if (cell === 2) {
+                        cellDiv.textContent = 'S';
+                        cellDiv.style.background = '#28a745';
+                        cellDiv.style.color = 'white';
+                    }
+                    else if (cell === 3) {
+                        cellDiv.textContent = 'E';
+                        cellDiv.style.background = '#dc3545';
+                        cellDiv.style.color = 'white';
+                    }
+
+                    grid.appendChild(cellDiv);
+                });
+            });
+        }
+
+        async function solveMazeDemo() {
+            resetMaze();
+            const path = [];
+            await solveMazeRecursive(0, 0, new Set(), path);
+        }
+
+        async function solveMazeRecursive(x, y, visited, path) {
+            const key = `${x},${y}`;
+            const delay = document.getElementById('slowMode').checked ? 500 : 200;
+
+            // Check bounds
+            if (x < 0 || y < 0 || x >= mazeData.length || y >= mazeData[0].length) {
+                return false;
+            }
+
+            // Check if wall or visited
+            if (mazeData[x][y] === 1 || visited.has(key)) {
+                return false;
+            }
+
+            // Mark as visited
+            visited.add(key);
+            path.push({x, y});
+            mazeSteps++;
+            document.getElementById('mazeSteps').textContent = mazeSteps;
+
+            const cell = document.querySelector(`.maze-cell[data-row="${x}"][data-col="${y}"]`);
+            if (mazeData[x][y] !== 2 && mazeData[x][y] !== 3) {
+                cell.classList.add('current');
+            }
+
+            await sleep(delay);
+
+            // Check if goal
+            if (mazeData[x][y] === 3) {
+                return true;
+            }
+
+            // Try all 4 directions
+            const directions = [[0,1], [1,0], [0,-1], [-1,0]];
+
+            for (const [dx, dy] of directions) {
+                if (await solveMazeRecursive(x + dx, y + dy, visited, path)) {
+                    if (mazeData[x][y] !== 2) {
+                        cell.classList.remove('current');
+                        cell.classList.add('solution');
+                    }
+                    return true;
+                }
+            }
+
+            // Backtrack
+            mazeBacktracks++;
+            document.getElementById('mazeBacktracks').textContent = mazeBacktracks;
+            path.pop();
+
+            if (mazeData[x][y] !== 2 && mazeData[x][y] !== 3) {
+                cell.classList.remove('current');
+                cell.classList.add('visited');
+            }
+
+            await sleep(delay / 2);
+            return false;
+        }
+
+        function resetMaze() {
+            mazeSteps = 0;
+            mazeBacktracks = 0;
+            document.getElementById('mazeSteps').textContent = '0';
+            document.getElementById('mazeBacktracks').textContent = '0';
+            renderMaze();
+        }
+
+        // N-Queens
+        const queensSize = 4;
+        let queensBoard = Array(queensSize).fill(null).map(() => Array(queensSize).fill(0));
+        let queensTries = 0;
+        let queensBacktracks = 0;
+
+        function renderQueensBoard() {
+            const board = document.getElementById('queensBoard');
+            board.innerHTML = '';
+            board.style.gridTemplateColumns = `repeat(${queensSize}, 60px)`;
+
+            for (let i = 0; i < queensSize; i++) {
+                for (let j = 0; j < queensSize; j++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'queen-cell';
+                    cell.classList.add((i + j) % 2 === 0 ? 'light' : 'dark');
+                    cell.dataset.row = i;
+                    cell.dataset.col = j;
+
+                    if (queensBoard[i][j] === 1) {
+                        cell.classList.add('queen');
+                    }
+
+                    board.appendChild(cell);
+                }
+            }
+        }
+
+        async function solveQueens() {
+            resetQueens();
+            await solveNQueensRecursive(0);
+        }
+
+        async function solveNQueensRecursive(row) {
+            if (row === queensSize) {
+                return true;
+            }
+
+            for (let col = 0; col < queensSize; col++) {
+                queensTries++;
+                document.getElementById('queensTries').textContent = queensTries;
+
+                if (isSafeQueen(row, col)) {
+                    queensBoard[row][col] = 1;
+                    renderQueensBoard();
+                    await sleep(500);
+
+                    if (await solveNQueensRecursive(row + 1)) {
+                        return true;
+                    }
+
+                    // Backtrack
+                    queensBacktracks++;
+                    document.getElementById('queensBacktracks').textContent = queensBacktracks;
+                    queensBoard[row][col] = 0;
+                    renderQueensBoard();
+                    await sleep(300);
+                }
+            }
+
+            return false;
+        }
+
+        function isSafeQueen(row, col) {
+            // Check column
+            for (let i = 0; i < row; i++) {
+                if (queensBoard[i][col] === 1) return false;
+            }
+
+            // Check diagonal (top-left)
+            for (let i = row - 1, j = col - 1; i >= 0 && j >= 0; i--, j--) {
+                if (queensBoard[i][j] === 1) return false;
+            }
+
+            // Check diagonal (top-right)
+            for (let i = row - 1, j = col + 1; i >= 0 && j < queensSize; i--, j++) {
+                if (queensBoard[i][j] === 1) return false;
+            }
+
+            return true;
+        }
+
+        function resetQueens() {
+            queensBoard = Array(queensSize).fill(null).map(() => Array(queensSize).fill(0));
+            queensTries = 0;
+            queensBacktracks = 0;
+            document.getElementById('queensTries').textContent = '0';
+            document.getElementById('queensBacktracks').textContent = '0';
+            renderQueensBoard();
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initialize
+        renderMaze();
+        renderQueensBoard();
+    </script>
+</body>
+</html>

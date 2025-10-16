@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rekursion</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin: 40px 0;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment {
+            color: #5c6370;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-function {
+            color: #61afef;
+        }
+
+        .code-number {
+            color: #d19a66;
+        }
+
+        .visualization-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .call-stack {
+            display: flex;
+            flex-direction: column-reverse;
+            gap: 10px;
+            min-height: 200px;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+        }
+
+        .stack-frame {
+            background: #667eea;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
+
+        .stack-frame.returning {
+            background: #28a745;
+            animation: slideOut 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                opacity: 1;
+            }
+            to {
+                opacity: 0.7;
+            }
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 120px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover {
+            background: #5568d3;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .tree-container {
+            text-align: center;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            overflow-x: auto;
+        }
+
+        .tree-node {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 50%;
+            margin: 5px;
+            font-weight: bold;
+            min-width: 50px;
+        }
+
+        .tree-node.active {
+            background: #ffc107;
+            animation: pulse 0.5s ease;
+        }
+
+        .tree-node.completed {
+            background: #28a745;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .recursion-tree {
+            margin: 30px 0;
+        }
+
+        .tree-level {
+            display: flex;
+            justify-content: center;
+            gap: 40px;
+            margin: 20px 0;
+        }
+
+        .output-display {
+            background: #282c34;
+            color: #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            min-height: 100px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Rekursion</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Rekursion ist eine Programmiertechnik, bei der eine Funktion
+            sich selbst aufruft. Jeder rekursive Aufruf wird auf dem Call Stack gespeichert.
+            Diese Visualisierung zeigt, wie der Call Stack bei rekursiven Aufrufen wächst und schrumpft.
+        </div>
+
+        <div class="section">
+            <h2>1. Fakultät - Einfache Rekursion</h2>
+
+            <div class="info-box">
+                <h3>Konzept:</h3>
+                <p><strong>Fakultät (n!):</strong> Das Produkt aller positiven Zahlen von 1 bis n</p>
+                <p><strong>Rekursive Definition:</strong> n! = n × (n-1)!</p>
+                <p><strong>Basisfall:</strong> 0! = 1</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">factorial</span>(n) {
+    <span class="code-comment">// Basisfall: Rekursion stoppen</span>
+    <span class="code-keyword">if</span> (n === <span class="code-number">0</span> || n === <span class="code-number">1</span>) {
+        <span class="code-keyword">return</span> <span class="code-number">1</span>;
+    }
+
+    <span class="code-comment">// Rekursiver Aufruf</span>
+    <span class="code-keyword">return</span> n * <span class="code-function">factorial</span>(n - <span class="code-number">1</span>);
+}
+
+<span class="code-comment">// Beispiel: factorial(5) = 5 × 4 × 3 × 2 × 1 = 120</span>
+            </div>
+
+            <div class="visualization-container">
+                <h3>Interaktive Visualisierung</h3>
+
+                <div class="controls">
+                    <input type="number" id="factorialInput" placeholder="n" min="0" max="10" value="5">
+                    <button onclick="visualizeFactorial()">Fakultät berechnen</button>
+                    <button onclick="clearStack()">Stack leeren</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="callCount">0</div>
+                        <div class="stat-label">Aufrufe</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="maxDepth">0</div>
+                        <div class="stat-label">Max. Tiefe</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="result">-</div>
+                        <div class="stat-label">Ergebnis</div>
+                    </div>
+                </div>
+
+                <div class="call-stack" id="callStack"></div>
+
+                <div class="output-display" id="output"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Fibonacci - Mehrfache Rekursion</h2>
+
+            <div class="info-box">
+                <h3>Konzept:</h3>
+                <p><strong>Fibonacci:</strong> Jede Zahl ist die Summe der beiden vorherigen</p>
+                <p><strong>Rekursive Definition:</strong> fib(n) = fib(n-1) + fib(n-2)</p>
+                <p><strong>Basisfälle:</strong> fib(0) = 0, fib(1) = 1</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">fibonacci</span>(n) {
+    <span class="code-comment">// Basisfälle</span>
+    <span class="code-keyword">if</span> (n === <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-number">0</span>;
+    <span class="code-keyword">if</span> (n === <span class="code-number">1</span>) <span class="code-keyword">return</span> <span class="code-number">1</span>;
+
+    <span class="code-comment">// Zwei rekursive Aufrufe!</span>
+    <span class="code-keyword">return</span> <span class="code-function">fibonacci</span>(n - <span class="code-number">1</span>) + <span class="code-function">fibonacci</span>(n - <span class="code-number">2</span>);
+}
+
+<span class="code-comment">// Achtung: Exponentiell viele Aufrufe! O(2^n)</span>
+            </div>
+
+            <div class="visualization-container">
+                <h3>Rekursionsbaum</h3>
+
+                <div class="controls">
+                    <input type="number" id="fibInput" placeholder="n" min="0" max="7" value="5">
+                    <button onclick="visualizeFibonacci()">Fibonacci berechnen</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="fibCalls">0</div>
+                        <div class="stat-label">Gesamt-Aufrufe</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="fibResult">-</div>
+                        <div class="stat-label">Fibonacci-Zahl</div>
+                    </div>
+                </div>
+
+                <div class="tree-container">
+                    <canvas id="fibTree" width="800" height="400"></canvas>
+                </div>
+
+                <div class="info-box">
+                    <h3>Hinweis:</h3>
+                    <p>Beachte wie die Anzahl der Aufrufe exponentiell wächst! Für n=7 sind bereits
+                    41 Aufrufe nötig. Dies ist ein Beispiel, warum naive Rekursion ineffizient sein kann.
+                    Lösung: <strong>Memoization</strong> oder <strong>Dynamic Programming</strong>.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Rekursive Summe eines Arrays</h2>
+
+            <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">arraySum</span>(arr, index = <span class="code-number">0</span>) {
+    <span class="code-comment">// Basisfall: Ende des Arrays erreicht</span>
+    <span class="code-keyword">if</span> (index === arr.length) {
+        <span class="code-keyword">return</span> <span class="code-number">0</span>;
+    }
+
+    <span class="code-comment">// Aktuelles Element + Summe des Rests</span>
+    <span class="code-keyword">return</span> arr[index] + <span class="code-function">arraySum</span>(arr, index + <span class="code-number">1</span>);
+}
+
+<span class="code-comment">// Beispiel: arraySum([1, 2, 3, 4]) = 1 + 2 + 3 + 4 = 10</span>
+            </div>
+
+            <div class="visualization-container">
+                <h3>Interaktive Visualisierung</h3>
+
+                <div class="controls">
+                    <input type="text" id="arrayInput" placeholder="z.B. 1,2,3,4,5" value="1,2,3,4,5" style="width: 200px;">
+                    <button onclick="visualizeArraySum()">Summe berechnen</button>
+                </div>
+
+                <div class="call-stack" id="arraySumStack"></div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="arraySumResult">-</div>
+                        <div class="stat-label">Summe</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="arraySumCalls">0</div>
+                        <div class="stat-label">Aufrufe</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let callCount = 0;
+        let maxDepth = 0;
+        let currentDepth = 0;
+
+        function clearStack() {
+            document.getElementById('callStack').innerHTML = '';
+            document.getElementById('output').innerHTML = '';
+            callCount = 0;
+            maxDepth = 0;
+            currentDepth = 0;
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('callCount').textContent = callCount;
+            document.getElementById('maxDepth').textContent = maxDepth;
+        }
+
+        function addStackFrame(text, isReturning = false) {
+            const stack = document.getElementById('callStack');
+            const frame = document.createElement('div');
+            frame.className = 'stack-frame' + (isReturning ? ' returning' : '');
+            frame.textContent = text;
+            stack.appendChild(frame);
+
+            return frame;
+        }
+
+        function removeStackFrame(frame) {
+            setTimeout(() => {
+                if (frame && frame.parentNode) {
+                    frame.parentNode.removeChild(frame);
+                }
+            }, 500);
+        }
+
+        function log(message) {
+            const output = document.getElementById('output');
+            output.innerHTML += message + '\n';
+            output.scrollTop = output.scrollHeight;
+        }
+
+        async function visualizeFactorial() {
+            clearStack();
+            const n = parseInt(document.getElementById('factorialInput').value);
+
+            if (isNaN(n) || n < 0) {
+                alert('Bitte gültige Zahl >= 0 eingeben!');
+                return;
+            }
+
+            log(`=== Berechne factorial(${n}) ===\n`);
+            const result = await factorialRecursive(n);
+            document.getElementById('result').textContent = result;
+            log(`\n=== Ergebnis: ${result} ===`);
+        }
+
+        async function factorialRecursive(n, indent = 0) {
+            callCount++;
+            currentDepth++;
+            maxDepth = Math.max(maxDepth, currentDepth);
+            updateStats();
+
+            const indentStr = '  '.repeat(indent);
+            log(`${indentStr}→ factorial(${n})`);
+
+            const frame = addStackFrame(`factorial(${n})`);
+            await sleep(500);
+
+            if (n === 0 || n === 1) {
+                log(`${indentStr}← return 1 (Basisfall)`);
+                frame.classList.add('returning');
+                await sleep(500);
+                removeStackFrame(frame);
+                currentDepth--;
+                return 1;
+            }
+
+            const result = n * await factorialRecursive(n - 1, indent + 1);
+            log(`${indentStr}← return ${n} × ${result/n} = ${result}`);
+
+            frame.classList.add('returning');
+            await sleep(500);
+            removeStackFrame(frame);
+            currentDepth--;
+
+            return result;
+        }
+
+        async function visualizeFibonacci() {
+            const n = parseInt(document.getElementById('fibInput').value);
+
+            if (isNaN(n) || n < 0) {
+                alert('Bitte gültige Zahl >= 0 eingeben!');
+                return;
+            }
+
+            document.getElementById('fibCalls').textContent = '0';
+            document.getElementById('fibResult').textContent = '-';
+
+            const canvas = document.getElementById('fibTree');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            fibCallCount = 0;
+            await drawFibTree(ctx, canvas.width / 2, 30, n, 0);
+
+            const result = fibonacci(n);
+            document.getElementById('fibResult').textContent = result;
+        }
+
+        let fibCallCount = 0;
+
+        function fibonacci(n) {
+            if (n === 0) return 0;
+            if (n === 1) return 1;
+            return fibonacci(n - 1) + fibonacci(n - 2);
+        }
+
+        async function drawFibTree(ctx, x, y, n, depth) {
+            fibCallCount++;
+            document.getElementById('fibCalls').textContent = fibCallCount;
+
+            const radius = 25;
+            const vSpacing = 70;
+            const hSpacing = Math.max(100, 400 / Math.pow(2, depth));
+
+            // Draw circle
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#667eea';
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw text
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(`fib(${n})`, x, y);
+
+            await sleep(200);
+
+            if (n > 1 && depth < 4) {
+                // Draw left branch (n-1)
+                const leftX = x - hSpacing;
+                const leftY = y + vSpacing;
+
+                ctx.beginPath();
+                ctx.moveTo(x, y + radius);
+                ctx.lineTo(leftX, leftY - radius);
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                await drawFibTree(ctx, leftX, leftY, n - 1, depth + 1);
+
+                // Draw right branch (n-2)
+                const rightX = x + hSpacing;
+                const rightY = y + vSpacing;
+
+                ctx.beginPath();
+                ctx.moveTo(x, y + radius);
+                ctx.lineTo(rightX, rightY - radius);
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+
+                await drawFibTree(ctx, rightX, rightY, n - 2, depth + 1);
+            }
+        }
+
+        async function visualizeArraySum() {
+            const input = document.getElementById('arrayInput').value;
+            const arr = input.split(',').map(x => parseInt(x.trim())).filter(x => !isNaN(x));
+
+            if (arr.length === 0) {
+                alert('Bitte gültiges Array eingeben!');
+                return;
+            }
+
+            const stack = document.getElementById('arraySumStack');
+            stack.innerHTML = '';
+
+            let calls = 0;
+            const result = await arraySumRecursive(arr, 0, calls);
+
+            document.getElementById('arraySumResult').textContent = result;
+            document.getElementById('arraySumCalls').textContent = calls;
+        }
+
+        async function arraySumRecursive(arr, index, calls) {
+            calls++;
+            document.getElementById('arraySumCalls').textContent = calls;
+
+            const stack = document.getElementById('arraySumStack');
+            const frame = document.createElement('div');
+            frame.className = 'stack-frame';
+            frame.textContent = `arraySum([...], index=${index})`;
+            stack.appendChild(frame);
+
+            await sleep(500);
+
+            if (index === arr.length) {
+                frame.classList.add('returning');
+                frame.textContent += ' → return 0';
+                await sleep(500);
+                setTimeout(() => stack.removeChild(frame), 500);
+                return 0;
+            }
+
+            const sum = arr[index] + await arraySumRecursive(arr, index + 1, calls);
+
+            frame.classList.add('returning');
+            frame.textContent = `arraySum([...], ${index}) → return ${arr[index]} + ... = ${sum}`;
+            await sleep(500);
+            setTimeout(() => stack.removeChild(frame), 500);
+
+            return sum;
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+    </script>
+</body>
+</html>

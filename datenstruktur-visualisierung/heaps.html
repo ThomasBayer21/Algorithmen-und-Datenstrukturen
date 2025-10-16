@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heaps</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .section { margin: 40px 0; }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .visualization-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        .heap-array {
+            display: flex;
+            gap: 5px;
+            justify-content: center;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        .heap-cell {
+            width: 60px;
+            height: 60px;
+            border: 3px solid #667eea;
+            border-radius: 8px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: #667eea;
+            color: white;
+            font-weight: bold;
+            font-size: 1.2em;
+            transition: all 0.3s;
+        }
+        .heap-cell.highlight {
+            background: #ffc107;
+            border-color: #ffc107;
+            transform: scale(1.1);
+        }
+        .cell-index {
+            font-size: 0.6em;
+            margin-top: 2px;
+            opacity: 0.8;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 100px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #667eea;
+            color: white;
+        }
+        button:hover { background: #5568d3; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+        .info-box h3 { color: #333; margin-bottom: 10px; }
+        .complexity-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .badge-good { background: #28a745; color: white; }
+        .badge-fair { background: #ffc107; color: #333; }
+        .tree-canvas {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            display: block;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+        <div class="header">
+            <h1>Heaps (Priority Queue)</h1>
+        </div>
+        <div class="description">
+            <strong>Überblick:</strong> Ein Heap ist eine baumartige Datenstruktur, die als Array implementiert wird.
+            In einem Max-Heap ist jeder Elternknoten größer als seine Kinder, in einem Min-Heap ist jeder
+            Elternknoten kleiner. Heaps werden für Priority Queues und Heap Sort verwendet.
+        </div>
+
+        <div class="section">
+            <h2>1. Max-Heap</h2>
+            <div class="info-box">
+                <h3>Eigenschaften:</h3>
+                <p><strong>Heap-Eigenschaft:</strong> Parent ≥ Children</p>
+                <p><strong>Einfügen:</strong> <span class="complexity-badge badge-good">O(log n)</span></p>
+                <p><strong>Extract-Max:</strong> <span class="complexity-badge badge-good">O(log n)</span></p>
+                <p><strong>Get-Max:</strong> <span class="complexity-badge badge-good">O(1)</span></p>
+                <p><strong>Array-Implementierung:</strong> Parent at index i, Children at 2i+1 und 2i+2</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Max-Heap Klasse</span>
+<span class="code-keyword">class</span> <span class="code-function">MaxHeap</span> {
+    <span class="code-function">constructor</span>() {
+        <span class="code-keyword">this</span>.heap = [];
+    }
+
+    <span class="code-comment">// Einfügen - O(log n)</span>
+    <span class="code-function">insert</span>(value) {
+        <span class="code-keyword">this</span>.heap.push(value);
+        <span class="code-keyword">this</span>.<span class="code-function">heapifyUp</span>(<span class="code-keyword">this</span>.heap.length - <span class="code-number">1</span>);
+    }
+
+    <span class="code-comment">// Nach oben "bubblen"</span>
+    <span class="code-function">heapifyUp</span>(index) {
+        <span class="code-keyword">let</span> parentIndex = Math.floor((index - <span class="code-number">1</span>) / <span class="code-number">2</span>);
+
+        <span class="code-keyword">if</span> (index &gt; <span class="code-number">0</span> && <span class="code-keyword">this</span>.heap[index] &gt; <span class="code-keyword">this</span>.heap[parentIndex]) {
+            [<span class="code-keyword">this</span>.heap[index], <span class="code-keyword">this</span>.heap[parentIndex]] =
+                [<span class="code-keyword">this</span>.heap[parentIndex], <span class="code-keyword">this</span>.heap[index]];
+
+            <span class="code-keyword">this</span>.<span class="code-function">heapifyUp</span>(parentIndex);
+        }
+    }
+
+    <span class="code-comment">// Maximum entfernen - O(log n)</span>
+    <span class="code-function">extractMax</span>() {
+        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.heap.length === <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-keyword">null</span>;
+
+        <span class="code-keyword">const</span> max = <span class="code-keyword">this</span>.heap[<span class="code-number">0</span>];
+        <span class="code-keyword">this</span>.heap[<span class="code-number">0</span>] = <span class="code-keyword">this</span>.heap.<span class="code-function">pop</span>();
+
+        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.heap.length &gt; <span class="code-number">0</span>) {
+            <span class="code-keyword">this</span>.<span class="code-function">heapifyDown</span>(<span class="code-number">0</span>);
+        }
+
+        <span class="code-keyword">return</span> max;
+    }
+
+    <span class="code-comment">// Nach unten "bubblen"</span>
+    <span class="code-function">heapifyDown</span>(index) {
+        <span class="code-keyword">let</span> largest = index;
+        <span class="code-keyword">const</span> left = <span class="code-number">2</span> * index + <span class="code-number">1</span>;
+        <span class="code-keyword">const</span> right = <span class="code-number">2</span> * index + <span class="code-number">2</span>;
+
+        <span class="code-keyword">if</span> (left &lt; <span class="code-keyword">this</span>.heap.length && <span class="code-keyword">this</span>.heap[left] &gt; <span class="code-keyword">this</span>.heap[largest]) {
+            largest = left;
+        }
+
+        <span class="code-keyword">if</span> (right &lt; <span class="code-keyword">this</span>.heap.length && <span class="code-keyword">this</span>.heap[right] &gt; <span class="code-keyword">this</span>.heap[largest]) {
+            largest = right;
+        }
+
+        <span class="code-keyword">if</span> (largest !== index) {
+            [<span class="code-keyword">this</span>.heap[index], <span class="code-keyword">this</span>.heap[largest]] =
+                [<span class="code-keyword">this</span>.heap[largest], <span class="code-keyword">this</span>.heap[index]];
+
+            <span class="code-keyword">this</span>.<span class="code-function">heapifyDown</span>(largest);
+        }
+    }
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>Interaktive Max-Heap Visualisierung</h3>
+                <div class="controls">
+                    <input type="number" id="heapValue" placeholder="Wert" value="50">
+                    <button onclick="insertHeap()">Einfügen</button>
+                    <button onclick="extractMax()">Max entfernen</button>
+                    <button onclick="resetHeap()">Reset</button>
+                </div>
+
+                <h4 style="margin: 20px 0; color: #666;">Array-Darstellung:</h4>
+                <div class="heap-array" id="heapArray"></div>
+
+                <h4 style="margin: 20px 0; color: #666;">Baum-Darstellung:</h4>
+                <canvas id="heapCanvas" class="tree-canvas" width="800" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Heap Sort</h2>
+            <div class="info-box">
+                <h3>Algorithmus:</h3>
+                <ol style="margin-left: 20px; line-height: 2;">
+                    <li>Baue einen Max-Heap aus dem Array</li>
+                    <li>Tausche Root (Maximum) mit letztem Element</li>
+                    <li>Reduziere Heap-Größe um 1</li>
+                    <li>Heapify Root</li>
+                    <li>Wiederhole 2-4 bis Heap leer ist</li>
+                </ol>
+                <p><strong>Komplexität:</strong> <span class="complexity-badge badge-fair">O(n log n)</span> in allen Fällen</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Heap Sort - O(n log n)</span>
+<span class="code-keyword">function</span> <span class="code-function">heapSort</span>(arr) {
+    <span class="code-keyword">const</span> n = arr.length;
+
+    <span class="code-comment">// 1. Build max heap</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = Math.floor(n / <span class="code-number">2</span>) - <span class="code-number">1</span>; i &gt;= <span class="code-number">0</span>; i--) {
+        <span class="code-function">heapify</span>(arr, n, i);
+    }
+
+    <span class="code-comment">// 2. Extract elements one by one</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = n - <span class="code-number">1</span>; i &gt; <span class="code-number">0</span>; i--) {
+        [arr[<span class="code-number">0</span>], arr[i]] = [arr[i], arr[<span class="code-number">0</span>]];
+        <span class="code-function">heapify</span>(arr, i, <span class="code-number">0</span>);
+    }
+
+    <span class="code-keyword">return</span> arr;
+}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class MaxHeap {
+            constructor() {
+                this.heap = [];
+            }
+
+            insert(value) {
+                this.heap.push(value);
+                this.heapifyUp(this.heap.length - 1);
+            }
+
+            heapifyUp(index) {
+                let parentIndex = Math.floor((index - 1) / 2);
+
+                if (index > 0 && this.heap[index] > this.heap[parentIndex]) {
+                    [this.heap[index], this.heap[parentIndex]] =
+                        [this.heap[parentIndex], this.heap[index]];
+                    this.heapifyUp(parentIndex);
+                }
+            }
+
+            extractMax() {
+                if (this.heap.length === 0) return null;
+
+                const max = this.heap[0];
+                this.heap[0] = this.heap.pop();
+
+                if (this.heap.length > 0) {
+                    this.heapifyDown(0);
+                }
+
+                return max;
+            }
+
+            heapifyDown(index) {
+                let largest = index;
+                const left = 2 * index + 1;
+                const right = 2 * index + 2;
+
+                if (left < this.heap.length && this.heap[left] > this.heap[largest]) {
+                    largest = left;
+                }
+
+                if (right < this.heap.length && this.heap[right] > this.heap[largest]) {
+                    largest = right;
+                }
+
+                if (largest !== index) {
+                    [this.heap[index], this.heap[largest]] =
+                        [this.heap[largest], this.heap[index]];
+                    this.heapifyDown(largest);
+                }
+            }
+        }
+
+        let heap = new MaxHeap();
+
+        function renderHeap() {
+            // Render array
+            const arrayContainer = document.getElementById('heapArray');
+            arrayContainer.innerHTML = '';
+
+            heap.heap.forEach((value, index) => {
+                const cell = document.createElement('div');
+                cell.className = 'heap-cell';
+                cell.innerHTML = `${value}<div class="cell-index">[${index}]</div>`;
+                arrayContainer.appendChild(cell);
+            });
+
+            // Render tree
+            drawHeapTree();
+        }
+
+        function drawHeapTree() {
+            const canvas = document.getElementById('heapCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (heap.heap.length === 0) return;
+
+            drawHeapNode(ctx, 0, canvas.width / 2, 30, 0);
+        }
+
+        function drawHeapNode(ctx, index, x, y, level) {
+            if (index >= heap.heap.length) return;
+
+            const value = heap.heap[index];
+            const radius = 25;
+            const hSpacing = 400 / Math.pow(2, level);
+            const vSpacing = 70;
+
+            // Draw lines to children
+            const leftIndex = 2 * index + 1;
+            const rightIndex = 2 * index + 2;
+
+            if (leftIndex < heap.heap.length) {
+                const leftX = x - hSpacing;
+                const leftY = y + vSpacing;
+
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, y + radius);
+                ctx.lineTo(leftX, leftY - radius);
+                ctx.stroke();
+
+                drawHeapNode(ctx, leftIndex, leftX, leftY, level + 1);
+            }
+
+            if (rightIndex < heap.heap.length) {
+                const rightX = x + hSpacing;
+                const rightY = y + vSpacing;
+
+                ctx.strokeStyle = '#999';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(x, y + radius);
+                ctx.lineTo(rightX, rightY - radius);
+                ctx.stroke();
+
+                drawHeapNode(ctx, rightIndex, rightX, rightY, level + 1);
+            }
+
+            // Draw node
+            ctx.beginPath();
+            ctx.arc(x, y, radius, 0, 2 * Math.PI);
+            ctx.fillStyle = '#667eea';
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(value, x, y);
+        }
+
+        function insertHeap() {
+            const value = parseInt(document.getElementById('heapValue').value);
+            if (!isNaN(value)) {
+                heap.insert(value);
+                renderHeap();
+            }
+        }
+
+        function extractMax() {
+            const max = heap.extractMax();
+            if (max !== null) {
+                alert(`Max ${max} entfernt!`);
+                renderHeap();
+            } else {
+                alert('Heap ist leer!');
+            }
+        }
+
+        function resetHeap() {
+            heap = new MaxHeap();
+            [50, 30, 70, 20, 40, 60, 80].forEach(v => heap.insert(v));
+            renderHeap();
+        }
+
+        // Initialize
+        resetHeap();
+    </script>
+</body>
+</html>

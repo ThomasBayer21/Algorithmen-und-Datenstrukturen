@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suchalgorithmen Visualisierung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .algorithms-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .algorithm-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .algorithm-card:hover {
+            transform: translateY(-2px);
+            border-color: #333;
+        }
+
+        .algorithm-card h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .algorithm-card p {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .complexity {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #e0e0e0;
+            font-size: 0.85em;
+            color: #555;
+        }
+
+        .complexity-item {
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Suchalgorithmen Visualisierung</h1>
+        <p class="subtitle">Interaktive Visualisierung verschiedener Suchalgorithmen</p>
+
+        <div class="algorithms-grid">
+            <a href="lineare-suche.html" class="algorithm-card">
+                <h2>Lineare Suche</h2>
+                <p>Durchsucht das Array sequenziell von links nach rechts, bis das gesuchte Element gefunden wird.</p>
+                <div class="complexity">
+                    <div class="complexity-item"><strong>Zeitkomplexität:</strong> O(n)</div>
+                    <div class="complexity-item"><strong>Platzkomplexität:</strong> O(1)</div>
+                    <div class="complexity-item"><strong>Bedingung:</strong> Keine</div>
+                </div>
+            </a>
+
+            <a href="binaere-suche.html" class="algorithm-card">
+                <h2>Binäre Suche</h2>
+                <p>Teilt das Array wiederholt in der Mitte und sucht in der entsprechenden Hälfte weiter.</p>
+                <div class="complexity">
+                    <div class="complexity-item"><strong>Zeitkomplexität:</strong> O(log n)</div>
+                    <div class="complexity-item"><strong>Platzkomplexität:</strong> O(1)</div>
+                    <div class="complexity-item"><strong>Bedingung:</strong> Sortiertes Array</div>
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

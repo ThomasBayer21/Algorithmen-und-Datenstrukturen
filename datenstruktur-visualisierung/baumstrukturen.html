@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Baumstrukturen</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .back-link:hover { text-decoration: underline; }
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+        .section { margin: 40px 0; }
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .visualization-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+        .tree-canvas {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            display: block;
+            margin: 20px auto;
+        }
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 100px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #667eea;
+            color: white;
+        }
+        button:hover { background: #5568d3; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+        .info-box h3 { color: #333; margin-bottom: 10px; }
+        .traversal-output {
+            background: #282c34;
+            color: #28a745;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 20px 0;
+            min-height: 60px;
+        }
+        .complexity-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+        .badge-good { background: #28a745; color: white; }
+        .badge-fair { background: #ffc107; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+        <div class="header">
+            <h1>Baumstrukturen</h1>
+        </div>
+        <div class="description">
+            <strong>Überblick:</strong> Bäume sind hierarchische Datenstrukturen mit einem Wurzelknoten
+            und Kindknoten. Binary Search Trees (BST) sind eine spezielle Form, bei der alle Werte im
+            linken Teilbaum kleiner und alle im rechten Teilbaum größer als der Elternknoten sind.
+        </div>
+
+        <div class="section">
+            <h2>1. Binary Search Tree (BST)</h2>
+            <div class="info-box">
+                <h3>Eigenschaften:</h3>
+                <p><strong>Suche:</strong> <span class="complexity-badge badge-good">O(log n)</span> im Durchschnitt, O(n) im schlechtesten Fall</p>
+                <p><strong>Einfügen:</strong> <span class="complexity-badge badge-good">O(log n)</span> im Durchschnitt</p>
+                <p><strong>Löschen:</strong> <span class="complexity-badge badge-good">O(log n)</span> im Durchschnitt</p>
+                <p><strong>BST-Eigenschaft:</strong> Linker Teilbaum &lt; Wurzel &lt; Rechter Teilbaum</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Tree Node</span>
+<span class="code-keyword">class</span> <span class="code-function">TreeNode</span> {
+    <span class="code-function">constructor</span>(value) {
+        <span class="code-keyword">this</span>.value = value;
+        <span class="code-keyword">this</span>.left = <span class="code-keyword">null</span>;
+        <span class="code-keyword">this</span>.right = <span class="code-keyword">null</span>;
+    }
+}
+
+<span class="code-comment">// BST Einfügen - O(log n)</span>
+<span class="code-keyword">function</span> <span class="code-function">insert</span>(root, value) {
+    <span class="code-keyword">if</span> (root === <span class="code-keyword">null</span>) {
+        <span class="code-keyword">return</span> <span class="code-keyword">new</span> <span class="code-function">TreeNode</span>(value);
+    }
+
+    <span class="code-keyword">if</span> (value &lt; root.value) {
+        root.left = <span class="code-function">insert</span>(root.left, value);
+    } <span class="code-keyword">else</span> <span class="code-keyword">if</span> (value &gt; root.value) {
+        root.right = <span class="code-function">insert</span>(root.right, value);
+    }
+
+    <span class="code-keyword">return</span> root;
+}
+
+<span class="code-comment">// BST Suche - O(log n)</span>
+<span class="code-keyword">function</span> <span class="code-function">search</span>(root, value) {
+    <span class="code-keyword">if</span> (root === <span class="code-keyword">null</span> || root.value === value) {
+        <span class="code-keyword">return</span> root;
+    }
+
+    <span class="code-keyword">if</span> (value &lt; root.value) {
+        <span class="code-keyword">return</span> <span class="code-function">search</span>(root.left, value);
+    }
+
+    <span class="code-keyword">return</span> <span class="code-function">search</span>(root.right, value);
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>Interaktive BST Visualisierung</h3>
+                <div class="controls">
+                    <input type="number" id="treeValue" placeholder="Wert" value="50">
+                    <button onclick="insertNode()">Einfügen</button>
+                    <button onclick="searchNode()">Suchen</button>
+                    <button onclick="deleteNode()">Löschen</button>
+                    <button onclick="resetTree()">Reset</button>
+                </div>
+                <canvas id="treeCanvas" class="tree-canvas" width="800" height="400"></canvas>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Tree Traversierung</h2>
+            <div class="info-box">
+                <h3>Traversierungs-Arten:</h3>
+                <ul style="margin-left: 20px; line-height: 2;">
+                    <li><strong>Inorder (LNR):</strong> Links → Node → Rechts (ergibt sortierte Reihenfolge)</li>
+                    <li><strong>Preorder (NLR):</strong> Node → Links → Rechts</li>
+                    <li><strong>Postorder (LRN):</strong> Links → Rechts → Node</li>
+                    <li><strong>Level-Order (BFS):</strong> Ebenenweise von oben nach unten</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Inorder: Links → Node → Rechts</span>
+<span class="code-keyword">function</span> <span class="code-function">inorder</span>(node) {
+    <span class="code-keyword">if</span> (node === <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;
+
+    <span class="code-function">inorder</span>(node.left);
+    <span class="code-function">console.log</span>(node.value);
+    <span class="code-function">inorder</span>(node.right);
+}
+
+<span class="code-comment">// Preorder: Node → Links → Rechts</span>
+<span class="code-keyword">function</span> <span class="code-function">preorder</span>(node) {
+    <span class="code-keyword">if</span> (node === <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;
+
+    <span class="code-function">console.log</span>(node.value);
+    <span class="code-function">preorder</span>(node.left);
+    <span class="code-function">preorder</span>(node.right);
+}
+
+<span class="code-comment">// Postorder: Links → Rechts → Node</span>
+<span class="code-keyword">function</span> <span class="code-function">postorder</span>(node) {
+    <span class="code-keyword">if</span> (node === <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;
+
+    <span class="code-function">postorder</span>(node.left);
+    <span class="code-function">postorder</span>(node.right);
+    <span class="code-function">console.log</span>(node.value);
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>Traversierungs-Demo</h3>
+                <div class="controls">
+                    <button onclick="traverseInorder()">Inorder</button>
+                    <button onclick="traversePreorder()">Preorder</button>
+                    <button onclick="traversePostorder()">Postorder</button>
+                    <button onclick="traverseLevelOrder()">Level-Order</button>
+                </div>
+                <div class="traversal-output" id="traversalOutput">Wähle eine Traversierungs-Methode...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class TreeNode {
+            constructor(value) {
+                this.value = value;
+                this.left = null;
+                this.right = null;
+                this.x = 0;
+                this.y = 0;
+            }
+        }
+
+        let root = null;
+
+        function insert(node, value) {
+            if (node === null) {
+                return new TreeNode(value);
+            }
+            if (value < node.value) {
+                node.left = insert(node.left, value);
+            } else if (value > node.value) {
+                node.right = insert(node.right, value);
+            }
+            return node;
+        }
+
+        function search(node, value) {
+            if (node === null || node.value === value) {
+                return node;
+            }
+            if (value < node.value) {
+                return search(node.left, value);
+            }
+            return search(node.right, value);
+        }
+
+        function deleteNode(node, value) {
+            if (node === null) return null;
+
+            if (value < node.value) {
+                node.left = deleteNode(node.left, value);
+            } else if (value > node.value) {
+                node.right = deleteNode(node.right, value);
+            } else {
+                if (node.left === null) return node.right;
+                if (node.right === null) return node.left;
+
+                let minNode = findMin(node.right);
+                node.value = minNode.value;
+                node.right = deleteNode(node.right, minNode.value);
+            }
+            return node;
+        }
+
+        function findMin(node) {
+            while (node.left !== null) {
+                node = node.left;
+            }
+            return node;
+        }
+
+        function drawTree() {
+            const canvas = document.getElementById('treeCanvas');
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (root === null) return;
+
+            calculatePositions(root, 0, canvas.width, 0);
+            drawNode(ctx, root);
+        }
+
+        function calculatePositions(node, left, right, level) {
+            if (node === null) return;
+
+            node.x = (left + right) / 2;
+            node.y = 50 + level * 80;
+
+            const mid = (left + right) / 2;
+            if (node.left) calculatePositions(node.left, left, mid, level + 1);
+            if (node.right) calculatePositions(node.right, mid, right, level + 1);
+        }
+
+        function drawNode(ctx, node) {
+            if (node === null) return;
+
+            // Draw lines to children
+            ctx.strokeStyle = '#999';
+            ctx.lineWidth = 2;
+
+            if (node.left) {
+                ctx.beginPath();
+                ctx.moveTo(node.x, node.y);
+                ctx.lineTo(node.left.x, node.left.y);
+                ctx.stroke();
+                drawNode(ctx, node.left);
+            }
+
+            if (node.right) {
+                ctx.beginPath();
+                ctx.moveTo(node.x, node.y);
+                ctx.lineTo(node.right.x, node.right.y);
+                ctx.stroke();
+                drawNode(ctx, node.right);
+            }
+
+            // Draw node circle
+            ctx.beginPath();
+            ctx.arc(node.x, node.y, 25, 0, 2 * Math.PI);
+            ctx.fillStyle = '#667eea';
+            ctx.fill();
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Draw node value
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 16px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(node.value, node.x, node.y);
+        }
+
+        function insertNode() {
+            const value = parseInt(document.getElementById('treeValue').value);
+            if (!isNaN(value)) {
+                root = insert(root, value);
+                drawTree();
+            }
+        }
+
+        function searchNode() {
+            const value = parseInt(document.getElementById('treeValue').value);
+            if (!isNaN(value)) {
+                const found = search(root, value);
+                if (found) {
+                    alert(`Wert ${value} gefunden!`);
+                } else {
+                    alert(`Wert ${value} nicht gefunden!`);
+                }
+            }
+        }
+
+        function deleteNode() {
+            const value = parseInt(document.getElementById('treeValue').value);
+            if (!isNaN(value)) {
+                root = deleteNode(root, value);
+                drawTree();
+            }
+        }
+
+        function resetTree() {
+            root = null;
+            root = insert(root, 50);
+            root = insert(root, 30);
+            root = insert(root, 70);
+            root = insert(root, 20);
+            root = insert(root, 40);
+            root = insert(root, 60);
+            root = insert(root, 80);
+            drawTree();
+        }
+
+        // Traversals
+        function inorderTraversal(node, result) {
+            if (node === null) return;
+            inorderTraversal(node.left, result);
+            result.push(node.value);
+            inorderTraversal(node.right, result);
+        }
+
+        function preorderTraversal(node, result) {
+            if (node === null) return;
+            result.push(node.value);
+            preorderTraversal(node.left, result);
+            preorderTraversal(node.right, result);
+        }
+
+        function postorderTraversal(node, result) {
+            if (node === null) return;
+            postorderTraversal(node.left, result);
+            postorderTraversal(node.right, result);
+            result.push(node.value);
+        }
+
+        function levelOrderTraversal(root) {
+            if (root === null) return [];
+            const result = [];
+            const queue = [root];
+
+            while (queue.length > 0) {
+                const node = queue.shift();
+                result.push(node.value);
+
+                if (node.left) queue.push(node.left);
+                if (node.right) queue.push(node.right);
+            }
+
+            return result;
+        }
+
+        function traverseInorder() {
+            const result = [];
+            inorderTraversal(root, result);
+            document.getElementById('traversalOutput').textContent = 'Inorder: ' + result.join(' → ');
+        }
+
+        function traversePreorder() {
+            const result = [];
+            preorderTraversal(root, result);
+            document.getElementById('traversalOutput').textContent = 'Preorder: ' + result.join(' → ');
+        }
+
+        function traversePostorder() {
+            const result = [];
+            postorderTraversal(root, result);
+            document.getElementById('traversalOutput').textContent = 'Postorder: ' + result.join(' → ');
+        }
+
+        function traverseLevelOrder() {
+            const result = levelOrderTraversal(root);
+            document.getElementById('traversalOutput').textContent = 'Level-Order: ' + result.join(' → ');
+        }
+
+        // Initialize
+        resetTree();
+    </script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Datenstruktur-Visualisierungen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .intro h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Datenstruktur-Visualisierungen</h1>
+            <p class="subtitle">Interaktive Visualisierungen grundlegender Datenstrukturen und Konzepte</p>
+        </div>
+
+        <div class="intro">
+            <h2>Was sind Datenstrukturen?</h2>
+            <p>
+                Datenstrukturen sind fundamentale Organisationsformen für Daten in der Informatik.
+                Sie bestimmen, wie Daten gespeichert, organisiert und abgerufen werden. Die Wahl
+                der richtigen Datenstruktur ist entscheidend für die Effizienz von Algorithmen und
+                kann den Unterschied zwischen einer praktikablen und einer unpraktikablen Lösung ausmachen.
+                Diese Visualisierungen helfen dabei, das Verhalten und die innere Funktionsweise
+                verschiedener Datenstrukturen zu verstehen.
+            </p>
+        </div>
+
+        <div class="cards">
+            <a href="arrays.html" class="card">
+                <div class="card-title">Arrays und Felder</div>
+                <div class="card-description">
+                    Die einfachste Datenstruktur: zusammenhängende Speicherbereiche mit konstantem
+                    Zugriff. Visualisierung von eindimensionalen, mehrdimensionalen Arrays und
+                    typischen Operationen wie Zugriff, Einfügen und Löschen.
+                </div>
+            </a>
+
+            <a href="rekursion.html" class="card">
+                <div class="card-title">Rekursion</div>
+                <div class="card-description">
+                    Visualisierung rekursiver Aufrufe und des Call-Stacks. Zeigt wie Funktionen
+                    sich selbst aufrufen, wie der Stack wächst und schrumpft, und typische
+                    rekursive Muster wie Divide-and-Conquer.
+                </div>
+            </a>
+
+            <a href="backtracking.html" class="card">
+                <div class="card-title">Backtracking</div>
+                <div class="card-description">
+                    Interaktive Demonstration des Backtracking-Algorithmus. Zeigt wie Lösungen
+                    durch systematisches Ausprobieren gefunden werden, mit Beispielen wie
+                    N-Damen-Problem und Labyrinth-Lösung.
+                </div>
+            </a>
+
+            <a href="verkettete-listen.html" class="card">
+                <div class="card-title">Verkettete Listen</div>
+                <div class="card-description">
+                    Einfach und doppelt verkettete Listen visualisiert. Zeigt Operationen wie
+                    Einfügen, Löschen, Suchen und Umkehren mit animierten Zeiger-Manipulationen.
+                </div>
+            </a>
+
+            <a href="baumstrukturen.html" class="card">
+                <div class="card-title">Baumstrukturen</div>
+                <div class="card-description">
+                    Binärbäume, Binary Search Trees (BST) und balancierte Bäume. Visualisierung
+                    von Tree-Traversierungen (Inorder, Preorder, Postorder) und Baum-Operationen
+                    wie Einfügen und Löschen.
+                </div>
+            </a>
+
+            <a href="heaps.html" class="card">
+                <div class="card-title">Heaps</div>
+                <div class="card-description">
+                    Min-Heaps und Max-Heaps visualisiert. Zeigt die Heap-Eigenschaft,
+                    Heapify-Operationen und wie Priority Queues implementiert werden.
+                    Inklusive Heap Sort Animation.
+                </div>
+            </a>
+
+            <a href="hashtabellen.html" class="card">
+                <div class="card-title">Hashtabellen</div>
+                <div class="card-description">
+                    Hash-Funktionen, Kollisionsbehandlung (Chaining, Open Addressing) und
+                    Load-Factor visualisiert. Zeigt wie Hash-Tables O(1) Zugriff ermöglichen
+                    und wie Kollisionen behandelt werden.
+                </div>
+            </a>
+
+            <a href="graphen.html" class="card">
+                <div class="card-title">Graphen</div>
+                <div class="card-description">
+                    Gerichtete und ungerichtete Graphen mit verschiedenen Darstellungsformen
+                    (Adjazenzmatrix, Adjazenzliste). Visualisierung von Graph-Traversierungen
+                    (BFS, DFS) und kürzeste Wege Algorithmen.
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>

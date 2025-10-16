@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lineare Suche Visualisierung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 120px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        .visualization {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 40px 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .bar {
+            background: #333;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .bar.checking {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.1);
+        }
+
+        .bar.found {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            transform: scale(1.2);
+        }
+
+        .bar.checked {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .bar-value {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .info-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            min-height: 85px;
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            color: #333;
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-target {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .search-target strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .target-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Lineare Suche Visualisierung</h1>
+        </div>
+
+        <div class="description">
+            <strong>Funktionsweise:</strong> Die lineare Suche durchläuft das Array sequenziell von Anfang bis Ende
+            und vergleicht jedes Element mit dem gesuchten Wert. Sobald das Element gefunden wird, endet die Suche.
+            Im schlechtesten Fall müssen alle Elemente überprüft werden.
+        </div>
+
+        <div class="controls">
+            <div class="input-container">
+                <label>Gesuchter Wert:</label>
+                <input type="number" id="searchValue" value="50" min="10" max="100">
+            </div>
+            <button class="btn-primary" onclick="startSearch()">Suche starten</button>
+            <button class="btn-secondary" onclick="resetArray()">Neues Array</button>
+
+            <div class="slider-container">
+                <label>Geschwindigkeit:</label>
+                <input type="range" id="speedSlider" min="100" max="1000" value="500" step="50">
+                <span id="speedValue">500ms</span>
+            </div>
+
+            <div class="slider-container">
+                <label>Array-Größe:</label>
+                <input type="range" id="sizeSlider" min="5" max="30" value="15" step="1" onchange="resetArray()">
+                <span id="sizeValue">15</span>
+            </div>
+        </div>
+
+        <div class="search-target" id="searchTarget" style="display: none;">
+            <strong>Gesuchter Wert:</strong>
+            <div class="target-value" id="targetDisplay">-</div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title">Aktueller Status</div>
+            <div class="info-content">
+                <div class="info-item">
+                    <strong>Position:</strong>
+                    <div class="info-value" id="currentPosition">-</div>
+                </div>
+                <div class="info-item">
+                    <strong>Aktuelles Element:</strong>
+                    <div class="info-value" id="currentElement">-</div>
+                </div>
+                <div class="info-item">
+                    <strong>Status:</strong>
+                    <div class="info-value" id="currentAction">Warte auf Start...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization" id="visualization"></div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="comparisons">0</div>
+                <div class="stat-label">Vergleiche</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="result">-</div>
+                <div class="stat-label">Ergebnis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="time">0.0s</div>
+                <div class="stat-label">Zeit</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let array = [];
+        let comparisons = 0;
+        let isSearching = false;
+        let startTime = 0;
+        let timerInterval = null;
+
+        const visualization = document.getElementById('visualization');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const sizeValue = document.getElementById('sizeValue');
+        const searchValueInput = document.getElementById('searchValue');
+
+        speedSlider.addEventListener('input', (e) => {
+            speedValue.textContent = e.target.value + 'ms';
+        });
+
+        sizeSlider.addEventListener('input', (e) => {
+            sizeValue.textContent = e.target.value;
+        });
+
+        function generateArray(size) {
+            const arr = [];
+            for (let i = 0; i < size; i++) {
+                arr.push(Math.floor(Math.random() * 91) + 10);
+            }
+            return arr;
+        }
+
+        function renderArray() {
+            visualization.innerHTML = '';
+            const maxValue = Math.max(...array);
+            const barWidth = Math.max(15, Math.min(50, (visualization.offsetWidth - array.length * 4) / array.length));
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${(value / maxValue) * 300}px`;
+                bar.style.width = `${barWidth}px`;
+                bar.id = `bar-${index}`;
+
+                const barValue = document.createElement('div');
+                barValue.className = 'bar-value';
+                barValue.textContent = value;
+                bar.appendChild(barValue);
+
+                visualization.appendChild(bar);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('comparisons').textContent = comparisons;
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                document.getElementById('time').textContent = elapsed.toFixed(1) + 's';
+            }, 100);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        async function sleep(ms) {
+            await new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function updateInfo(position, element, action) {
+            document.getElementById('currentPosition').textContent = position;
+            document.getElementById('currentElement').textContent = element;
+            document.getElementById('currentAction').textContent = action;
+        }
+
+        async function linearSearch(target) {
+            const n = array.length;
+
+            for (let i = 0; i < n; i++) {
+                if (!isSearching) return -1;
+
+                const bar = document.getElementById(`bar-${i}`);
+                bar.classList.add('checking');
+
+                comparisons++;
+                updateStats();
+                updateInfo(i, array[i], `Prüfe Element an Position ${i}...`);
+
+                await sleep(parseInt(speedSlider.value));
+
+                if (array[i] === target) {
+                    bar.classList.remove('checking');
+                    bar.classList.add('found');
+                    updateInfo(i, array[i], `Element gefunden!`);
+                    document.getElementById('result').textContent = `Position ${i}`;
+                    return i;
+                }
+
+                bar.classList.remove('checking');
+                bar.classList.add('checked');
+                updateInfo(i, array[i], `Nicht gefunden, weiter...`);
+            }
+
+            updateInfo('-', '-', 'Element nicht gefunden');
+            document.getElementById('result').textContent = 'Nicht gefunden';
+            return -1;
+        }
+
+        async function startSearch() {
+            if (isSearching) return;
+
+            const target = parseInt(searchValueInput.value);
+            if (isNaN(target)) {
+                alert('Bitte geben Sie einen gültigen Wert ein!');
+                return;
+            }
+
+            isSearching = true;
+            comparisons = 0;
+            updateStats();
+            document.getElementById('result').textContent = '-';
+            startTimer();
+
+            document.getElementById('searchTarget').style.display = 'block';
+            document.getElementById('targetDisplay').textContent = target;
+
+            const bars = document.querySelectorAll('.bar');
+            bars.forEach(bar => {
+                bar.classList.remove('checking', 'found', 'checked');
+            });
+
+            await linearSearch(target);
+
+            isSearching = false;
+            stopTimer();
+        }
+
+        function resetArray() {
+            isSearching = false;
+            stopTimer();
+            comparisons = 0;
+            document.getElementById('time').textContent = '0.0s';
+            document.getElementById('result').textContent = '-';
+            updateStats();
+            updateInfo('-', '-', 'Warte auf Start...');
+            document.getElementById('searchTarget').style.display = 'none';
+
+            const size = parseInt(sizeSlider.value);
+            array = generateArray(size);
+            renderArray();
+        }
+
+        resetArray();
+    </script>
+</body>
+</html>

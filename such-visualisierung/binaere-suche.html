@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Binäre Suche Visualisierung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 120px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        .visualization {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 40px 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .bar {
+            background: #333;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .bar.in-range {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .bar.out-of-range {
+            background: #9e9e9e;
+            opacity: 0.4;
+        }
+
+        .bar.mid {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            transform: scale(1.15);
+        }
+
+        .bar.left-bound, .bar.right-bound {
+            border: 3px solid #ffa726;
+        }
+
+        .bar.found {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            transform: scale(1.2);
+        }
+
+        .bar-value {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .bar-label {
+            position: absolute;
+            top: -25px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .info-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            min-height: 85px;
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            color: #333;
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-target {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .search-target strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #666;
+        }
+
+        .target-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .legend {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Binäre Suche Visualisierung</h1>
+        </div>
+
+        <div class="description">
+            <strong>Funktionsweise:</strong> Die binäre Suche funktioniert nur auf sortierten Arrays. Sie teilt das
+            Suchintervall wiederholt in der Mitte und vergleicht das mittlere Element mit dem gesuchten Wert.
+            Abhängig vom Vergleich wird dann in der linken oder rechten Hälfte weitergesucht. Dies führt zu einer
+            logarithmischen Zeitkomplexität O(log n).
+        </div>
+
+        <div class="controls">
+            <div class="input-container">
+                <label>Gesuchter Wert:</label>
+                <input type="number" id="searchValue" value="50" min="10" max="100">
+            </div>
+            <button class="btn-primary" onclick="startSearch()">Suche starten</button>
+            <button class="btn-secondary" onclick="resetArray()">Neues Array</button>
+
+            <div class="slider-container">
+                <label>Geschwindigkeit:</label>
+                <input type="range" id="speedSlider" min="200" max="1500" value="800" step="100">
+                <span id="speedValue">800ms</span>
+            </div>
+
+            <div class="slider-container">
+                <label>Array-Größe:</label>
+                <input type="range" id="sizeSlider" min="7" max="31" value="15" step="2" onchange="resetArray()">
+                <span id="sizeValue">15</span>
+            </div>
+        </div>
+
+        <div class="search-target" id="searchTarget" style="display: none;">
+            <strong>Gesuchter Wert:</strong>
+            <div class="target-value" id="targetDisplay">-</div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title">Aktueller Status</div>
+            <div class="info-content">
+                <div class="info-item">
+                    <strong>Suchbereich:</strong>
+                    <div class="info-value" id="searchRange">-</div>
+                </div>
+                <div class="info-item">
+                    <strong>Mittleres Element:</strong>
+                    <div class="info-value" id="midElement">-</div>
+                </div>
+                <div class="info-item">
+                    <strong>Vergleich:</strong>
+                    <div class="info-value" id="comparison">-</div>
+                </div>
+                <div class="info-item">
+                    <strong>Status:</strong>
+                    <div class="info-value" id="currentAction">Warte auf Start...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization" id="visualization"></div>
+
+        <div class="legend">
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);"></div>
+                <span>Aktiver Bereich</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);"></div>
+                <span>Mittleres Element</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: #9e9e9e;"></div>
+                <span>Ausgeschlossen</span>
+            </div>
+            <div class="legend-item">
+                <div class="legend-color" style="background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);"></div>
+                <span>Gefunden</span>
+            </div>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="comparisons">0</div>
+                <div class="stat-label">Vergleiche</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="steps">0</div>
+                <div class="stat-label">Schritte</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="result">-</div>
+                <div class="stat-label">Ergebnis</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="time">0.0s</div>
+                <div class="stat-label">Zeit</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let array = [];
+        let comparisons = 0;
+        let steps = 0;
+        let isSearching = false;
+        let startTime = 0;
+        let timerInterval = null;
+
+        const visualization = document.getElementById('visualization');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const sizeValue = document.getElementById('sizeValue');
+        const searchValueInput = document.getElementById('searchValue');
+
+        speedSlider.addEventListener('input', (e) => {
+            speedValue.textContent = e.target.value + 'ms';
+        });
+
+        sizeSlider.addEventListener('input', (e) => {
+            sizeValue.textContent = e.target.value;
+        });
+
+        function generateSortedArray(size) {
+            const arr = [];
+            let value = Math.floor(Math.random() * 10) + 10;
+            for (let i = 0; i < size; i++) {
+                arr.push(value);
+                value += Math.floor(Math.random() * 8) + 2;
+            }
+            return arr;
+        }
+
+        function renderArray(leftIdx = -1, rightIdx = -1, midIdx = -1) {
+            visualization.innerHTML = '';
+            const maxValue = Math.max(...array);
+            const barWidth = Math.max(15, Math.min(50, (visualization.offsetWidth - array.length * 4) / array.length));
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${(value / maxValue) * 300}px`;
+                bar.style.width = `${barWidth}px`;
+                bar.id = `bar-${index}`;
+
+                if (index >= leftIdx && index <= rightIdx && leftIdx !== -1) {
+                    bar.classList.add('in-range');
+                } else if (leftIdx !== -1) {
+                    bar.classList.add('out-of-range');
+                }
+
+                if (index === midIdx) {
+                    bar.classList.add('mid');
+                    const label = document.createElement('div');
+                    label.className = 'bar-label';
+                    label.textContent = 'MID';
+                    bar.appendChild(label);
+                } else if (index === leftIdx && leftIdx !== -1) {
+                    bar.classList.add('left-bound');
+                    const label = document.createElement('div');
+                    label.className = 'bar-label';
+                    label.textContent = 'L';
+                    bar.appendChild(label);
+                } else if (index === rightIdx && rightIdx !== -1) {
+                    bar.classList.add('right-bound');
+                    const label = document.createElement('div');
+                    label.className = 'bar-label';
+                    label.textContent = 'R';
+                    bar.appendChild(label);
+                }
+
+                const barValue = document.createElement('div');
+                barValue.className = 'bar-value';
+                barValue.textContent = value;
+                bar.appendChild(barValue);
+
+                visualization.appendChild(bar);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('comparisons').textContent = comparisons;
+            document.getElementById('steps').textContent = steps;
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                document.getElementById('time').textContent = elapsed.toFixed(1) + 's';
+            }, 100);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        async function sleep(ms) {
+            await new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function updateInfo(range, mid, comp, action) {
+            document.getElementById('searchRange').textContent = range;
+            document.getElementById('midElement').textContent = mid;
+            document.getElementById('comparison').textContent = comp;
+            document.getElementById('currentAction').textContent = action;
+        }
+
+        async function binarySearch(target) {
+            let left = 0;
+            let right = array.length - 1;
+
+            while (left <= right) {
+                if (!isSearching) return -1;
+
+                steps++;
+                updateStats();
+
+                const mid = Math.floor((left + right) / 2);
+
+                renderArray(left, right, mid);
+                updateInfo(
+                    `[${left}, ${right}]`,
+                    `${array[mid]} (Index ${mid})`,
+                    '-',
+                    'Berechne mittleres Element...'
+                );
+
+                await sleep(parseInt(speedSlider.value));
+
+                comparisons++;
+                updateStats();
+
+                if (array[mid] === target) {
+                    updateInfo(
+                        `[${left}, ${right}]`,
+                        `${array[mid]} (Index ${mid})`,
+                        `${array[mid]} = ${target}`,
+                        'Element gefunden!'
+                    );
+
+                    const bar = document.getElementById(`bar-${mid}`);
+                    bar.classList.remove('mid', 'in-range');
+                    bar.classList.add('found');
+
+                    document.getElementById('result').textContent = `Position ${mid}`;
+                    return mid;
+                }
+
+                if (array[mid] < target) {
+                    updateInfo(
+                        `[${left}, ${right}]`,
+                        `${array[mid]} (Index ${mid})`,
+                        `${array[mid]} < ${target}`,
+                        'Suche in rechter Hälfte weiter...'
+                    );
+                    await sleep(parseInt(speedSlider.value) / 2);
+                    left = mid + 1;
+                } else {
+                    updateInfo(
+                        `[${left}, ${right}]`,
+                        `${array[mid]} (Index ${mid})`,
+                        `${array[mid]} > ${target}`,
+                        'Suche in linker Hälfte weiter...'
+                    );
+                    await sleep(parseInt(speedSlider.value) / 2);
+                    right = mid - 1;
+                }
+            }
+
+            updateInfo('-', '-', '-', 'Element nicht gefunden');
+            document.getElementById('result').textContent = 'Nicht gefunden';
+            renderArray();
+            return -1;
+        }
+
+        async function startSearch() {
+            if (isSearching) return;
+
+            const target = parseInt(searchValueInput.value);
+            if (isNaN(target)) {
+                alert('Bitte geben Sie einen gültigen Wert ein!');
+                return;
+            }
+
+            isSearching = true;
+            comparisons = 0;
+            steps = 0;
+            updateStats();
+            document.getElementById('result').textContent = '-';
+            startTimer();
+
+            document.getElementById('searchTarget').style.display = 'block';
+            document.getElementById('targetDisplay').textContent = target;
+
+            await binarySearch(target);
+
+            isSearching = false;
+            stopTimer();
+        }
+
+        function resetArray() {
+            isSearching = false;
+            stopTimer();
+            comparisons = 0;
+            steps = 0;
+            document.getElementById('time').textContent = '0.0s';
+            document.getElementById('result').textContent = '-';
+            updateStats();
+            updateInfo('-', '-', '-', 'Warte auf Start...');
+            document.getElementById('searchTarget').style.display = 'none';
+
+            const size = parseInt(sizeSlider.value);
+            array = generateSortedArray(size);
+            renderArray();
+        }
+
+        resetArray();
+    </script>
+</body>
+</html>

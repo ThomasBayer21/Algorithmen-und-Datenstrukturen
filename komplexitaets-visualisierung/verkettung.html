@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verkettung & Hintereinanderausführung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .rules {
+            background: #fff3cd;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #ffc107;
+        }
+
+        .rules h3 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .rules ul {
+            margin-left: 20px;
+            line-height: 2;
+        }
+
+        .rules strong {
+            color: #d35400;
+        }
+
+        .examples {
+            display: grid;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .example {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .example-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment {
+            color: #5c6370;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-function {
+            color: #61afef;
+        }
+
+        .code-number {
+            color: #d19a66;
+        }
+
+        .visualization-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .operation-flow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        .operation {
+            background: #667eea;
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .operation.sequential {
+            background: #667eea;
+        }
+
+        .operation.nested {
+            background: #fd7e14;
+        }
+
+        .arrow {
+            font-size: 2em;
+            color: #333;
+        }
+
+        .result {
+            background: #28a745;
+            color: white;
+            padding: 25px 35px;
+            border-radius: 10px;
+            font-weight: bold;
+            font-size: 1.2em;
+            text-align: center;
+            min-width: 150px;
+        }
+
+        .complexity-calc {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+
+        .complexity-calc h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .calc-step {
+            margin: 8px 0;
+            padding: 8px;
+            background: white;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .interactive-section {
+            margin-top: 40px;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        select {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #333;
+            color: white;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        .result-display {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-top: 20px;
+            min-height: 100px;
+        }
+
+        .result-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Verkettung & Hintereinanderausführung</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Wenn verschiedene Operationen kombiniert werden, müssen ihre
+            Komplexitäten korrekt zusammengeführt werden. Diese Seite zeigt, wie man die
+            Gesamtkomplexität von sequenziellen und verschachtelten Operationen berechnet.
+        </div>
+
+        <div class="rules">
+            <h3>Wichtige Regeln:</h3>
+            <ul>
+                <li><strong>Sequenzielle Operationen (nacheinander):</strong> Addiere die Komplexitäten, behalte die dominante = O(n) + O(n²) → O(n²)</li>
+                <li><strong>Verschachtelte Operationen (ineinander):</strong> Multipliziere die Komplexitäten = O(n) * O(n) → O(n²)</li>
+                <li><strong>Konstanten ignorieren:</strong> O(2n) = O(n), O(n/2) = O(n)</li>
+                <li><strong>Dominante Terme behalten:</strong> O(n² + n + 1) = O(n²)</li>
+            </ul>
+        </div>
+
+        <div class="examples">
+            <div class="example">
+                <div class="example-title">Beispiel 1: Sequenzielle Operationen (Hintereinander)</div>
+                <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">processData</span>(arr) {
+    <span class="code-comment">// Operation 1: Linearer Durchlauf</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {  <span class="code-comment">// O(n)</span>
+        <span class="code-function">print</span>(arr[i]);
+    }
+
+    <span class="code-comment">// Operation 2: Weiterer linearer Durchlauf</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {  <span class="code-comment">// O(n)</span>
+        arr[i] = arr[i] * <span class="code-number">2</span>;
+    }
+
+    <span class="code-comment">// Operation 3: Konstante Operation</span>
+    <span class="code-keyword">return</span> arr[<span class="code-number">0</span>];  <span class="code-comment">// O(1)</span>
+}
+                </div>
+
+                <div class="visualization-container">
+                    <div class="operation-flow">
+                        <div class="operation sequential">O(n)</div>
+                        <div class="arrow">+</div>
+                        <div class="operation sequential">O(n)</div>
+                        <div class="arrow">+</div>
+                        <div class="operation sequential">O(1)</div>
+                        <div class="arrow">=</div>
+                        <div class="result">O(n)</div>
+                    </div>
+                </div>
+
+                <div class="complexity-calc">
+                    <h4>Berechnung:</h4>
+                    <div class="calc-step">Schritt 1: O(n) + O(n) + O(1)</div>
+                    <div class="calc-step">Schritt 2: O(2n + 1)</div>
+                    <div class="calc-step">Schritt 3: O(n)  [Konstanten ignorieren, dominanter Term]</div>
+                </div>
+            </div>
+
+            <div class="example">
+                <div class="example-title">Beispiel 2: Verschachtelte Operationen</div>
+                <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">findPairs</span>(arr) {
+    <span class="code-comment">// Äußere Schleife</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {       <span class="code-comment">// O(n)</span>
+        <span class="code-comment">// Innere Schleife (verschachtelt)</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; arr.length; j++) {   <span class="code-comment">// O(n)</span>
+            <span class="code-function">print</span>(arr[i], arr[j]);
+        }
+    }
+}
+                </div>
+
+                <div class="visualization-container">
+                    <div class="operation-flow">
+                        <div class="operation nested">O(n)</div>
+                        <div class="arrow">×</div>
+                        <div class="operation nested">O(n)</div>
+                        <div class="arrow">=</div>
+                        <div class="result">O(n²)</div>
+                    </div>
+                </div>
+
+                <div class="complexity-calc">
+                    <h4>Berechnung:</h4>
+                    <div class="calc-step">Schritt 1: Äußere Schleife läuft n-mal</div>
+                    <div class="calc-step">Schritt 2: Für jeden Durchlauf der äußeren Schleife läuft die innere Schleife n-mal</div>
+                    <div class="calc-step">Schritt 3: O(n) × O(n) = O(n²)</div>
+                </div>
+            </div>
+
+            <div class="example">
+                <div class="example-title">Beispiel 3: Gemischt (Sequenziell + Verschachtelt)</div>
+                <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">complexProcess</span>(arr) {
+    <span class="code-comment">// Operation 1: Linearer Durchlauf</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {  <span class="code-comment">// O(n)</span>
+        <span class="code-function">print</span>(arr[i]);
+    }
+
+    <span class="code-comment">// Operation 2: Verschachtelte Schleifen</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {       <span class="code-comment">// O(n²)</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; arr.length; j++) {
+            <span class="code-function">print</span>(arr[i] + arr[j]);
+        }
+    }
+}
+                </div>
+
+                <div class="visualization-container">
+                    <div class="operation-flow">
+                        <div class="operation sequential">O(n)</div>
+                        <div class="arrow">+</div>
+                        <div class="operation nested">O(n²)</div>
+                        <div class="arrow">=</div>
+                        <div class="result">O(n²)</div>
+                    </div>
+                </div>
+
+                <div class="complexity-calc">
+                    <h4>Berechnung:</h4>
+                    <div class="calc-step">Schritt 1: O(n) + O(n²)</div>
+                    <div class="calc-step">Schritt 2: O(n² + n)</div>
+                    <div class="calc-step">Schritt 3: O(n²)  [n² dominiert n]</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="interactive-section">
+            <h2>Interaktiver Komplexitäts-Rechner</h2>
+            <p style="margin: 15px 0; color: #666;">Wähle zwei Operationen und deren Kombinationstyp:</p>
+
+            <div class="controls">
+                <select id="op1">
+                    <option value="1">O(1) - Konstant</option>
+                    <option value="log">O(log n) - Logarithmisch</option>
+                    <option value="n" selected>O(n) - Linear</option>
+                    <option value="nlogn">O(n log n) - Linearithmisch</option>
+                    <option value="n2">O(n²) - Quadratisch</option>
+                    <option value="n3">O(n³) - Kubisch</option>
+                    <option value="2n">O(2ⁿ) - Exponentiell</option>
+                </select>
+
+                <select id="combType">
+                    <option value="seq">Sequenziell (+)</option>
+                    <option value="nest">Verschachtelt (×)</option>
+                </select>
+
+                <select id="op2">
+                    <option value="1">O(1) - Konstant</option>
+                    <option value="log">O(log n) - Logarithmisch</option>
+                    <option value="n" selected>O(n) - Linear</option>
+                    <option value="nlogn">O(n log n) - Linearithmisch</option>
+                    <option value="n2">O(n²) - Quadratisch</option>
+                    <option value="n3">O(n³) - Kubisch</option>
+                    <option value="2n">O(2ⁿ) - Exponentiell</option>
+                </select>
+
+                <button onclick="calculateComplexity()">Berechnen</button>
+            </div>
+
+            <div class="result-display" id="resultDisplay">
+                <div class="result-title">Ergebnis:</div>
+                <div id="resultText">Wähle Operationen und klicke auf "Berechnen"</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const complexityNames = {
+            '1': 'O(1)',
+            'log': 'O(log n)',
+            'n': 'O(n)',
+            'nlogn': 'O(n log n)',
+            'n2': 'O(n²)',
+            'n3': 'O(n³)',
+            '2n': 'O(2ⁿ)'
+        };
+
+        const complexityOrder = ['1', 'log', 'n', 'nlogn', 'n2', 'n3', '2n'];
+
+        function multiplyComplexities(c1, c2) {
+            if (c1 === '1') return c2;
+            if (c2 === '1') return c1;
+            if (c1 === 'log' && c2 === 'log') return 'log';  // log * log ≈ log
+            if (c1 === 'log' && c2 === 'n') return 'nlogn';
+            if (c1 === 'n' && c2 === 'log') return 'nlogn';
+            if (c1 === 'n' && c2 === 'n') return 'n2';
+            if (c1 === 'n' && c2 === 'n2') return 'n3';
+            if (c1 === 'n2' && c2 === 'n') return 'n3';
+            if (c1 === 'n2' && c2 === 'n2') return '2n';  // Approximation
+
+            // Für komplexere Fälle, nehme das schlechtere
+            const i1 = complexityOrder.indexOf(c1);
+            const i2 = complexityOrder.indexOf(c2);
+            if (i1 + i2 >= complexityOrder.length - 1) return '2n';
+            return complexityOrder[Math.min(complexityOrder.length - 1, i1 + i2)];
+        }
+
+        function addComplexities(c1, c2) {
+            // Bei Addition dominiert der größere Term
+            const i1 = complexityOrder.indexOf(c1);
+            const i2 = complexityOrder.indexOf(c2);
+            return complexityOrder[Math.max(i1, i2)];
+        }
+
+        function calculateComplexity() {
+            const op1 = document.getElementById('op1').value;
+            const op2 = document.getElementById('op2').value;
+            const combType = document.getElementById('combType').value;
+
+            let result;
+            let explanation;
+
+            if (combType === 'seq') {
+                result = addComplexities(op1, op2);
+                explanation = `
+                    <div class="operation-flow">
+                        <div class="operation sequential">${complexityNames[op1]}</div>
+                        <div class="arrow">+</div>
+                        <div class="operation sequential">${complexityNames[op2]}</div>
+                        <div class="arrow">=</div>
+                        <div class="result">${complexityNames[result]}</div>
+                    </div>
+                    <p style="margin-top: 20px; line-height: 1.6;">
+                        <strong>Erklärung:</strong> Bei sequenzieller Ausführung werden die Komplexitäten addiert,
+                        aber der dominante (größere) Term bestimmt die Gesamtkomplexität.
+                        ${complexityNames[result]} wächst schneller als die anderen Terme und dominiert daher.
+                    </p>
+                `;
+            } else {
+                result = multiplyComplexities(op1, op2);
+                explanation = `
+                    <div class="operation-flow">
+                        <div class="operation nested">${complexityNames[op1]}</div>
+                        <div class="arrow">×</div>
+                        <div class="operation nested">${complexityNames[op2]}</div>
+                        <div class="arrow">=</div>
+                        <div class="result">${complexityNames[result]}</div>
+                    </div>
+                    <p style="margin-top: 20px; line-height: 1.6;">
+                        <strong>Erklärung:</strong> Bei verschachtelten Operationen werden die Komplexitäten multipliziert.
+                        Die innere Operation wird für jeden Durchlauf der äußeren Operation ausgeführt,
+                        daher multiplizieren sich die Komplexitäten.
+                    </p>
+                `;
+            }
+
+            document.getElementById('resultDisplay').innerHTML = `
+                <div class="result-title">Ergebnis:</div>
+                ${explanation}
+            `;
+        }
+    </script>
+</body>
+</html>

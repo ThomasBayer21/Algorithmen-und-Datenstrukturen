@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Typische Muster für Komplexitätsklassen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            background: #f8f9fa;
+            border: none;
+            border-radius: 8px 8px 0 0;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            color: #666;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: #333;
+            color: white;
+        }
+
+        .tab:hover {
+            background: #555;
+            color: white;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .pattern-grid {
+            display: grid;
+            gap: 30px;
+        }
+
+        .pattern-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .pattern-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .pattern-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .complexity-badge {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 1em;
+            font-weight: bold;
+        }
+
+        .badge-excellent {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-good {
+            background: #5cb85c;
+            color: white;
+        }
+
+        .badge-fair {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .badge-bad {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .badge-terrible {
+            background: #dc3545;
+            color: white;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment {
+            color: #5c6370;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-function {
+            color: #61afef;
+        }
+
+        .code-number {
+            color: #d19a66;
+        }
+
+        .code-string {
+            color: #98c379;
+        }
+
+        .code-variable {
+            color: #e06c75;
+        }
+
+        .explanation {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            line-height: 1.6;
+        }
+
+        .use-cases {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .use-cases h4 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .use-cases ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .comparison-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .comparison-table th,
+        .comparison-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .comparison-table th {
+            background: #333;
+            color: white;
+            font-weight: bold;
+        }
+
+        .comparison-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .space-visual {
+            display: flex;
+            align-items: flex-end;
+            gap: 10px;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            margin: 15px 0;
+            min-height: 150px;
+        }
+
+        .memory-block {
+            background: #667eea;
+            border-radius: 5px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            min-width: 40px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Typische Muster für Komplexitätsklassen</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Diese Seite zeigt typische Code-Muster für verschiedene
+            Komplexitätsklassen. Lerne, welche Strukturen welche Komplexität haben, sowohl
+            für Zeit- als auch für Platzkomplexität.
+        </div>
+
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('time')">Zeitkomplexität</button>
+            <button class="tab" onclick="switchTab('space')">Platzkomplexität</button>
+            <button class="tab" onclick="switchTab('comparison')">Vergleich</button>
+        </div>
+
+        <div id="timeTab" class="tab-content active">
+            <div class="pattern-grid">
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(1) - Konstante Zeit</div>
+                        <div class="complexity-badge badge-excellent">Ausgezeichnet</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Array-Zugriff</span>
+<span class="code-keyword">function</span> <span class="code-function">getFirst</span>(arr) {
+    <span class="code-keyword">return</span> arr[<span class="code-number">0</span>];  <span class="code-comment">// O(1)</span>
+}
+
+<span class="code-comment">// Hash-Table Zugriff</span>
+<span class="code-keyword">function</span> <span class="code-function">getValue</span>(map, key) {
+    <span class="code-keyword">return</span> map.get(key);  <span class="code-comment">// O(1)</span>
+}
+
+<span class="code-comment">// Mathematische Berechnung</span>
+<span class="code-keyword">function</span> <span class="code-function">isEven</span>(n) {
+    <span class="code-keyword">return</span> n % <span class="code-number">2</span> === <span class="code-number">0</span>;  <span class="code-comment">// O(1)</span>
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Keine Schleifen, keine Rekursion, direkter Zugriff
+                        auf Daten. Die Operation dauert immer gleich lang, unabhängig von der Eingabegröße.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Array-Indexzugriff</li>
+                            <li>Hash-Table Operationen (get, set)</li>
+                            <li>Stack push/pop</li>
+                            <li>Queue enqueue/dequeue</li>
+                            <li>Mathematische Berechnungen</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(log n) - Logarithmische Zeit</div>
+                        <div class="complexity-badge badge-excellent">Ausgezeichnet</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Binäre Suche</span>
+<span class="code-keyword">function</span> <span class="code-function">binarySearch</span>(arr, target) {
+    <span class="code-keyword">let</span> left = <span class="code-number">0</span>, right = arr.length - <span class="code-number">1</span>;
+
+    <span class="code-keyword">while</span> (left &lt;= right) {
+        <span class="code-keyword">let</span> mid = Math.floor((left + right) / <span class="code-number">2</span>);
+
+        <span class="code-keyword">if</span> (arr[mid] === target) <span class="code-keyword">return</span> mid;
+        <span class="code-keyword">if</span> (arr[mid] &lt; target) left = mid + <span class="code-number">1</span>;
+        <span class="code-keyword">else</span> right = mid - <span class="code-number">1</span>;
+    }
+    <span class="code-keyword">return</span> -<span class="code-number">1</span>;
+}
+
+<span class="code-comment">// Baum-Höhe berechnen (balanciert)</span>
+<span class="code-keyword">function</span> <span class="code-function">treeHeight</span>(node) {
+    <span class="code-keyword">if</span> (!node) <span class="code-keyword">return</span> <span class="code-number">0</span>;
+    <span class="code-keyword">return</span> <span class="code-number">1</span> + Math.max(
+        <span class="code-function">treeHeight</span>(node.left),
+        <span class="code-function">treeHeight</span>(node.right)
+    );
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Suchraum wird in jedem Schritt halbiert oder
+                        die Eingabe wird durch einen konstanten Faktor geteilt. Oft bei
+                        divide-and-conquer Algorithmen oder balancierten Baumstrukturen.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Binäre Suche in sortierten Arrays</li>
+                            <li>Operationen auf balancierten Bäumen (BST, AVL, Red-Black)</li>
+                            <li>Heap Operationen (insert, delete)</li>
+                            <li>Suche in Skip Lists</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(n) - Lineare Zeit</div>
+                        <div class="complexity-badge badge-good">Gut</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Array durchlaufen</span>
+<span class="code-keyword">function</span> <span class="code-function">findMax</span>(arr) {
+    <span class="code-keyword">let</span> max = arr[<span class="code-number">0</span>];
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">1</span>; i &lt; arr.length; i++) {
+        <span class="code-keyword">if</span> (arr[i] &gt; max) max = arr[i];
+    }
+    <span class="code-keyword">return</span> max;
+}
+
+<span class="code-comment">// Lineare Suche</span>
+<span class="code-keyword">function</span> <span class="code-function">linearSearch</span>(arr, target) {
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {
+        <span class="code-keyword">if</span> (arr[i] === target) <span class="code-keyword">return</span> i;
+    }
+    <span class="code-keyword">return</span> -<span class="code-number">1</span>;
+}
+
+<span class="code-comment">// Summe berechnen</span>
+<span class="code-keyword">function</span> <span class="code-function">sum</span>(arr) {
+    <span class="code-keyword">let</span> total = <span class="code-number">0</span>;
+    <span class="code-keyword">for</span> (<span class="code-keyword">const</span> num <span class="code-keyword">of</span> arr) {
+        total += num;
+    }
+    <span class="code-keyword">return</span> total;
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Eine einzige Schleife über die Eingabe.
+                        Jedes Element wird genau einmal besucht. Die Laufzeit wächst direkt
+                        proportional zur Eingabegröße.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Array durchlaufen</li>
+                            <li>Lineare Suche</li>
+                            <li>Maximum/Minimum finden</li>
+                            <li>Liste umkehren</li>
+                            <li>String-Operationen (einzelner Durchlauf)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(n log n) - Linearithmische Zeit</div>
+                        <div class="complexity-badge badge-fair">Akzeptabel</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Merge Sort</span>
+<span class="code-keyword">function</span> <span class="code-function">mergeSort</span>(arr) {
+    <span class="code-keyword">if</span> (arr.length &lt;= <span class="code-number">1</span>) <span class="code-keyword">return</span> arr;
+
+    <span class="code-keyword">const</span> mid = Math.floor(arr.length / <span class="code-number">2</span>);
+    <span class="code-keyword">const</span> left = <span class="code-function">mergeSort</span>(arr.slice(<span class="code-number">0</span>, mid));
+    <span class="code-keyword">const</span> right = <span class="code-function">mergeSort</span>(arr.slice(mid));
+
+    <span class="code-keyword">return</span> <span class="code-function">merge</span>(left, right);
+}
+
+<span class="code-comment">// Quick Sort (average case)</span>
+<span class="code-keyword">function</span> <span class="code-function">quickSort</span>(arr) {
+    <span class="code-keyword">if</span> (arr.length &lt;= <span class="code-number">1</span>) <span class="code-keyword">return</span> arr;
+
+    <span class="code-keyword">const</span> pivot = arr[Math.floor(arr.length / <span class="code-number">2</span>)];
+    <span class="code-keyword">const</span> left = arr.filter(<span class="code-variable">x</span> =&gt; x &lt; pivot);
+    <span class="code-keyword">const</span> middle = arr.filter(<span class="code-variable">x</span> =&gt; x === pivot);
+    <span class="code-keyword">const</span> right = arr.filter(<span class="code-variable">x</span> =&gt; x &gt; pivot);
+
+    <span class="code-keyword">return</span> [...<span class="code-function">quickSort</span>(left), ...middle, ...<span class="code-function">quickSort</span>(right)];
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Divide-and-Conquer mit linearer Arbeit in
+                        jedem Level. Die Eingabe wird log(n) mal geteilt, und auf jedem Level
+                        wird O(n) Arbeit geleistet.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Effiziente Sortieralgorithmen (Merge Sort, Quick Sort, Heap Sort)</li>
+                            <li>Viele Divide-and-Conquer Algorithmen</li>
+                            <li>FFT (Fast Fourier Transform)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(n²) - Quadratische Zeit</div>
+                        <div class="complexity-badge badge-bad">Schlecht</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Bubble Sort</span>
+<span class="code-keyword">function</span> <span class="code-function">bubbleSort</span>(arr) {
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; arr.length - i - <span class="code-number">1</span>; j++) {
+            <span class="code-keyword">if</span> (arr[j] &gt; arr[j + <span class="code-number">1</span>]) {
+                [arr[j], arr[j + <span class="code-number">1</span>]] = [arr[j + <span class="code-number">1</span>], arr[j]];
+            }
+        }
+    }
+    <span class="code-keyword">return</span> arr;
+}
+
+<span class="code-comment">// Alle Paare finden</span>
+<span class="code-keyword">function</span> <span class="code-function">findPairs</span>(arr) {
+    <span class="code-keyword">const</span> pairs = [];
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = i + <span class="code-number">1</span>; j &lt; arr.length; j++) {
+            pairs.push([arr[i], arr[j]]);
+        }
+    }
+    <span class="code-keyword">return</span> pairs;
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Zwei verschachtelte Schleifen über die Eingabe.
+                        Jedes Element wird mit jedem anderen Element verglichen. Wird schnell
+                        unpraktikabel bei großen Datenmengen.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Einfache Sortieralgorithmen (Bubble, Insertion, Selection Sort)</li>
+                            <li>Naive Duplikat-Suche</li>
+                            <li>Vergleich aller Paare</li>
+                            <li>Matrix-Transposition</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(2ⁿ) - Exponentiell</div>
+                        <div class="complexity-badge badge-terrible">Sehr schlecht</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Naive Fibonacci</span>
+<span class="code-keyword">function</span> <span class="code-function">fibonacci</span>(n) {
+    <span class="code-keyword">if</span> (n &lt;= <span class="code-number">1</span>) <span class="code-keyword">return</span> n;
+    <span class="code-keyword">return</span> <span class="code-function">fibonacci</span>(n - <span class="code-number">1</span>) + <span class="code-function">fibonacci</span>(n - <span class="code-number">2</span>);
+}
+
+<span class="code-comment">// Alle Teilmengen generieren</span>
+<span class="code-keyword">function</span> <span class="code-function">getAllSubsets</span>(arr) {
+    <span class="code-keyword">if</span> (arr.length === <span class="code-number">0</span>) <span class="code-keyword">return</span> [[]];
+
+    <span class="code-keyword">const</span> first = arr[<span class="code-number">0</span>];
+    <span class="code-keyword">const</span> rest = arr.slice(<span class="code-number">1</span>);
+    <span class="code-keyword">const</span> subsetsWithoutFirst = <span class="code-function">getAllSubsets</span>(rest);
+    <span class="code-keyword">const</span> subsetsWithFirst = subsetsWithoutFirst.map(
+        <span class="code-variable">subset</span> =&gt; [first, ...subset]
+    );
+
+    <span class="code-keyword">return</span> [...subsetsWithoutFirst, ...subsetsWithFirst];
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Rekursive Aufrufe verzweigen mehrfach ohne
+                        Memoization. Die Anzahl der Operationen verdoppelt sich mit jedem
+                        zusätzlichen Input-Element. Wird schnell unpraktikabel.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Naive rekursive Fibonacci</li>
+                            <li>Generierung aller Teilmengen</li>
+                            <li>Türme von Hanoi</li>
+                            <li>Brute-Force Suche (ohne Pruning)</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="spaceTab" class="tab-content">
+            <div class="pattern-grid">
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(1) - Konstanter Speicher</div>
+                        <div class="complexity-badge badge-excellent">Ausgezeichnet</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// In-Place Vertauschung</span>
+<span class="code-keyword">function</span> <span class="code-function">swap</span>(arr, i, j) {
+    <span class="code-keyword">const</span> temp = arr[i];  <span class="code-comment">// O(1) Speicher</span>
+    arr[i] = arr[j];
+    arr[j] = temp;
+}
+
+<span class="code-comment">// Iteration mit fixen Variablen</span>
+<span class="code-keyword">function</span> <span class="code-function">sumArray</span>(arr) {
+    <span class="code-keyword">let</span> sum = <span class="code-number">0</span>;  <span class="code-comment">// O(1) Speicher</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">const</span> num <span class="code-keyword">of</span> arr) {
+        sum += num;
+    }
+    <span class="code-keyword">return</span> sum;
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Nur eine feste Anzahl von Variablen wird verwendet,
+                        unabhängig von der Eingabegröße. Keine dynamischen Datenstrukturen.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>In-Place Algorithmen</li>
+                            <li>Iterative Berechnungen mit fixen Variablen</li>
+                            <li>Bubble Sort, Insertion Sort (in-place)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(log n) - Logarithmischer Speicher</div>
+                        <div class="complexity-badge badge-excellent">Ausgezeichnet</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Rekursive binäre Suche (Call Stack)</span>
+<span class="code-keyword">function</span> <span class="code-function">binarySearchRecursive</span>(arr, target, left = <span class="code-number">0</span>, right = arr.length - <span class="code-number">1</span>) {
+    <span class="code-keyword">if</span> (left &gt; right) <span class="code-keyword">return</span> -<span class="code-number">1</span>;
+
+    <span class="code-keyword">const</span> mid = Math.floor((left + right) / <span class="code-number">2</span>);
+
+    <span class="code-keyword">if</span> (arr[mid] === target) <span class="code-keyword">return</span> mid;
+    <span class="code-keyword">if</span> (arr[mid] &lt; target)
+        <span class="code-keyword">return</span> <span class="code-function">binarySearchRecursive</span>(arr, target, mid + <span class="code-number">1</span>, right);
+    <span class="code-keyword">return</span> <span class="code-function">binarySearchRecursive</span>(arr, target, left, mid - <span class="code-number">1</span>);
+}
+<span class="code-comment">// Rekursionstiefe: log(n) → O(log n) Speicher</span>
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Rekursive Algorithmen, bei denen die
+                        Rekursionstiefe logarithmisch zur Eingabegröße ist. Der Call Stack
+                        wächst nur logarithmisch.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Rekursive binäre Suche</li>
+                            <li>Balancierte Baum-Traversierung</li>
+                            <li>Divide-and-Conquer mit einzelnem Zweig</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(n) - Linearer Speicher</div>
+                        <div class="complexity-badge badge-good">Gut</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Neues Array erstellen</span>
+<span class="code-keyword">function</span> <span class="code-function">doubleArray</span>(arr) {
+    <span class="code-keyword">const</span> result = [];  <span class="code-comment">// O(n) Speicher</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">const</span> num <span class="code-keyword">of</span> arr) {
+        result.push(num * <span class="code-number">2</span>);
+    }
+    <span class="code-keyword">return</span> result;
+}
+
+<span class="code-comment">// Hash-Set für Duplikaterkennung</span>
+<span class="code-keyword">function</span> <span class="code-function">hasDuplicates</span>(arr) {
+    <span class="code-keyword">const</span> seen = <span class="code-keyword">new</span> Set();  <span class="code-comment">// O(n) Speicher</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">const</span> num <span class="code-keyword">of</span> arr) {
+        <span class="code-keyword">if</span> (seen.has(num)) <span class="code-keyword">return</span> <span class="code-number">true</span>;
+        seen.add(num);
+    }
+    <span class="code-keyword">return</span> <span class="code-number">false</span>;
+}
+
+<span class="code-comment">// Rekursive Funktion mit linearer Tiefe</span>
+<span class="code-keyword">function</span> <span class="code-function">sumRecursive</span>(arr, i = <span class="code-number">0</span>) {
+    <span class="code-keyword">if</span> (i === arr.length) <span class="code-keyword">return</span> <span class="code-number">0</span>;
+    <span class="code-keyword">return</span> arr[i] + <span class="code-function">sumRecursive</span>(arr, i + <span class="code-number">1</span>);
+}
+<span class="code-comment">// Rekursionstiefe: n → O(n) Speicher</span>
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Eine zusätzliche Datenstruktur wird angelegt,
+                        die proportional zur Eingabegröße wächst. Oder Rekursionstiefe ist linear.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Kopie eines Arrays/Listen erstellen</li>
+                            <li>Hash-Table/Set zur Duplikaterkennung</li>
+                            <li>Merge Sort (zusätzliches Array)</li>
+                            <li>BFS/DFS mit Queue/Stack</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(n²) - Quadratischer Speicher</div>
+                        <div class="complexity-badge badge-bad">Schlecht</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// 2D Matrix erstellen</span>
+<span class="code-keyword">function</span> <span class="code-function">createMatrix</span>(n) {
+    <span class="code-keyword">const</span> matrix = [];
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {
+        matrix[i] = [];
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; n; j++) {
+            matrix[i][j] = i * j;
+        }
+    }
+    <span class="code-keyword">return</span> matrix;  <span class="code-comment">// O(n²) Speicher</span>
+}
+
+<span class="code-comment">// Alle Paare speichern</span>
+<span class="code-keyword">function</span> <span class="code-function">storePairs</span>(arr) {
+    <span class="code-keyword">const</span> pairs = [];
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = i + <span class="code-number">1</span>; j &lt; arr.length; j++) {
+            pairs.push([arr[i], arr[j]]);  <span class="code-comment">// O(n²) Elemente</span>
+        }
+    }
+    <span class="code-keyword">return</span> pairs;
+}
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Mehrdimensionale Datenstrukturen oder
+                        Speicherung aller Kombinationen. Die Speichernutzung wächst quadratisch.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>2D Arrays/Matrizen</li>
+                            <li>Adjacency Matrix für Graphen</li>
+                            <li>Dynamic Programming Tables</li>
+                            <li>Speicherung aller Paare</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="pattern-card">
+                    <div class="pattern-header">
+                        <div class="pattern-title">O(2ⁿ) - Exponentieller Speicher</div>
+                        <div class="complexity-badge badge-terrible">Sehr schlecht</div>
+                    </div>
+
+                    <div class="code-block">
+<span class="code-comment">// Alle Teilmengen speichern</span>
+<span class="code-keyword">function</span> <span class="code-function">getAllSubsets</span>(arr) {
+    <span class="code-keyword">if</span> (arr.length === <span class="code-number">0</span>) <span class="code-keyword">return</span> [[]];
+
+    <span class="code-keyword">const</span> first = arr[<span class="code-number">0</span>];
+    <span class="code-keyword">const</span> rest = arr.slice(<span class="code-number">1</span>);
+    <span class="code-keyword">const</span> subsetsWithoutFirst = <span class="code-function">getAllSubsets</span>(rest);
+    <span class="code-keyword">const</span> subsetsWithFirst = subsetsWithoutFirst.map(
+        <span class="code-variable">subset</span> =&gt; [first, ...subset]
+    );
+
+    <span class="code-keyword">return</span> [...subsetsWithoutFirst, ...subsetsWithFirst];
+}
+<span class="code-comment">// 2ⁿ Teilmengen → O(2ⁿ) Speicher</span>
+                    </div>
+
+                    <div class="explanation">
+                        <strong>Erkennung:</strong> Speicherung aller möglichen Kombinationen
+                        oder Teilmengen. Die Anzahl der gespeicherten Elemente wächst exponentiell.
+                    </div>
+
+                    <div class="use-cases">
+                        <h4>Typische Anwendungen:</h4>
+                        <ul>
+                            <li>Generierung aller Teilmengen</li>
+                            <li>Generierung aller Permutationen</li>
+                            <li>Brute-Force Suche mit Speicherung aller Pfade</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div id="comparisonTab" class="tab-content">
+            <h2>Komplexitätsvergleich</h2>
+            <p style="margin: 20px 0; line-height: 1.6;">
+                Diese Tabelle zeigt, wie verschiedene Komplexitätsklassen mit wachsender Eingabegröße skalieren.
+            </p>
+
+            <table class="comparison-table">
+                <thead>
+                    <tr>
+                        <th>Komplexität</th>
+                        <th>n = 10</th>
+                        <th>n = 100</th>
+                        <th>n = 1,000</th>
+                        <th>n = 10,000</th>
+                        <th>n = 100,000</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>O(1)</strong></td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                        <td>1</td>
+                    </tr>
+                    <tr>
+                        <td><strong>O(log n)</strong></td>
+                        <td>3</td>
+                        <td>7</td>
+                        <td>10</td>
+                        <td>13</td>
+                        <td>17</td>
+                    </tr>
+                    <tr>
+                        <td><strong>O(n)</strong></td>
+                        <td>10</td>
+                        <td>100</td>
+                        <td>1,000</td>
+                        <td>10,000</td>
+                        <td>100,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>O(n log n)</strong></td>
+                        <td>30</td>
+                        <td>664</td>
+                        <td>9,966</td>
+                        <td>132,877</td>
+                        <td>1,660,964</td>
+                    </tr>
+                    <tr>
+                        <td><strong>O(n²)</strong></td>
+                        <td>100</td>
+                        <td>10,000</td>
+                        <td>1,000,000</td>
+                        <td>100,000,000</td>
+                        <td>10,000,000,000</td>
+                    </tr>
+                    <tr>
+                        <td><strong>O(n³)</strong></td>
+                        <td>1,000</td>
+                        <td>1,000,000</td>
+                        <td>1,000,000,000</td>
+                        <td>10¹²</td>
+                        <td>10¹⁵</td>
+                    </tr>
+                    <tr>
+                        <td><strong>O(2ⁿ)</strong></td>
+                        <td>1,024</td>
+                        <td>1.3 × 10³⁰</td>
+                        <td>1.1 × 10³⁰¹</td>
+                        <td>~∞</td>
+                        <td>~∞</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div style="margin-top: 40px;">
+                <h3>Praktische Richtlinien</h3>
+                <div class="pattern-card" style="margin-top: 20px;">
+                    <h4>Für Zeitkomplexität:</h4>
+                    <ul style="line-height: 2; margin: 15px 0 15px 20px;">
+                        <li><strong>O(1), O(log n), O(n):</strong> Excellent für große Datenmengen</li>
+                        <li><strong>O(n log n):</strong> Standard für effizientes Sortieren</li>
+                        <li><strong>O(n²):</strong> Akzeptabel für kleine Datenmengen (n < 1000)</li>
+                        <li><strong>O(n³):</strong> Nur für sehr kleine Datenmengen (n < 100)</li>
+                        <li><strong>O(2ⁿ):</strong> Nur für winzige Datenmengen (n < 20)</li>
+                    </ul>
+
+                    <h4 style="margin-top: 20px;">Für Platzkomplexität:</h4>
+                    <ul style="line-height: 2; margin: 15px 0 15px 20px;">
+                        <li><strong>O(1):</strong> Ideal, keine zusätzliche Speichernutzung</li>
+                        <li><strong>O(log n):</strong> Sehr gut, minimaler zusätzlicher Speicher</li>
+                        <li><strong>O(n):</strong> Standard, akzeptabel für die meisten Anwendungen</li>
+                        <li><strong>O(n²) und höher:</strong> Problematisch bei großen Datenmengen</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+
+            // Deactivate all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Show selected tab content
+            document.getElementById(tabName + 'Tab').classList.add('active');
+
+            // Activate clicked tab
+            event.target.classList.add('active');
+        }
+    </script>
+</body>
+</html>

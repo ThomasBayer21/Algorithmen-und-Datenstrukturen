@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Big O-Notation Diagramm</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .chart-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 40px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        canvas {
+            display: block;
+            margin: 0 auto;
+        }
+
+        .legend {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s;
+            cursor: pointer;
+        }
+
+        .legend-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .legend-color {
+            width: 30px;
+            height: 20px;
+            border-radius: 4px;
+        }
+
+        .legend-label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        .legend-description {
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .complexity-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .info-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #333;
+        }
+
+        .info-card.excellent {
+            border-left-color: #28a745;
+            background: #d4edda;
+        }
+
+        .info-card.good {
+            border-left-color: #5cb85c;
+            background: #d4edda;
+        }
+
+        .info-card.fair {
+            border-left-color: #ffc107;
+            background: #fff3cd;
+        }
+
+        .info-card.bad {
+            border-left-color: #fd7e14;
+            background: #ffe5d0;
+        }
+
+        .info-card.terrible {
+            border-left-color: #dc3545;
+            background: #f8d7da;
+        }
+
+        .info-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .info-description {
+            color: #555;
+            line-height: 1.6;
+        }
+
+        .info-examples {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .axis-label {
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Big O-Notation Diagramm</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Dieses Diagramm zeigt die verschiedenen Komplexitätsklassen
+            und wie sie mit wachsender Eingabegröße skalieren. Die Farben zeigen an, wie effizient
+            ein Algorithmus ist: <span style="color: #28a745; font-weight: bold;">Grün</span> = Ausgezeichnet,
+            <span style="color: #5cb85c; font-weight: bold;">Hellgrün</span> = Gut,
+            <span style="color: #ffc107; font-weight: bold;">Gelb</span> = Akzeptabel,
+            <span style="color: #fd7e14; font-weight: bold;">Orange</span> = Schlecht,
+            <span style="color: #dc3545; font-weight: bold;">Rot</span> = Sehr schlecht
+        </div>
+
+        <div class="controls">
+            <div class="slider-container">
+                <label>Maximale Eingabegröße (n):</label>
+                <input type="range" id="maxNSlider" min="10" max="100" value="50" step="5">
+                <span id="maxNValue">50</span>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <canvas id="complexityChart" width="1200" height="600"></canvas>
+            <div class="axis-label">Eingabegröße (n) →</div>
+        </div>
+
+        <div class="legend" id="legend"></div>
+
+        <div class="complexity-info">
+            <div class="info-card excellent">
+                <div class="info-title">O(1) - Konstant</div>
+                <div class="info-description">
+                    Die beste mögliche Komplexität. Die Laufzeit ist unabhängig von der Eingabegröße.
+                </div>
+                <div class="info-examples">Beispiele: Array-Zugriff, Hash-Table-Lookup</div>
+            </div>
+
+            <div class="info-card excellent">
+                <div class="info-title">O(log n) - Logarithmisch</div>
+                <div class="info-description">
+                    Sehr effizient. Die Laufzeit wächst langsam, selbst bei großen Eingaben.
+                </div>
+                <div class="info-examples">Beispiele: Binäre Suche, Baum-Operationen</div>
+            </div>
+
+            <div class="info-card good">
+                <div class="info-title">O(n) - Linear</div>
+                <div class="info-description">
+                    Gute Performance. Die Laufzeit wächst proportional zur Eingabegröße.
+                </div>
+                <div class="info-examples">Beispiele: Lineare Suche, Array-Durchlauf</div>
+            </div>
+
+            <div class="info-card fair">
+                <div class="info-title">O(n log n) - Linearithmisch</div>
+                <div class="info-description">
+                    Akzeptable Performance. Typisch für effiziente Sortieralgorithmen.
+                </div>
+                <div class="info-examples">Beispiele: Merge Sort, Quick Sort (average)</div>
+            </div>
+
+            <div class="info-card bad">
+                <div class="info-title">O(n²) - Quadratisch</div>
+                <div class="info-description">
+                    Problematisch bei großen Datenmengen. Oft bei verschachtelten Schleifen.
+                </div>
+                <div class="info-examples">Beispiele: Bubble Sort, Insertion Sort</div>
+            </div>
+
+            <div class="info-card terrible">
+                <div class="info-title">O(2ⁿ) - Exponentiell</div>
+                <div class="info-description">
+                    Sehr schlecht. Wird schnell unpraktikabel, selbst bei kleinen Eingaben.
+                </div>
+                <div class="info-examples">Beispiele: Naive Fibonacci, Subset-Generierung</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('complexityChart');
+        const ctx = canvas.getContext('2d');
+        const maxNSlider = document.getElementById('maxNSlider');
+        const maxNValue = document.getElementById('maxNValue');
+
+        const complexities = [
+            { name: 'O(1)', fn: (n) => 1, color: '#28a745', description: 'Konstant' },
+            { name: 'O(log n)', fn: (n) => Math.log2(n), color: '#5cb85c', description: 'Logarithmisch' },
+            { name: 'O(n)', fn: (n) => n, color: '#90ee90', description: 'Linear' },
+            { name: 'O(n log n)', fn: (n) => n * Math.log2(n), color: '#ffc107', description: 'Linearithmisch' },
+            { name: 'O(n²)', fn: (n) => n * n, color: '#fd7e14', description: 'Quadratisch' },
+            { name: 'O(2ⁿ)', fn: (n) => Math.pow(2, n), color: '#dc3545', description: 'Exponentiell' },
+        ];
+
+        let maxN = 50;
+        let visibleComplexities = complexities.map(() => true);
+
+        maxNSlider.addEventListener('input', (e) => {
+            maxN = parseInt(e.target.value);
+            maxNValue.textContent = maxN;
+            drawChart();
+        });
+
+        function drawChart() {
+            const padding = 60;
+            const chartWidth = canvas.width - 2 * padding;
+            const chartHeight = canvas.height - 2 * padding;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Calculate max value for scaling
+            let maxValue = 0;
+            for (let i = 0; i < complexities.length; i++) {
+                if (!visibleComplexities[i]) continue;
+                for (let n = 1; n <= maxN; n++) {
+                    const value = complexities[i].fn(n);
+                    if (value < 1000000) { // Cap extreme values
+                        maxValue = Math.max(maxValue, value);
+                    }
+                }
+            }
+
+            // Draw axes
+            ctx.strokeStyle = '#333';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvas.height - padding);
+            ctx.lineTo(canvas.width - padding, canvas.height - padding);
+            ctx.stroke();
+
+            // Draw axis labels
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('Laufzeit / Operationen', 30, canvas.height / 2);
+
+            // Draw grid lines and labels
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = 1;
+            ctx.font = '12px sans-serif';
+            ctx.fillStyle = '#666';
+
+            for (let i = 0; i <= 10; i++) {
+                const y = padding + (chartHeight * i / 10);
+                ctx.beginPath();
+                ctx.moveTo(padding, y);
+                ctx.lineTo(canvas.width - padding, y);
+                ctx.stroke();
+
+                const value = maxValue * (1 - i / 10);
+                ctx.textAlign = 'right';
+                ctx.fillText(Math.round(value).toString(), padding - 10, y + 5);
+            }
+
+            for (let i = 0; i <= 10; i++) {
+                const x = padding + (chartWidth * i / 10);
+                ctx.beginPath();
+                ctx.moveTo(x, padding);
+                ctx.lineTo(x, canvas.height - padding);
+                ctx.stroke();
+
+                const n = Math.round(maxN * i / 10);
+                ctx.textAlign = 'center';
+                ctx.fillText(n.toString(), x, canvas.height - padding + 20);
+            }
+
+            // Draw complexity curves
+            complexities.forEach((complexity, index) => {
+                if (!visibleComplexities[index]) return;
+
+                ctx.strokeStyle = complexity.color;
+                ctx.lineWidth = 3;
+                ctx.beginPath();
+
+                let started = false;
+                for (let n = 1; n <= maxN; n++) {
+                    const value = complexity.fn(n);
+                    if (value > maxValue || value > 1000000) continue;
+
+                    const x = padding + (n / maxN) * chartWidth;
+                    const y = canvas.height - padding - (value / maxValue) * chartHeight;
+
+                    if (!started) {
+                        ctx.moveTo(x, y);
+                        started = true;
+                    } else {
+                        ctx.lineTo(x, y);
+                    }
+                }
+
+                ctx.stroke();
+
+                // Draw label at the end of the curve
+                const labelX = canvas.width - padding - 10;
+                const labelY = canvas.height - padding - (complexity.fn(Math.min(maxN, 20)) / maxValue) * chartHeight;
+                ctx.fillStyle = complexity.color;
+                ctx.font = 'bold 14px sans-serif';
+                ctx.textAlign = 'right';
+                if (labelY > padding && labelY < canvas.height - padding) {
+                    ctx.fillText(complexity.name, labelX, labelY);
+                }
+            });
+        }
+
+        function createLegend() {
+            const legendDiv = document.getElementById('legend');
+            legendDiv.innerHTML = '';
+
+            complexities.forEach((complexity, index) => {
+                const item = document.createElement('div');
+                item.className = 'legend-item';
+                item.onclick = () => {
+                    visibleComplexities[index] = !visibleComplexities[index];
+                    item.style.opacity = visibleComplexities[index] ? '1' : '0.4';
+                    drawChart();
+                };
+
+                const color = document.createElement('div');
+                color.className = 'legend-color';
+                color.style.backgroundColor = complexity.color;
+
+                const textDiv = document.createElement('div');
+                const label = document.createElement('div');
+                label.className = 'legend-label';
+                label.textContent = complexity.name;
+
+                const description = document.createElement('div');
+                description.className = 'legend-description';
+                description.textContent = complexity.description;
+
+                textDiv.appendChild(label);
+                textDiv.appendChild(description);
+                item.appendChild(color);
+                item.appendChild(textDiv);
+                legendDiv.appendChild(item);
+            });
+        }
+
+        createLegend();
+        drawChart();
+    </script>
+</body>
+</html>

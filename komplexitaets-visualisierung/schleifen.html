@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schleifen & Auswirkungen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .pattern-section {
+            margin: 30px 0;
+        }
+
+        .pattern {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #e0e0e0;
+        }
+
+        .pattern-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .complexity-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .badge-good {
+            background: #28a745;
+            color: white;
+        }
+
+        .badge-ok {
+            background: #ffc107;
+            color: #333;
+        }
+
+        .badge-bad {
+            background: #fd7e14;
+            color: white;
+        }
+
+        .badge-terrible {
+            background: #dc3545;
+            color: white;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment {
+            color: #5c6370;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-function {
+            color: #61afef;
+        }
+
+        .code-number {
+            color: #d19a66;
+        }
+
+        .explanation {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+            line-height: 1.6;
+        }
+
+        .visualization {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 15px 0;
+        }
+
+        .loop-visual {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin: 15px 0;
+            flex-wrap: wrap;
+        }
+
+        .loop-box {
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 30px 20px;
+            text-align: center;
+            font-weight: bold;
+            min-width: 120px;
+        }
+
+        .nested-loops {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .outer-loop {
+            border: 3px solid #fd7e14;
+            border-radius: 10px;
+            padding: 40px 30px;
+            min-width: 300px;
+        }
+
+        .inner-loop {
+            border: 3px solid #667eea;
+            border-radius: 10px;
+            padding: 30px 20px;
+            background: #f8f9fa;
+        }
+
+        .iteration-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(30px, 40px));
+            gap: 5px;
+            margin: 15px 0;
+            justify-content: center;
+        }
+
+        .iteration-cell {
+            width: 40px;
+            height: 40px;
+            background: #667eea;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8em;
+            font-weight: bold;
+        }
+
+        .interactive-demo {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+        }
+
+        .demo-title {
+            font-size: 1.3em;
+            font-weight: bold;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        label {
+            font-weight: bold;
+            color: #333;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #333;
+            color: white;
+        }
+
+        button:hover {
+            background: #555;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            border: 2px solid #e0e0e0;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        #animationArea {
+            min-height: 200px;
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        .iteration-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #28a745;
+            border-radius: 50%;
+            transition: all 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Schleifen & Auswirkungen auf die Komplexität</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Schleifen sind einer der wichtigsten Faktoren für die
+            Zeitkomplexität von Algorithmen. Diese Seite zeigt verschiedene Schleifenmuster
+            und wie sie die Komplexität beeinflussen.
+        </div>
+
+        <div class="pattern-section">
+            <h2>Häufige Schleifenmuster</h2>
+
+            <div class="pattern">
+                <div class="pattern-title">
+                    1. Einfache Schleife
+                    <span class="complexity-badge badge-good">O(n)</span>
+                </div>
+
+                <div class="code-block">
+<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {
+    <span class="code-comment">// Konstante Operation</span>
+    <span class="code-function">print</span>(i);  <span class="code-comment">// O(1)</span>
+}
+                </div>
+
+                <div class="explanation">
+                    <strong>Erklärung:</strong> Eine einfache Schleife, die n-mal durchläuft und
+                    in jedem Durchlauf eine konstante Operation ausführt, hat die Komplexität O(n).
+                    Die Schleife skaliert linear mit der Eingabegröße.
+                </div>
+
+                <div class="visualization">
+                    <strong>Iterationen für n = 8:</strong>
+                    <div class="iteration-grid">
+                        <div class="iteration-cell">1</div>
+                        <div class="iteration-cell">2</div>
+                        <div class="iteration-cell">3</div>
+                        <div class="iteration-cell">4</div>
+                        <div class="iteration-cell">5</div>
+                        <div class="iteration-cell">6</div>
+                        <div class="iteration-cell">7</div>
+                        <div class="iteration-cell">8</div>
+                    </div>
+                    <p style="text-align: center; margin-top: 15px; color: #666;">
+                        Anzahl Operationen: <strong>n = 8</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="pattern">
+                <div class="pattern-title">
+                    2. Verschachtelte Schleifen (2 Ebenen)
+                    <span class="complexity-badge badge-bad">O(n²)</span>
+                </div>
+
+                <div class="code-block">
+<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {          <span class="code-comment">// n Iterationen</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; n; j++) {      <span class="code-comment">// n Iterationen pro i</span>
+        <span class="code-function">print</span>(i, j);  <span class="code-comment">// O(1)</span>
+    }
+}
+                </div>
+
+                <div class="explanation">
+                    <strong>Erklärung:</strong> Zwei verschachtelte Schleifen führen zu O(n²).
+                    Die innere Schleife läuft n-mal für jeden der n Durchläufe der äußeren Schleife,
+                    also insgesamt n × n = n² Operationen.
+                </div>
+
+                <div class="visualization">
+                    <strong>Iterationen für n = 5:</strong>
+                    <div class="iteration-grid" style="max-width: 250px; margin: 15px auto;">
+                        <div class="iteration-cell" style="background: #dc3545;">1</div>
+                        <div class="iteration-cell" style="background: #dc3545;">2</div>
+                        <div class="iteration-cell" style="background: #dc3545;">3</div>
+                        <div class="iteration-cell" style="background: #dc3545;">4</div>
+                        <div class="iteration-cell" style="background: #dc3545;">5</div>
+                        <div class="iteration-cell" style="background: #dc3545;">6</div>
+                        <div class="iteration-cell" style="background: #dc3545;">7</div>
+                        <div class="iteration-cell" style="background: #dc3545;">8</div>
+                        <div class="iteration-cell" style="background: #dc3545;">9</div>
+                        <div class="iteration-cell" style="background: #dc3545;">10</div>
+                        <div class="iteration-cell" style="background: #dc3545;">11</div>
+                        <div class="iteration-cell" style="background: #dc3545;">12</div>
+                        <div class="iteration-cell" style="background: #dc3545;">13</div>
+                        <div class="iteration-cell" style="background: #dc3545;">14</div>
+                        <div class="iteration-cell" style="background: #dc3545;">15</div>
+                        <div class="iteration-cell" style="background: #dc3545;">16</div>
+                        <div class="iteration-cell" style="background: #dc3545;">17</div>
+                        <div class="iteration-cell" style="background: #dc3545;">18</div>
+                        <div class="iteration-cell" style="background: #dc3545;">19</div>
+                        <div class="iteration-cell" style="background: #dc3545;">20</div>
+                        <div class="iteration-cell" style="background: #dc3545;">21</div>
+                        <div class="iteration-cell" style="background: #dc3545;">22</div>
+                        <div class="iteration-cell" style="background: #dc3545;">23</div>
+                        <div class="iteration-cell" style="background: #dc3545;">24</div>
+                        <div class="iteration-cell" style="background: #dc3545;">25</div>
+                    </div>
+                    <p style="text-align: center; margin-top: 15px; color: #666;">
+                        Anzahl Operationen: <strong>n² = 5 × 5 = 25</strong>
+                    </p>
+                </div>
+            </div>
+
+            <div class="pattern">
+                <div class="pattern-title">
+                    3. Verschachtelte Schleifen (3 Ebenen)
+                    <span class="complexity-badge badge-terrible">O(n³)</span>
+                </div>
+
+                <div class="code-block">
+<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {          <span class="code-comment">// n Iterationen</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; n; j++) {      <span class="code-comment">// n Iterationen pro i</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> k = <span class="code-number">0</span>; k &lt; n; k++) {  <span class="code-comment">// n Iterationen pro (i,j)</span>
+            <span class="code-function">print</span>(i, j, k);  <span class="code-comment">// O(1)</span>
+        }
+    }
+}
+                </div>
+
+                <div class="explanation">
+                    <strong>Erklärung:</strong> Drei verschachtelte Schleifen führen zu O(n³).
+                    Die innerste Schleife läuft n³-mal insgesamt, was sehr schnell unpraktikabel wird.
+                </div>
+
+                <div class="visualization">
+                    <p style="text-align: center; margin: 15px 0; color: #666;">
+                        <strong>Wachstum der Operationen:</strong>
+                    </p>
+                    <div style="display: flex; justify-content: space-around; text-align: center;">
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold; color: #dc3545;">8</div>
+                            <div style="color: #666;">n = 2</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold; color: #dc3545;">27</div>
+                            <div style="color: #666;">n = 3</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold; color: #dc3545;">64</div>
+                            <div style="color: #666;">n = 4</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold; color: #dc3545;">125</div>
+                            <div style="color: #666;">n = 5</div>
+                        </div>
+                        <div>
+                            <div style="font-size: 2em; font-weight: bold; color: #dc3545;">1000</div>
+                            <div style="color: #666;">n = 10</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pattern">
+                <div class="pattern-title">
+                    4. Abhängige Schleife (Halbierung)
+                    <span class="complexity-badge badge-good">O(log n)</span>
+                </div>
+
+                <div class="code-block">
+<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = n; i &gt; <span class="code-number">0</span>; i = i / <span class="code-number">2</span>) {
+    <span class="code-function">print</span>(i);  <span class="code-comment">// O(1)</span>
+}
+<span class="code-comment">// oder äquivalent:</span>
+<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">1</span>; i &lt; n; i = i * <span class="code-number">2</span>) {
+    <span class="code-function">print</span>(i);
+}
+                </div>
+
+                <div class="explanation">
+                    <strong>Erklärung:</strong> Wenn der Schleifenzähler in jedem Durchlauf
+                    halbiert (oder verdoppelt) wird, haben wir logarithmisches Wachstum O(log n).
+                    Die Anzahl der Iterationen ist log₂(n).
+                </div>
+
+                <div class="visualization">
+                    <strong>Iterationen für n = 16 (Halbierung):</strong>
+                    <div style="display: flex; gap: 10px; justify-content: center; margin: 15px 0;">
+                        <div class="iteration-cell" style="width: 60px;">16</div>
+                        <div class="iteration-cell" style="width: 60px;">8</div>
+                        <div class="iteration-cell" style="width: 60px;">4</div>
+                        <div class="iteration-cell" style="width: 60px;">2</div>
+                        <div class="iteration-cell" style="width: 60px;">1</div>
+                    </div>
+                    <p style="text-align: center; margin-top: 15px; color: #666;">
+                        Anzahl Operationen: <strong>log₂(16) = 4</strong> (statt 16!)
+                    </p>
+                </div>
+            </div>
+
+            <div class="pattern">
+                <div class="pattern-title">
+                    5. Abhängige verschachtelte Schleife
+                    <span class="complexity-badge badge-ok">O(n²) - Triangle</span>
+                </div>
+
+                <div class="code-block">
+<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {          <span class="code-comment">// n Iterationen</span>
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = i; j &lt; n; j++) {      <span class="code-comment">// (n-i) Iterationen</span>
+        <span class="code-function">print</span>(i, j);  <span class="code-comment">// O(1)</span>
+    }
+}
+                </div>
+
+                <div class="explanation">
+                    <strong>Erklärung:</strong> Obwohl die innere Schleife von i abhängt,
+                    ist die Gesamtkomplexität immer noch O(n²). Die Anzahl der Operationen ist
+                    n + (n-1) + (n-2) + ... + 1 = n(n+1)/2 ≈ n²/2 = O(n²).
+                </div>
+
+                <div class="visualization">
+                    <strong>Iterationen für n = 5 (Dreiecksform):</strong>
+                    <div style="margin: 15px 0;">
+                        <div style="display: flex; gap: 5px; justify-content: center; margin: 5px 0;">
+                            <div class="iteration-cell" style="background: #ffc107;">1</div>
+                            <div class="iteration-cell" style="background: #ffc107;">2</div>
+                            <div class="iteration-cell" style="background: #ffc107;">3</div>
+                            <div class="iteration-cell" style="background: #ffc107;">4</div>
+                            <div class="iteration-cell" style="background: #ffc107;">5</div>
+                        </div>
+                        <div style="display: flex; gap: 5px; justify-content: center; margin: 5px 0;">
+                            <div class="iteration-cell" style="background: #ffc107;">6</div>
+                            <div class="iteration-cell" style="background: #ffc107;">7</div>
+                            <div class="iteration-cell" style="background: #ffc107;">8</div>
+                            <div class="iteration-cell" style="background: #ffc107;">9</div>
+                        </div>
+                        <div style="display: flex; gap: 5px; justify-content: center; margin: 5px 0;">
+                            <div class="iteration-cell" style="background: #ffc107;">10</div>
+                            <div class="iteration-cell" style="background: #ffc107;">11</div>
+                            <div class="iteration-cell" style="background: #ffc107;">12</div>
+                        </div>
+                        <div style="display: flex; gap: 5px; justify-content: center; margin: 5px 0;">
+                            <div class="iteration-cell" style="background: #ffc107;">13</div>
+                            <div class="iteration-cell" style="background: #ffc107;">14</div>
+                        </div>
+                        <div style="display: flex; gap: 5px; justify-content: center; margin: 5px 0;">
+                            <div class="iteration-cell" style="background: #ffc107;">15</div>
+                        </div>
+                    </div>
+                    <p style="text-align: center; margin-top: 15px; color: #666;">
+                        Anzahl Operationen: <strong>5+4+3+2+1 = 15 ≈ n²/2</strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="interactive-demo">
+            <div class="demo-title">Interaktive Demonstration</div>
+            <p style="margin-bottom: 20px; color: #666;">
+                Wähle ein Schleifenmuster und visualisiere die Anzahl der Operationen:
+            </p>
+
+            <div class="controls">
+                <div class="slider-container">
+                    <label>Eingabegröße (n):</label>
+                    <input type="range" id="nSlider" min="1" max="20" value="5" step="1">
+                    <span id="nValue">5</span>
+                </div>
+
+                <select id="loopPattern">
+                    <option value="single">Einfache Schleife O(n)</option>
+                    <option value="nested2">Verschachtelt 2x O(n²)</option>
+                    <option value="nested3">Verschachtelt 3x O(n³)</option>
+                    <option value="log">Logarithmisch O(log n)</option>
+                    <option value="triangle">Dreieck O(n²/2)</option>
+                </select>
+
+                <button onclick="runDemo()">Visualisieren</button>
+            </div>
+
+            <div class="stats">
+                <div class="stat-card">
+                    <div class="stat-value" id="operationCount">-</div>
+                    <div class="stat-label">Operationen</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="complexityDisplay">-</div>
+                    <div class="stat-label">Komplexität</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="growthFactor">-</div>
+                    <div class="stat-label">Wachstumsfaktor</div>
+                </div>
+            </div>
+
+            <div id="animationArea"></div>
+        </div>
+    </div>
+
+    <script>
+        const nSlider = document.getElementById('nSlider');
+        const nValue = document.getElementById('nValue');
+
+        nSlider.addEventListener('input', (e) => {
+            nValue.textContent = e.target.value;
+        });
+
+        function calculateOperations(pattern, n) {
+            switch(pattern) {
+                case 'single':
+                    return { count: n, complexity: 'O(n)' };
+                case 'nested2':
+                    return { count: n * n, complexity: 'O(n²)' };
+                case 'nested3':
+                    return { count: n * n * n, complexity: 'O(n³)' };
+                case 'log':
+                    return { count: Math.ceil(Math.log2(n)), complexity: 'O(log n)' };
+                case 'triangle':
+                    return { count: (n * (n + 1)) / 2, complexity: 'O(n²/2)' };
+                default:
+                    return { count: 0, complexity: '-' };
+            }
+        }
+
+        function runDemo() {
+            const n = parseInt(nSlider.value);
+            const pattern = document.getElementById('loopPattern').value;
+            const result = calculateOperations(pattern, n);
+
+            document.getElementById('operationCount').textContent = result.count;
+            document.getElementById('complexityDisplay').textContent = result.complexity;
+
+            // Calculate growth factor (operations per n)
+            const growthFactor = (result.count / n).toFixed(2);
+            document.getElementById('growthFactor').textContent = growthFactor + 'x';
+
+            // Visualize
+            const area = document.getElementById('animationArea');
+            area.innerHTML = '';
+
+            const maxCells = 400;
+            const cellsToShow = Math.min(result.count, maxCells);
+
+            const gridDiv = document.createElement('div');
+            gridDiv.style.display = 'grid';
+            gridDiv.style.gridTemplateColumns = `repeat(auto-fit, minmax(20px, 25px))`;
+            gridDiv.style.gap = '3px';
+            gridDiv.style.justifyContent = 'center';
+
+            for (let i = 0; i < cellsToShow; i++) {
+                const cell = document.createElement('div');
+                cell.style.width = '25px';
+                cell.style.height = '25px';
+                cell.style.background = getColorForPattern(pattern);
+                cell.style.borderRadius = '3px';
+                cell.style.animation = `fadeIn 0.3s ease ${i * 0.002}s forwards`;
+                cell.style.opacity = '0';
+                gridDiv.appendChild(cell);
+            }
+
+            area.appendChild(gridDiv);
+
+            if (result.count > maxCells) {
+                const note = document.createElement('p');
+                note.textContent = `... und ${result.count - maxCells} weitere Operationen`;
+                note.style.textAlign = 'center';
+                note.style.marginTop = '15px';
+                note.style.color = '#666';
+                note.style.fontStyle = 'italic';
+                area.appendChild(note);
+            }
+        }
+
+        function getColorForPattern(pattern) {
+            const colors = {
+                'single': '#28a745',
+                'nested2': '#fd7e14',
+                'nested3': '#dc3545',
+                'log': '#28a745',
+                'triangle': '#ffc107'
+            };
+            return colors[pattern] || '#667eea';
+        }
+
+        // Add CSS animation
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fadeIn {
+                from { opacity: 0; transform: scale(0.5); }
+                to { opacity: 1; transform: scale(1); }
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>

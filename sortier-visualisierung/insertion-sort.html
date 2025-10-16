@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Insertion Sort Visualisierung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        .visualization {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 40px 20px;
+            min-height: 400px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .bar {
+            background: #333;
+            border-radius: 4px 4px 0 0;
+            transition: all 0.3s;
+            position: relative;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+
+        .bar.current {
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        }
+
+        .bar.comparing {
+            background: linear-gradient(135deg, #fa709a 0%, #fee140 100%);
+        }
+
+        .bar.sorted {
+            background: linear-gradient(135deg, #30cfd0 0%, #330867 100%);
+        }
+
+        .bar-value {
+            color: white;
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .info-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .info-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .info-item {
+            background: white;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #e0e0e0;
+            min-height: 85px;
+        }
+
+        .info-item strong {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .info-value {
+            font-size: 1.1em;
+            color: #333;
+            min-height: 2.4em;
+            display: flex;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Insertion Sort Visualisierung</h1>
+        </div>
+
+        <div class="description">
+            <strong>Funktionsweise:</strong> Insertion Sort baut eine sortierte Liste auf, indem es jedes Element an der
+            richtigen Position in den bereits sortierten Teil einfügt. Der Algorithmus durchläuft das Array von links nach
+            rechts und verschiebt Elemente nach rechts, um Platz für das einzufügende Element zu schaffen.
+        </div>
+
+        <div class="controls">
+            <button class="btn-primary" onclick="startSort()">Sortierung starten</button>
+            <button class="btn-secondary" onclick="resetArray()">Neues Array</button>
+            <button class="btn-secondary" onclick="pauseSort()">Pause/Fortsetzen</button>
+
+            <div class="slider-container">
+                <label>Geschwindigkeit:</label>
+                <input type="range" id="speedSlider" min="10" max="500" value="100" step="10">
+                <span id="speedValue">100ms</span>
+            </div>
+
+            <div class="slider-container">
+                <label>Array-Größe:</label>
+                <input type="range" id="sizeSlider" min="5" max="50" value="20" step="1" onchange="resetArray()">
+                <span id="sizeValue">20</span>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title">Aktueller Status</div>
+            <div class="info-content">
+                <div class="info-item">
+                    <strong>Einzufügendes Element:</strong>
+                    <div class="info-value" id="currentKey">-</div>
+                </div>
+                <div class="info-item">
+                    <strong>Position im Array:</strong>
+                    <div class="info-value" id="currentPosition">-</div>
+                </div>
+                <div class="info-item">
+                    <strong>Aktion:</strong>
+                    <div class="info-value" id="currentAction">Warte auf Start...</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="visualization" id="visualization"></div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="comparisons">0</div>
+                <div class="stat-label">Vergleiche</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="shifts">0</div>
+                <div class="stat-label">Verschiebungen</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="time">0.0s</div>
+                <div class="stat-label">Zeit</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let array = [];
+        let comparisons = 0;
+        let shifts = 0;
+        let isSorting = false;
+        let isPaused = false;
+        let startTime = 0;
+        let timerInterval = null;
+
+        const visualization = document.getElementById('visualization');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const sizeSlider = document.getElementById('sizeSlider');
+        const sizeValue = document.getElementById('sizeValue');
+
+        speedSlider.addEventListener('input', (e) => {
+            speedValue.textContent = e.target.value + 'ms';
+        });
+
+        sizeSlider.addEventListener('input', (e) => {
+            sizeValue.textContent = e.target.value;
+        });
+
+        function generateArray(size) {
+            const arr = [];
+            for (let i = 0; i < size; i++) {
+                arr.push(Math.floor(Math.random() * 100) + 10);
+            }
+            return arr;
+        }
+
+        function renderArray(highlightIndices = {}) {
+            visualization.innerHTML = '';
+            const maxValue = Math.max(...array);
+            const barWidth = Math.max(10, Math.min(40, (visualization.offsetWidth - array.length * 4) / array.length));
+
+            array.forEach((value, index) => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${(value / maxValue) * 300}px`;
+                bar.style.width = `${barWidth}px`;
+                bar.id = `bar-${index}`;
+
+                if (highlightIndices.current === index) {
+                    bar.classList.add('current');
+                } else if (highlightIndices.comparing && highlightIndices.comparing.includes(index)) {
+                    bar.classList.add('comparing');
+                } else if (highlightIndices.sorted && index < highlightIndices.sorted) {
+                    bar.classList.add('sorted');
+                }
+
+                const barValue = document.createElement('div');
+                barValue.className = 'bar-value';
+                barValue.textContent = value;
+                bar.appendChild(barValue);
+
+                visualization.appendChild(bar);
+            });
+        }
+
+        function updateStats() {
+            document.getElementById('comparisons').textContent = comparisons;
+            document.getElementById('shifts').textContent = shifts;
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                if (!isPaused) {
+                    const elapsed = (Date.now() - startTime) / 1000;
+                    document.getElementById('time').textContent = elapsed.toFixed(1) + 's';
+                }
+            }, 100);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        async function sleep(ms) {
+            const startTime = Date.now();
+            while (Date.now() - startTime < ms) {
+                if (isPaused) {
+                    while (isPaused && isSorting) {
+                        await new Promise(resolve => setTimeout(resolve, 50));
+                    }
+                }
+                if (!isSorting) return;
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
+        }
+
+        function updateInfo(key, position, action) {
+            document.getElementById('currentKey').textContent = key;
+            document.getElementById('currentPosition').textContent = position;
+            document.getElementById('currentAction').textContent = action;
+        }
+
+        async function insertionSort() {
+            const n = array.length;
+
+            for (let i = 1; i < n; i++) {
+                if (!isSorting) return;
+
+                const key = array[i];
+                let j = i - 1;
+
+                updateInfo(key, `Index ${i}`, `Wähle Element ${key} zum Einfügen`);
+                renderArray({ current: i, sorted: i });
+                await sleep(parseInt(speedSlider.value));
+
+                while (j >= 0) {
+                    if (!isSorting) return;
+
+                    comparisons++;
+                    updateStats();
+
+                    updateInfo(key, `Suche Position`, `Vergleiche ${key} mit ${array[j]}`);
+                    renderArray({ current: i, comparing: [j], sorted: i });
+                    await sleep(parseInt(speedSlider.value));
+
+                    if (array[j] > key) {
+                        updateInfo(key, `Position ${j+1}`, `Verschiebe ${array[j]} nach rechts`);
+                        array[j + 1] = array[j];
+                        shifts++;
+                        updateStats();
+
+                        renderArray({ comparing: [j, j + 1], sorted: i });
+                        await sleep(parseInt(speedSlider.value));
+
+                        j--;
+                    } else {
+                        break;
+                    }
+                }
+
+                updateInfo(key, `Position ${j+1}`, `Füge ${key} an Position ${j+1} ein`);
+                array[j + 1] = key;
+                renderArray({ sorted: i + 1 });
+                await sleep(parseInt(speedSlider.value));
+            }
+
+            renderArray({ sorted: n });
+            updateInfo('-', '-', 'Sortierung abgeschlossen!');
+            isSorting = false;
+            stopTimer();
+        }
+
+        async function startSort() {
+            if (isSorting) return;
+
+            isSorting = true;
+            isPaused = false;
+            comparisons = 0;
+            shifts = 0;
+            updateStats();
+            startTimer();
+
+            await insertionSort();
+        }
+
+        function pauseSort() {
+            isPaused = !isPaused;
+        }
+
+        function resetArray() {
+            isSorting = false;
+            isPaused = false;
+            stopTimer();
+            comparisons = 0;
+            shifts = 0;
+            document.getElementById('time').textContent = '0.0s';
+            updateStats();
+            updateInfo('-', '-', 'Warte auf Start...');
+
+            const size = parseInt(sizeSlider.value);
+            array = generateArray(size);
+            renderArray();
+        }
+
+        resetArray();
+    </script>
+</body>
+</html>

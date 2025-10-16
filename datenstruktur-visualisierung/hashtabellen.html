@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hashtabellen</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f5f5f5; min-height: 100vh; padding: 20px; }
+        .container { max-width: 1400px; margin: 0 auto; background: white; border-radius: 12px; padding: 40px; box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { color: #333; margin-bottom: 10px; }
+        .back-link { display: inline-block; margin-bottom: 20px; color: #333; text-decoration: none; font-weight: bold; }
+        .back-link:hover { text-decoration: underline; }
+        .description { background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px; line-height: 1.6; }
+        .section { margin: 40px 0; }
+        .section h2 { color: #333; margin-bottom: 20px; border-bottom: 3px solid #667eea; padding-bottom: 10px; }
+        .code-block { background: #282c34; color: #abb2bf; padding: 20px; border-radius: 8px; font-family: 'Courier New', monospace; margin: 15px 0; overflow-x: auto; line-height: 1.8; white-space: pre-wrap; }
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
+        .visualization-container { background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 30px; margin: 20px 0; }
+        .hash-table { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
+        .hash-bucket { border: 2px solid #667eea; border-radius: 8px; padding: 15px; background: #f8f9fa; min-height: 60px; }
+        .bucket-header { font-weight: bold; color: #667eea; margin-bottom: 10px; }
+        .bucket-items { display: flex; gap: 10px; flex-wrap: wrap; }
+        .hash-item { background: #667eea; color: white; padding: 8px 15px; border-radius: 5px; font-weight: bold; }
+        .controls { display: flex; gap: 15px; margin: 20px 0; flex-wrap: wrap; align-items: center; }
+        input[type="text"], input[type="number"] { padding: 10px; font-size: 16px; border: 2px solid #e0e0e0; border-radius: 8px; width: 150px; }
+        button { padding: 12px 24px; font-size: 16px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; transition: all 0.3s; background: #667eea; color: white; }
+        button:hover { background: #5568d3; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .info-box { background: #f8f9fa; padding: 20px; border-radius: 10px; border-left: 4px solid #667eea; margin: 20px 0; }
+        .info-box h3 { color: #333; margin-bottom: 10px; }
+        .complexity-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 0.9em; font-weight: bold; margin-left: 10px; }
+        .badge-excellent { background: #28a745; color: white; }
+        .badge-bad { background: #fd7e14; color: white; }
+        .stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin: 20px 0; }
+        .stat-card { background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; }
+        .stat-value { font-size: 1.8em; font-weight: bold; color: #667eea; }
+        .stat-label { color: #666; font-size: 0.9em; margin-top: 5px; }
+        .collision { background: #ffc107 !important; animation: shake 0.5s; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 75% { transform: translateX(5px); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+        <div class="header">
+            <h1>Hashtabellen</h1>
+        </div>
+        <div class="description">
+            <strong>Überblick:</strong> Hashtabellen verwenden Hash-Funktionen um Schlüssel auf Array-Indizes abzubilden.
+            Dies ermöglicht durchschnittlich O(1) Zugriff, Einfügen und Löschen. Bei Kollisionen (zwei Schlüssel
+            ergeben denselben Index) gibt es verschiedene Lösungsstrategien wie Chaining oder Open Addressing.
+        </div>
+
+        <div class="section">
+            <h2>1. Hash-Funktion & Chaining</h2>
+            <div class="info-box">
+                <h3>Eigenschaften:</h3>
+                <p><strong>Zugriff/Einfügen/Löschen:</strong> <span class="complexity-badge badge-excellent">O(1)</span> im Durchschnitt</p>
+                <p><strong>Worst Case:</strong> <span class="complexity-badge badge-bad">O(n)</span> bei vielen Kollisionen</p>
+                <p><strong>Chaining:</strong> Jeder Bucket enthält eine verkettete Liste</p>
+                <p><strong>Load Factor:</strong> n / m (Elemente / Buckets), optimal: ≈ 0.75</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Einfache Hash-Funktion</span>
+<span class="code-keyword">function</span> <span class="code-function">hash</span>(key, size) {
+    <span class="code-keyword">let</span> hash = <span class="code-number">0</span>;
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; key.length; i++) {
+        hash = (hash + key.charCodeAt(i)) % size;
+    }
+    <span class="code-keyword">return</span> hash;
+}
+
+<span class="code-comment">// Hash Table mit Chaining</span>
+<span class="code-keyword">class</span> <span class="code-function">HashTable</span> {
+    <span class="code-function">constructor</span>(size = <span class="code-number">10</span>) {
+        <span class="code-keyword">this</span>.size = size;
+        <span class="code-keyword">this</span>.table = <span class="code-keyword">new</span> <span class="code-function">Array</span>(size).fill(<span class="code-keyword">null</span>).map(() =&gt; []);
+    }
+
+    <span class="code-function">set</span>(key, value) {
+        <span class="code-keyword">const</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
+        <span class="code-keyword">const</span> bucket = <span class="code-keyword">this</span>.table[index];
+
+        <span class="code-comment">// Prüfe ob Key schon existiert</span>
+        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; bucket.length; i++) {
+            <span class="code-keyword">if</span> (bucket[i][<span class="code-number">0</span>] === key) {
+                bucket[i][<span class="code-number">1</span>] = value;  <span class="code-comment">// Update</span>
+                <span class="code-keyword">return</span>;
+            }
+        }
+
+        <span class="code-comment">// Neues Key-Value Paar</span>
+        bucket.push([key, value]);
+    }
+
+    <span class="code-function">get</span>(key) {
+        <span class="code-keyword">const</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
+        <span class="code-keyword">const</span> bucket = <span class="code-keyword">this</span>.table[index];
+
+        <span class="code-keyword">for</span> (<span class="code-keyword">const</span> [k, v] <span class="code-keyword">of</span> bucket) {
+            <span class="code-keyword">if</span> (k === key) <span class="code-keyword">return</span> v;
+        }
+
+        <span class="code-keyword">return</span> <span class="code-keyword">undefined</span>;
+    }
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>Interaktive Hash-Table (Chaining)</h3>
+                <div class="controls">
+                    <input type="text" id="hashKey" placeholder="Schlüssel" value="apple">
+                    <input type="text" id="hashValue" placeholder="Wert" value="red">
+                    <button onclick="insertHash()">Einfügen</button>
+                    <button onclick="searchHash()">Suchen</button>
+                    <button onclick="deleteHash()">Löschen</button>
+                    <button onclick="resetHash()">Reset</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="itemCount">0</div>
+                        <div class="stat-label">Einträge</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="collisionCount">0</div>
+                        <div class="stat-label">Kollisionen</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="loadFactor">0.00</div>
+                        <div class="stat-label">Load Factor</div>
+                    </div>
+                </div>
+
+                <div class="hash-table" id="hashTable"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Kollisionsbehandlung</h2>
+            <div class="info-box">
+                <h3>Strategien:</h3>
+                <ul style="margin-left: 20px; line-height: 2;">
+                    <li><strong>Chaining:</strong> Jeder Bucket enthält eine Liste von Elementen</li>
+                    <li><strong>Linear Probing:</strong> Suche nächsten freien Platz linear</li>
+                    <li><strong>Quadratic Probing:</strong> Suche mit quadratischen Abständen</li>
+                    <li><strong>Double Hashing:</strong> Verwende zweite Hash-Funktion</li>
+                </ul>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Linear Probing (Open Addressing)</span>
+<span class="code-keyword">class</span> <span class="code-function">LinearProbingHashTable</span> {
+    <span class="code-function">constructor</span>(size = <span class="code-number">10</span>) {
+        <span class="code-keyword">this</span>.size = size;
+        <span class="code-keyword">this</span>.table = <span class="code-keyword">new</span> <span class="code-function">Array</span>(size).fill(<span class="code-keyword">null</span>);
+    }
+
+    <span class="code-function">set</span>(key, value) {
+        <span class="code-keyword">let</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
+
+        <span class="code-comment">// Suche nächsten freien Platz</span>
+        <span class="code-keyword">while</span> (<span class="code-keyword">this</span>.table[index] !== <span class="code-keyword">null</span>) {
+            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.table[index][<span class="code-number">0</span>] === key) {
+                <span class="code-keyword">this</span>.table[index] = [key, value];  <span class="code-comment">// Update</span>
+                <span class="code-keyword">return</span>;
+            }
+            index = (index + <span class="code-number">1</span>) % <span class="code-keyword">this</span>.size;  <span class="code-comment">// Linear probe</span>
+        }
+
+        <span class="code-keyword">this</span>.table[index] = [key, value];
+    }
+
+    <span class="code-function">get</span>(key) {
+        <span class="code-keyword">let</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
+        <span class="code-keyword">let</span> startIndex = index;
+
+        <span class="code-keyword">while</span> (<span class="code-keyword">this</span>.table[index] !== <span class="code-keyword">null</span>) {
+            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.table[index][<span class="code-number">0</span>] === key) {
+                <span class="code-keyword">return</span> <span class="code-keyword">this</span>.table[index][<span class="code-number">1</span>];
+            }
+            index = (index + <span class="code-number">1</span>) % <span class="code-keyword">this</span>.size;
+
+            <span class="code-keyword">if</span> (index === startIndex) <span class="code-keyword">break</span>;  <span class="code-comment">// Voll durchlaufen</span>
+        }
+
+        <span class="code-keyword">return</span> <span class="code-keyword">undefined</span>;
+    }
+}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const TABLE_SIZE = 7;
+
+        function simpleHash(key) {
+            let hash = 0;
+            for (let i = 0; i < key.length; i++) {
+                hash = (hash + key.charCodeAt(i)) % TABLE_SIZE;
+            }
+            return hash;
+        }
+
+        class HashTable {
+            constructor() {
+                this.table = new Array(TABLE_SIZE).fill(null).map(() => []);
+                this.itemCount = 0;
+                this.collisionCount = 0;
+            }
+
+            set(key, value) {
+                const index = simpleHash(key);
+                const bucket = this.table[index];
+
+                const existing = bucket.find(([k]) => k === key);
+                if (existing) {
+                    existing[1] = value;
+                } else {
+                    if (bucket.length > 0) {
+                        this.collisionCount++;
+                    }
+                    bucket.push([key, value]);
+                    this.itemCount++;
+                }
+            }
+
+            get(key) {
+                const index = simpleHash(key);
+                const bucket = this.table[index];
+                const item = bucket.find(([k]) => k === key);
+                return item ? item[1] : undefined;
+            }
+
+            delete(key) {
+                const index = simpleHash(key);
+                const bucket = this.table[index];
+                const itemIndex = bucket.findIndex(([k]) => k === key);
+
+                if (itemIndex !== -1) {
+                    bucket.splice(itemIndex, 1);
+                    this.itemCount--;
+                    return true;
+                }
+                return false;
+            }
+
+            getLoadFactor() {
+                return this.itemCount / TABLE_SIZE;
+            }
+        }
+
+        let hashTable = new HashTable();
+
+        function renderHashTable() {
+            const container = document.getElementById('hashTable');
+            container.innerHTML = '';
+
+            hashTable.table.forEach((bucket, index) => {
+                const bucketDiv = document.createElement('div');
+                bucketDiv.className = 'hash-bucket';
+
+                const header = document.createElement('div');
+                header.className = 'bucket-header';
+                header.textContent = `Bucket ${index}`;
+                bucketDiv.appendChild(header);
+
+                const items = document.createElement('div');
+                items.className = 'bucket-items';
+
+                bucket.forEach(([key, value]) => {
+                    const item = document.createElement('div');
+                    item.className = 'hash-item';
+                    item.textContent = `${key}: ${value}`;
+                    items.appendChild(item);
+                });
+
+                bucketDiv.appendChild(items);
+                container.appendChild(bucketDiv);
+            });
+
+            document.getElementById('itemCount').textContent = hashTable.itemCount;
+            document.getElementById('collisionCount').textContent = hashTable.collisionCount;
+            document.getElementById('loadFactor').textContent = hashTable.getLoadFactor().toFixed(2);
+        }
+
+        function insertHash() {
+            const key = document.getElementById('hashKey').value.trim();
+            const value = document.getElementById('hashValue').value.trim();
+
+            if (key && value) {
+                hashTable.set(key, value);
+                renderHashTable();
+            } else {
+                alert('Bitte Schlüssel und Wert eingeben!');
+            }
+        }
+
+        function searchHash() {
+            const key = document.getElementById('hashKey').value.trim();
+            if (!key) {
+                alert('Bitte Schlüssel eingeben!');
+                return;
+            }
+
+            const value = hashTable.get(key);
+            if (value !== undefined) {
+                alert(`Gefunden: ${key} = ${value}`);
+            } else {
+                alert(`Nicht gefunden: ${key}`);
+            }
+        }
+
+        function deleteHash() {
+            const key = document.getElementById('hashKey').value.trim();
+            if (!key) {
+                alert('Bitte Schlüssel eingeben!');
+                return;
+            }
+
+            if (hashTable.delete(key)) {
+                alert(`${key} wurde gelöscht`);
+                renderHashTable();
+            } else {
+                alert(`${key} nicht gefunden`);
+            }
+        }
+
+        function resetHash() {
+            hashTable = new HashTable();
+            hashTable.set('apple', 'red');
+            hashTable.set('banana', 'yellow');
+            hashTable.set('grape', 'purple');
+            renderHashTable();
+        }
+
+        // Initialize
+        resetHash();
+    </script>
+</body>
+</html>

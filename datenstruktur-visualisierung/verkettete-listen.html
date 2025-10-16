@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verkettete Listen</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header { text-align: center; margin-bottom: 30px; }
+        h1 { color: #333; margin-bottom: 10px; }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover { text-decoration: underline; }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .section { margin: 40px 0; }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+
+        .visualization-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .linked-list {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            overflow-x: auto;
+            padding: 30px 20px;
+            min-height: 150px;
+        }
+
+        .node {
+            display: flex;
+            align-items: center;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .node-box {
+            background: #667eea;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            min-width: 80px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2em;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+        }
+
+        .node-box.highlight {
+            background: #ffc107;
+            transform: scale(1.1);
+        }
+
+        .arrow {
+            color: #667eea;
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .null-pointer {
+            color: #dc3545;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 100px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #667eea;
+            color: white;
+        }
+
+        button:hover { background: #5568d3; }
+        button:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+        }
+
+        .info-box h3 { color: #333; margin-bottom: 10px; }
+
+        .complexity-badge {
+            display: inline-block;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 0.9em;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        .badge-good { background: #28a745; color: white; }
+        .badge-bad { background: #fd7e14; color: white; }
+
+        .doubly-node {
+            position: relative;
+        }
+
+        .back-arrow {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #999;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Verkettete Listen</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Verkettete Listen sind dynamische Datenstrukturen, bei denen
+            jedes Element (Knoten) einen Wert und einen Zeiger auf das nächste Element enthält.
+            Im Gegensatz zu Arrays können Elemente effizient am Anfang eingefügt werden, aber der
+            Zugriff auf ein Element an einer bestimmten Position ist langsamer.
+        </div>
+
+        <div class="section">
+            <h2>1. Einfach verkettete Liste</h2>
+
+            <div class="info-box">
+                <h3>Eigenschaften:</h3>
+                <p><strong>Zugriff:</strong> <span class="complexity-badge badge-bad">O(n)</span> - Muss von vorne durchlaufen werden</p>
+                <p><strong>Einfügen am Anfang:</strong> <span class="complexity-badge badge-good">O(1)</span> - Nur Zeiger umhängen</p>
+                <p><strong>Löschen am Anfang:</strong> <span class="complexity-badge badge-good">O(1)</span> - Nur Zeiger umhängen</p>
+                <p><strong>Suche:</strong> <span class="complexity-badge badge-bad">O(n)</span> - Lineares Durchsuchen</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Node-Klasse</span>
+<span class="code-keyword">class</span> <span class="code-function">Node</span> {
+    <span class="code-function">constructor</span>(value) {
+        <span class="code-keyword">this</span>.value = value;
+        <span class="code-keyword">this</span>.next = <span class="code-keyword">null</span>;
+    }
+}
+
+<span class="code-comment">// Einfach verkettete Liste</span>
+<span class="code-keyword">class</span> <span class="code-function">LinkedList</span> {
+    <span class="code-function">constructor</span>() {
+        <span class="code-keyword">this</span>.head = <span class="code-keyword">null</span>;
+    }
+
+    <span class="code-comment">// Am Anfang einfügen - O(1)</span>
+    <span class="code-function">insertAtHead</span>(value) {
+        <span class="code-keyword">const</span> newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(value);
+        newNode.next = <span class="code-keyword">this</span>.head;
+        <span class="code-keyword">this</span>.head = newNode;
+    }
+
+    <span class="code-comment">// Am Ende einfügen - O(n)</span>
+    <span class="code-function">insertAtTail</span>(value) {
+        <span class="code-keyword">const</span> newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(value);
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.head) {
+            <span class="code-keyword">this</span>.head = newNode;
+            <span class="code-keyword">return</span>;
+        }
+
+        <span class="code-keyword">let</span> current = <span class="code-keyword">this</span>.head;
+        <span class="code-keyword">while</span> (current.next) {
+            current = current.next;
+        }
+        current.next = newNode;
+    }
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>Interaktive Visualisierung</h3>
+
+                <div class="controls">
+                    <input type="number" id="valueInput" placeholder="Wert" value="10">
+                    <button onclick="insertAtHead()">Am Anfang einfügen</button>
+                    <button onclick="insertAtTail()">Am Ende einfügen</button>
+                    <button onclick="deleteAtHead()">Ersten löschen</button>
+                    <button onclick="searchValue()">Suchen</button>
+                    <button onclick="reverseList()">Umkehren</button>
+                    <button onclick="resetList()">Reset</button>
+                </div>
+
+                <div class="linked-list" id="linkedList"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>2. Doppelt verkettete Liste</h2>
+
+            <div class="info-box">
+                <h3>Unterschied:</h3>
+                <p>Jeder Knoten hat zwei Zeiger: einen zum nächsten und einen zum vorherigen Element.
+                Dies ermöglicht Traversierung in beide Richtungen.</p>
+            </div>
+
+            <div class="code-block">
+<span class="code-comment">// Doppelt verketteter Knoten</span>
+<span class="code-keyword">class</span> <span class="code-function">DoublyNode</span> {
+    <span class="code-function">constructor</span>(value) {
+        <span class="code-keyword">this</span>.value = value;
+        <span class="code-keyword">this</span>.next = <span class="code-keyword">null</span>;
+        <span class="code-keyword">this</span>.prev = <span class="code-keyword">null</span>;  <span class="code-comment">// Zeiger zum vorherigen</span>
+    }
+}
+
+<span class="code-keyword">class</span> <span class="code-function">DoublyLinkedList</span> {
+    <span class="code-function">constructor</span>() {
+        <span class="code-keyword">this</span>.head = <span class="code-keyword">null</span>;
+        <span class="code-keyword">this</span>.tail = <span class="code-keyword">null</span>;
+    }
+
+    <span class="code-function">insertAtHead</span>(value) {
+        <span class="code-keyword">const</span> newNode = <span class="code-keyword">new</span> <span class="code-function">DoublyNode</span>(value);
+
+        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.head) {
+            <span class="code-keyword">this</span>.head = <span class="code-keyword">this</span>.tail = newNode;
+        } <span class="code-keyword">else</span> {
+            newNode.next = <span class="code-keyword">this</span>.head;
+            <span class="code-keyword">this</span>.head.prev = newNode;
+            <span class="code-keyword">this</span>.head = newNode;
+        }
+    }
+}
+            </div>
+
+            <div class="visualization-container">
+                <h3>Doppelt verkettete Liste</h3>
+
+                <div class="controls">
+                    <input type="number" id="doublyValue" placeholder="Wert" value="20">
+                    <button onclick="insertDoublyHead()">Am Anfang einfügen</button>
+                    <button onclick="insertDoublyTail()">Am Ende einfügen</button>
+                    <button onclick="resetDoubly()">Reset</button>
+                </div>
+
+                <div class="linked-list" id="doublyList"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>3. Vergleich: Array vs. Verkettete Liste</h2>
+
+            <div class="info-box">
+                <table style="width: 100%; margin-top: 15px; border-collapse: collapse;">
+                    <tr style="background: #f8f9fa; font-weight: bold;">
+                        <td style="padding: 10px; border: 1px solid #ddd;">Operation</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Array</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Verkettete Liste</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Zugriff per Index</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><span class="complexity-badge badge-good">O(1)</span></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><span class="complexity-badge badge-bad">O(n)</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Einfügen am Anfang</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><span class="complexity-badge badge-bad">O(n)</span></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><span class="complexity-badge badge-good">O(1)</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Einfügen am Ende</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><span class="complexity-badge badge-good">O(1)</span></td>
+                        <td style="padding: 10px; border: 1px solid #ddd;"><span class="complexity-badge badge-bad">O(n)</span></td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Speicher-Overhead</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Keine Zeiger</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Zusätzliche Zeiger</td>
+                    </tr>
+                    <tr>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Cache-Performance</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Besser (zusammenhängend)</td>
+                        <td style="padding: 10px; border: 1px solid #ddd;">Schlechter (verstreut)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        class Node {
+            constructor(value) {
+                this.value = value;
+                this.next = null;
+            }
+        }
+
+        class LinkedList {
+            constructor() {
+                this.head = null;
+            }
+
+            insertAtHead(value) {
+                const newNode = new Node(value);
+                newNode.next = this.head;
+                this.head = newNode;
+            }
+
+            insertAtTail(value) {
+                const newNode = new Node(value);
+                if (!this.head) {
+                    this.head = newNode;
+                    return;
+                }
+                let current = this.head;
+                while (current.next) {
+                    current = current.next;
+                }
+                current.next = newNode;
+            }
+
+            deleteAtHead() {
+                if (this.head) {
+                    this.head = this.head.next;
+                }
+            }
+
+            reverse() {
+                let prev = null;
+                let current = this.head;
+                while (current) {
+                    const next = current.next;
+                    current.next = prev;
+                    prev = current;
+                    current = next;
+                }
+                this.head = prev;
+            }
+
+            toArray() {
+                const result = [];
+                let current = this.head;
+                while (current) {
+                    result.push(current.value);
+                    current = current.next;
+                }
+                return result;
+            }
+        }
+
+        let list = new LinkedList();
+        list.insertAtTail(10);
+        list.insertAtTail(20);
+        list.insertAtTail(30);
+
+        function renderList() {
+            const container = document.getElementById('linkedList');
+            container.innerHTML = '';
+
+            let current = list.head;
+            while (current) {
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = 'node';
+
+                const box = document.createElement('div');
+                box.className = 'node-box';
+                box.textContent = current.value;
+                nodeDiv.appendChild(box);
+
+                if (current.next) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow';
+                    arrow.textContent = '→';
+                    nodeDiv.appendChild(arrow);
+                }
+
+                container.appendChild(nodeDiv);
+                current = current.next;
+            }
+
+            const nullPointer = document.createElement('div');
+            nullPointer.className = 'null-pointer';
+            nullPointer.textContent = '∅';
+            container.appendChild(nullPointer);
+        }
+
+        function insertAtHead() {
+            const value = parseInt(document.getElementById('valueInput').value);
+            if (!isNaN(value)) {
+                list.insertAtHead(value);
+                renderList();
+            }
+        }
+
+        function insertAtTail() {
+            const value = parseInt(document.getElementById('valueInput').value);
+            if (!isNaN(value)) {
+                list.insertAtTail(value);
+                renderList();
+            }
+        }
+
+        function deleteAtHead() {
+            list.deleteAtHead();
+            renderList();
+        }
+
+        async function searchValue() {
+            const value = parseInt(document.getElementById('valueInput').value);
+            if (isNaN(value)) return;
+
+            const boxes = document.querySelectorAll('.node-box');
+            let found = false;
+
+            for (let i = 0; i < boxes.length; i++) {
+                boxes[i].classList.add('highlight');
+                await sleep(500);
+
+                if (parseInt(boxes[i].textContent) === value) {
+                    found = true;
+                    alert(`Gefunden an Position ${i}!`);
+                    setTimeout(() => boxes[i].classList.remove('highlight'), 2000);
+                    return;
+                }
+
+                boxes[i].classList.remove('highlight');
+            }
+
+            if (!found) alert('Nicht gefunden!');
+        }
+
+        function reverseList() {
+            list.reverse();
+            renderList();
+        }
+
+        function resetList() {
+            list = new LinkedList();
+            list.insertAtTail(10);
+            list.insertAtTail(20);
+            list.insertAtTail(30);
+            renderList();
+        }
+
+        // Doubly Linked List
+        let doublyList = [];
+
+        function renderDoublyList() {
+            const container = document.getElementById('doublyList');
+            container.innerHTML = '';
+
+            doublyList.forEach((value, index) => {
+                const nodeDiv = document.createElement('div');
+                nodeDiv.className = 'node doubly-node';
+
+                if (index > 0) {
+                    const backArrow = document.createElement('div');
+                    backArrow.className = 'back-arrow';
+                    backArrow.textContent = '⇠';
+                    nodeDiv.appendChild(backArrow);
+                }
+
+                const box = document.createElement('div');
+                box.className = 'node-box';
+                box.textContent = value;
+                nodeDiv.appendChild(box);
+
+                if (index < doublyList.length - 1) {
+                    const arrow = document.createElement('div');
+                    arrow.className = 'arrow';
+                    arrow.textContent = '⇢';
+                    nodeDiv.appendChild(arrow);
+                }
+
+                container.appendChild(nodeDiv);
+            });
+
+            const nullPointer = document.createElement('div');
+            nullPointer.className = 'null-pointer';
+            nullPointer.textContent = '∅';
+            container.appendChild(nullPointer);
+        }
+
+        function insertDoublyHead() {
+            const value = parseInt(document.getElementById('doublyValue').value);
+            if (!isNaN(value)) {
+                doublyList.unshift(value);
+                renderDoublyList();
+            }
+        }
+
+        function insertDoublyTail() {
+            const value = parseInt(document.getElementById('doublyValue').value);
+            if (!isNaN(value)) {
+                doublyList.push(value);
+                renderDoublyList();
+            }
+        }
+
+        function resetDoubly() {
+            doublyList = [10, 20, 30, 40];
+            renderDoublyList();
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initialize
+        renderList();
+        doublyList = [10, 20, 30, 40];
+        renderDoublyList();
+    </script>
+</body>
+</html>
