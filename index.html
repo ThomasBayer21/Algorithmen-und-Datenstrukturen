@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithmen und Datenstrukturen - Visualisierungen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .categories-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .category-card {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 30px;
+            text-align: center;
+            transition: transform 0.2s, border-color 0.2s;
+            cursor: pointer;
+            text-decoration: none;
+            color: #333;
+        }
+
+        .category-card:hover {
+            transform: translateY(-2px);
+            border-color: #333;
+        }
+
+        .category-card h2 {
+            font-size: 1.8em;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .category-card p {
+            font-size: 0.95em;
+            color: #666;
+            line-height: 1.6;
+        }
+
+        footer {
+            margin-top: 50px;
+            text-align: center;
+            color: #999;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Algorithmen und Datenstrukturen</h1>
+        <p class="subtitle">Interaktive Visualisierungen zum Lernen und Verstehen</p>
+
+        <div class="categories-grid">
+            <a href="sortier-visualisierung/index.html" class="category-card">
+                <h2>Sortieralgorithmen</h2>
+                <p>Visualisierung verschiedener Sortieralgorithmen wie Bubble Sort, Quick Sort, Merge Sort und mehr.</p>
+            </a>
+
+            <a href="such-visualisierung/index.html" class="category-card">
+                <h2>Suchalgorithmen</h2>
+                <p>Interaktive Darstellung von Such- und Traversierungsalgorithmen für Arrays und Graphen.</p>
+            </a>
+
+            <a href="komplexitaets-visualisierung/index.html" class="category-card">
+                <h2>Komplexitätsanalyse</h2>
+                <p>Vergleich der Zeit- und Raumkomplexität verschiedener Algorithmen mit visuellen Diagrammen.</p>
+            </a>
+
+            <a href="datenstruktur-visualisierung/index.html" class="category-card">
+                <h2>Datenstrukturen</h2>
+                <p>Visualisierung grundlegender Datenstrukturen wie Arrays, Listen, Stacks, Queues, Bäume und Graphen.</p>
+            </a>
+        </div>
+
+        <footer>
+            <p>Interaktive Visualisierungen für das Studium von Algorithmen und Datenstrukturen</p>
+        </footer>
+    </div>
+</body>
+</html>
