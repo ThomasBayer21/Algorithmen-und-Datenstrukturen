@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiefensuche (DFS) Visualisierung</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: #333;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #555;
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .input-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        select {
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+        }
+
+        .target-display {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .target-display strong {
+            display: block;
+            margin-bottom: 5px;
+            color: #856404;
+        }
+
+        .target-node {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #856404;
+        }
+
+        .node.target circle {
+            stroke: #ffc107;
+            stroke-width: 5px;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="range"] {
+            width: 200px;
+        }
+
+        .visualization {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 40px;
+            min-height: 500px;
+            position: relative;
+        }
+
+        svg {
+            width: 100%;
+            height: 500px;
+        }
+
+        .node {
+            cursor: pointer;
+        }
+
+        .node circle {
+            fill: #333;
+            stroke: #fff;
+            stroke-width: 3px;
+            transition: all 0.3s;
+        }
+
+        .node.visiting circle {
+            fill: #f5576c;
+            stroke: #f093fb;
+            stroke-width: 4px;
+            r: 28;
+        }
+
+        .node.visited circle {
+            fill: #764ba2;
+            stroke: #667eea;
+        }
+
+        .node.completed circle {
+            fill: #38ef7d;
+            stroke: #11998e;
+        }
+
+        .node.found circle {
+            fill: #4caf50;
+            stroke: #ffc107;
+            stroke-width: 6px;
+            animation: foundPulse 1s ease-in-out infinite;
+        }
+
+        @keyframes foundPulse {
+            0%, 100% {
+                transform: scale(1);
+                stroke-width: 6px;
+            }
+            50% {
+                transform: scale(1.1);
+                stroke-width: 8px;
+            }
+        }
+
+        .node text {
+            fill: white;
+            font-size: 18px;
+            font-weight: bold;
+            text-anchor: middle;
+            dominant-baseline: middle;
+            pointer-events: none;
+        }
+
+        .edge {
+            stroke: #999;
+            stroke-width: 2;
+            fill: none;
+        }
+
+        .edge.traversed {
+            stroke: #667eea;
+            stroke-width: 3;
+        }
+
+        .edge.current {
+            stroke: #f5576c;
+            stroke-width: 4;
+            animation: pulse 0.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .info-panel {
+            background: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0;
+            margin-bottom: 20px;
+            min-height: 80px;
+        }
+
+        .info-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .info-content {
+            font-size: 1.1em;
+        }
+
+        .stack-display {
+            background: white;
+            padding: 15px;
+            border-radius: 5px;
+            margin-top: 10px;
+            border: 1px solid #e0e0e0;
+            min-height: 50px;
+        }
+
+        .stack-item {
+            display: inline-block;
+            background: #333;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            margin: 5px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Tiefensuche (DFS) Visualisierung</h1>
+        </div>
+
+        <div class="description">
+            <strong>Funktionsweise:</strong> Die Tiefensuche (Depth-First Search) ist ein Graph-Traversierungs-Algorithmus,
+            der einen Pfad so weit wie möglich verfolgt, bevor er zurückgeht (Backtracking). Der Algorithmus verwendet
+            einen Stack (oder Rekursion), um die zu besuchenden Knoten zu verwalten. DFS eignet sich besonders für
+            Pfadfindung, Zykluserkennung und topologisches Sortieren.
+        </div>
+
+        <div class="controls">
+            <div class="input-container">
+                <label>Zielknoten:</label>
+                <select id="targetNode">
+                    <option value="">Alle durchlaufen</option>
+                    <option value="A">A</option>
+                    <option value="B">B</option>
+                    <option value="C">C</option>
+                    <option value="D">D</option>
+                    <option value="E">E</option>
+                    <option value="F">F</option>
+                    <option value="G">G</option>
+                    <option value="H">H</option>
+                </select>
+            </div>
+            <button class="btn-primary" onclick="startDFS()">DFS starten</button>
+            <button class="btn-secondary" onclick="resetGraph()">Zurücksetzen</button>
+
+            <div class="slider-container">
+                <label>Geschwindigkeit:</label>
+                <input type="range" id="speedSlider" min="200" max="2000" value="800" step="100">
+                <span id="speedValue">800ms</span>
+            </div>
+        </div>
+
+        <div class="target-display" id="targetDisplay" style="display: none;">
+            <strong>Gesuchter Knoten:</strong>
+            <div class="target-node" id="targetNodeDisplay">-</div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-title">Aktueller Status</div>
+            <div class="info-content" id="statusText">Warte auf Start...</div>
+            <div class="stack-display">
+                <strong>Stack:</strong>
+                <span id="stackDisplay">-</span>
+            </div>
+        </div>
+
+        <div class="visualization">
+            <svg id="graphSvg"></svg>
+        </div>
+
+        <div class="stats">
+            <div class="stat-card">
+                <div class="stat-value" id="visitedCount">0</div>
+                <div class="stat-label">Besuchte Knoten</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="edgeCount">0</div>
+                <div class="stat-label">Traversierte Kanten</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="time">0.0s</div>
+                <div class="stat-label">Zeit</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Graph structure: adjacency list
+        const graph = {
+            'A': ['B', 'C'],
+            'B': ['A', 'D', 'E'],
+            'C': ['A', 'F', 'G'],
+            'D': ['B'],
+            'E': ['B', 'H'],
+            'F': ['C'],
+            'G': ['C', 'H'],
+            'H': ['E', 'G']
+        };
+
+        // Node positions for visualization
+        const nodePositions = {
+            'A': { x: 400, y: 50 },
+            'B': { x: 250, y: 150 },
+            'C': { x: 550, y: 150 },
+            'D': { x: 150, y: 250 },
+            'E': { x: 350, y: 250 },
+            'F': { x: 500, y: 250 },
+            'G': { x: 650, y: 250 },
+            'H': { x: 500, y: 380 }
+        };
+
+        let isRunning = false;
+        let visitedCount = 0;
+        let edgeCount = 0;
+        let startTime = 0;
+        let timerInterval = null;
+
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+
+        speedSlider.addEventListener('input', (e) => {
+            speedValue.textContent = e.target.value + 'ms';
+        });
+
+        function initGraph() {
+            const svg = document.getElementById('graphSvg');
+            svg.innerHTML = '';
+
+            // Draw edges first (so they appear behind nodes)
+            const edges = new Set();
+            for (const [node, neighbors] of Object.entries(graph)) {
+                neighbors.forEach(neighbor => {
+                    const edge = [node, neighbor].sort().join('-');
+                    if (!edges.has(edge)) {
+                        edges.add(edge);
+                        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+                        line.setAttribute('class', 'edge');
+                        line.setAttribute('id', `edge-${node}-${neighbor}`);
+                        line.setAttribute('x1', nodePositions[node].x);
+                        line.setAttribute('y1', nodePositions[node].y);
+                        line.setAttribute('x2', nodePositions[neighbor].x);
+                        line.setAttribute('y2', nodePositions[neighbor].y);
+                        svg.appendChild(line);
+                    }
+                });
+            }
+
+            // Draw nodes
+            for (const [node, pos] of Object.entries(nodePositions)) {
+                const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+                g.setAttribute('class', 'node');
+                g.setAttribute('id', `node-${node}`);
+
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', pos.x);
+                circle.setAttribute('cy', pos.y);
+                circle.setAttribute('r', 25);
+
+                const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+                text.setAttribute('x', pos.x);
+                text.setAttribute('y', pos.y);
+                text.textContent = node;
+
+                g.appendChild(circle);
+                g.appendChild(text);
+                svg.appendChild(g);
+            }
+        }
+
+        function updateStats() {
+            document.getElementById('visitedCount').textContent = visitedCount;
+            document.getElementById('edgeCount').textContent = edgeCount;
+        }
+
+        function startTimer() {
+            startTime = Date.now();
+            timerInterval = setInterval(() => {
+                const elapsed = (Date.now() - startTime) / 1000;
+                document.getElementById('time').textContent = elapsed.toFixed(1) + 's';
+            }, 100);
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+            }
+        }
+
+        async function sleep(ms) {
+            await new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function updateStatus(text) {
+            document.getElementById('statusText').textContent = text;
+        }
+
+        function updateStack(stack) {
+            const stackDisplay = document.getElementById('stackDisplay');
+            if (stack.length === 0) {
+                stackDisplay.innerHTML = '<span style="color: #999;">leer</span>';
+            } else {
+                stackDisplay.innerHTML = stack.map(node =>
+                    `<span class="stack-item">${node}</span>`
+                ).join('');
+            }
+        }
+
+        function highlightEdge(from, to) {
+            const edge1 = document.getElementById(`edge-${from}-${to}`);
+            const edge2 = document.getElementById(`edge-${to}-${from}`);
+            const edge = edge1 || edge2;
+            if (edge) {
+                edge.classList.add('current');
+            }
+        }
+
+        function markEdgeTraversed(from, to) {
+            const edge1 = document.getElementById(`edge-${from}-${to}`);
+            const edge2 = document.getElementById(`edge-${to}-${from}`);
+            const edge = edge1 || edge2;
+            if (edge) {
+                edge.classList.remove('current');
+                edge.classList.add('traversed');
+                edgeCount++;
+                updateStats();
+            }
+        }
+
+        async function dfs(startNode, targetNode = null) {
+            const visited = new Set();
+            const stack = [startNode];
+            const parent = new Map();
+            parent.set(startNode, null);
+            let found = false;
+
+            while (stack.length > 0 && isRunning) {
+                updateStack(stack);
+                await sleep(parseInt(speedSlider.value));
+
+                const current = stack.pop();
+                updateStack(stack);
+
+                if (visited.has(current)) {
+                    continue;
+                }
+
+                // Mark edge from parent to current as traversed
+                const par = parent.get(current);
+                if (par !== null && par !== undefined) {
+                    markEdgeTraversed(par, current);
+                }
+
+                // Mark as visiting
+                const node = document.getElementById(`node-${current}`);
+                node.classList.add('visiting');
+
+                if (targetNode) {
+                    updateStatus(`Besuche Knoten ${current} - Suche nach ${targetNode}...`);
+                } else {
+                    updateStatus(`Besuche Knoten ${current}`);
+                }
+                await sleep(parseInt(speedSlider.value));
+
+                // Check if target found
+                if (targetNode && current === targetNode) {
+                    node.classList.remove('visiting');
+                    node.classList.add('found');
+                    updateStatus(`Zielknoten ${targetNode} gefunden!`);
+                    found = true;
+                    break;
+                }
+
+                // Mark as visited
+                visited.add(current);
+                visitedCount++;
+                updateStats();
+                node.classList.remove('visiting');
+                node.classList.add('visited');
+
+                updateStatus(`Knoten ${current} besucht - Überprüfe Nachbarn`);
+                await sleep(parseInt(speedSlider.value) / 2);
+
+                // Add neighbors to stack (in reverse order for alphabetical traversal)
+                const neighbors = [...graph[current]].reverse();
+                for (const neighbor of neighbors) {
+                    if (!visited.has(neighbor) && !parent.has(neighbor)) {
+                        highlightEdge(current, neighbor);
+                        updateStatus(`Füge Nachbar ${neighbor} zum Stack hinzu`);
+                        await sleep(parseInt(speedSlider.value) / 2);
+
+                        stack.push(neighbor);
+                        parent.set(neighbor, current);
+
+                        const edge1 = document.getElementById(`edge-${current}-${neighbor}`);
+                        const edge2 = document.getElementById(`edge-${neighbor}-${current}`);
+                        const edge = edge1 || edge2;
+                        if (edge) edge.classList.remove('current');
+
+                        updateStack(stack);
+                    }
+                }
+
+                node.classList.remove('visited');
+                node.classList.add('completed');
+            }
+
+            updateStack([]);
+            if (!found && targetNode) {
+                updateStatus(`Tiefensuche abgeschlossen - ${targetNode} wurde nicht gefunden!`);
+            } else if (found) {
+                updateStatus(`Tiefensuche abgeschlossen - ${targetNode} wurde gefunden!`);
+            } else {
+                updateStatus('Tiefensuche abgeschlossen!');
+            }
+
+            return found;
+        }
+
+        async function startDFS() {
+            if (isRunning) return;
+
+            const targetNodeSelect = document.getElementById('targetNode');
+            const target = targetNodeSelect.value || null;
+
+            visitedCount = 0;
+            edgeCount = 0;
+            updateStats();
+
+            // Clear the graph visually
+            initGraph();
+
+            // Show target if selected
+            if (target) {
+                document.getElementById('targetDisplay').style.display = 'block';
+                document.getElementById('targetNodeDisplay').textContent = target;
+                const targetNode = document.getElementById(`node-${target}`);
+                if (targetNode) targetNode.classList.add('target');
+            } else {
+                document.getElementById('targetDisplay').style.display = 'none';
+            }
+
+            isRunning = true;
+            startTimer();
+
+            await dfs('A', target);
+
+            isRunning = false;
+            stopTimer();
+        }
+
+        function resetGraph() {
+            isRunning = false;
+            stopTimer();
+            visitedCount = 0;
+            edgeCount = 0;
+            document.getElementById('time').textContent = '0.0s';
+            updateStats();
+            updateStatus('Warte auf Start...');
+            updateStack([]);
+            document.getElementById('targetDisplay').style.display = 'none';
+            initGraph();
+        }
+
+        // Initialize on load
+        initGraph();
+    </script>
+</body>
+</html>
