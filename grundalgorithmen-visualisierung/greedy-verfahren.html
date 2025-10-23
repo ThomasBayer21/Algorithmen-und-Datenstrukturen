@@ -632,7 +632,7 @@
 
                     // Update count
                     usedCoins[coin] = count;
-                    document.getElementById(`count-${count}`).textContent = `${count}×`;
+                    document.getElementById(`count-${coin}`).textContent = `${count}×`;
 
                     totalCoins += count;
                     remaining -= count * coin;
