@@ -47,6 +47,7 @@ Fundamentale algorithmische Konzepte und mathematische Prinzipien:
 - **Vollständige Enumeration** - Maximum Subarray Problem durch systematisches Durchprobieren
 - **Greedy-Verfahren** - Gierige Algorithmen mit Münzwechsel- und Aktivitätsauswahlproblem
 - **Teile und Beherrsche** - Rekursives Divide-and-Conquer Paradigma am Maximum Subarray Problem
+- **Dynamische Programmierung** - Fibonacci-Folge mit Memoization und Bottom-Up Optimierung
 
 ## Verwendung
 
