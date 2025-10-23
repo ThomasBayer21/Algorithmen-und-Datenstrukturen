@@ -46,6 +46,7 @@ Fundamentale algorithmische Konzepte und mathematische Prinzipien:
 - **Gaußsche Summenformel** - Elegante Berechnung der Summe 1 bis n in O(1)
 - **Vollständige Enumeration** - Maximum Subarray Problem durch systematisches Durchprobieren
 - **Greedy-Verfahren** - Gierige Algorithmen mit Münzwechsel- und Aktivitätsauswahlproblem
+- **Teile und Beherrsche** - Rekursives Divide-and-Conquer Paradigma am Maximum Subarray Problem
 
 ## Verwendung
 
