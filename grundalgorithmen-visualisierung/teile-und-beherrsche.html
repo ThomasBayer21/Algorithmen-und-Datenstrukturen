@@ -653,6 +653,8 @@
         let currentArray = [];
         let recursionCallCount = 0;
         let maxDepth = 0;
+        let treeNodeCounter = 0;
+        let treeStructure = {};
 
         function displayArray(arr, highlights = {}) {
             const display = document.getElementById('arrayDisplay');
@@ -696,13 +698,15 @@
             isRunning = true;
             recursionCallCount = 0;
             maxDepth = 0;
+            treeNodeCounter = 0;
+            treeStructure = {};
 
             document.getElementById('arrayLength').textContent = currentArray.length;
             document.getElementById('recursionDepth').textContent = 0;
             document.getElementById('recursiveCalls').textContent = 0;
             document.getElementById('maxSum').textContent = '-';
             document.getElementById('resultBox').style.display = 'none';
-            document.getElementById('recursionTree').innerHTML = '<div style="text-align: center; color: #666;">Rekursionsbaum wird aufgebaut...</div>';
+            document.getElementById('recursionTree').innerHTML = '';
 
             displayArray(currentArray);
 
@@ -733,11 +737,78 @@
             isRunning = false;
         }
 
-        async function maxSubarrayDivideConquerAnimated(arr, low, high, depth) {
+        function createTreeNode(nodeId, low, high, depth, parent = null) {
+            const treeContainer = document.getElementById('recursionTree');
+
+            // Erstelle oder finde die Level-Container
+            let levelContainer = document.getElementById(`level-${depth}`);
+            if (!levelContainer) {
+                levelContainer = document.createElement('div');
+                levelContainer.id = `level-${depth}`;
+                levelContainer.className = 'tree-level';
+                levelContainer.style.marginTop = '20px';
+                treeContainer.appendChild(levelContainer);
+            }
+
+            // Erstelle den Knoten
+            const node = document.createElement('div');
+            node.id = `node-${nodeId}`;
+            node.className = 'tree-node';
+            node.innerHTML = `
+                <div style="font-weight: bold; margin-bottom: 5px;">[${low}...${high}]</div>
+                <div style="font-size: 0.9em;">${currentArray.slice(low, high + 1).join(', ')}</div>
+                <div id="node-${nodeId}-result" style="margin-top: 5px; font-size: 0.85em; color: #666;">Berechne...</div>
+            `;
+            levelContainer.appendChild(node);
+
+            // Speichere Knoten-Info
+            treeStructure[nodeId] = { low, high, depth, parent, element: node };
+
+            return nodeId;
+        }
+
+        function updateTreeNode(nodeId, result, type = '') {
+            const resultDiv = document.getElementById(`node-${nodeId}-result`);
+            if (resultDiv) {
+                let typeLabel = '';
+                if (type === 'left') typeLabel = '← Links';
+                if (type === 'right') typeLabel = '→ Rechts';
+                if (type === 'cross') typeLabel = '↔ Crossing';
+
+                resultDiv.innerHTML = `${typeLabel ? typeLabel + '<br>' : ''}Summe: ${result.sum}`;
+            }
+
+            const nodeElement = document.getElementById(`node-${nodeId}`);
+            if (nodeElement) {
+                nodeElement.classList.remove('active');
+                nodeElement.classList.add('completed');
+            }
+        }
+
+        function highlightTreeNode(nodeId) {
+            // Entferne alle aktiven Highlights
+            document.querySelectorAll('.tree-node.active').forEach(node => {
+                node.classList.remove('active');
+            });
+
+            // Setze neues Highlight
+            const nodeElement = document.getElementById(`node-${nodeId}`);
+            if (nodeElement) {
+                nodeElement.classList.add('active');
+                nodeElement.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+
+        async function maxSubarrayDivideConquerAnimated(arr, low, high, depth, parentId = null) {
             if (!isRunning) return { sum: -Infinity, left: low, right: high };
 
             recursionCallCount++;
             maxDepth = Math.max(maxDepth, depth);
+
+            // Erstelle Knoten im Baum
+            const nodeId = treeNodeCounter++;
+            createTreeNode(nodeId, low, high, depth, parentId);
+            highlightTreeNode(nodeId);
 
             document.getElementById('recursiveCalls').textContent = recursionCallCount;
             document.getElementById('recursionDepth').textContent = depth;
@@ -755,11 +826,15 @@
                     Basisfall erreicht: Einzelnes Element arr[${low}] = ${arr[low]}
                 `;
                 await sleep(600);
-                return {
+
+                const result = {
                     sum: arr[low],
                     left: low,
                     right: high
                 };
+
+                updateTreeNode(nodeId, result);
+                return result;
             }
 
             const mid = Math.floor((low + high) / 2);
@@ -780,13 +855,15 @@
                 <strong>BEHERRSCHE:</strong> Löse linke Hälfte [${low}...${mid}]
             `;
             displayArray(currentArray, { left: { start: low, end: mid } });
-            const leftResult = await maxSubarrayDivideConquerAnimated(arr, low, mid, depth + 1);
+            const leftResult = await maxSubarrayDivideConquerAnimated(arr, low, mid, depth + 1, nodeId);
+            highlightTreeNode(nodeId); // Zurück zum aktuellen Knoten
 
             document.getElementById('stepInfo').innerHTML = `
                 <strong>BEHERRSCHE:</strong> Löse rechte Hälfte [${mid + 1}...${high}]
             `;
             displayArray(currentArray, { right: { start: mid + 1, end: high } });
-            const rightResult = await maxSubarrayDivideConquerAnimated(arr, mid + 1, high, depth + 1);
+            const rightResult = await maxSubarrayDivideConquerAnimated(arr, mid + 1, high, depth + 1, nodeId);
+            highlightTreeNode(nodeId); // Zurück zum aktuellen Knoten
 
             document.getElementById('stepInfo').innerHTML = `
                 <strong>BEHERRSCHE:</strong> Finde Crossing-Subarray über Mitte ${mid}
@@ -801,16 +878,23 @@
             await sleep(1000);
 
             let result;
+            let resultType = '';
             if (leftResult.sum >= rightResult.sum && leftResult.sum >= crossResult.sum) {
                 result = leftResult;
+                resultType = 'left';
                 document.getElementById('stepInfo').innerHTML += `<br><strong>→ Wähle linkes Ergebnis</strong>`;
             } else if (rightResult.sum >= leftResult.sum && rightResult.sum >= crossResult.sum) {
                 result = rightResult;
+                resultType = 'right';
                 document.getElementById('stepInfo').innerHTML += `<br><strong>→ Wähle rechtes Ergebnis</strong>`;
             } else {
                 result = crossResult;
+                resultType = 'cross';
                 document.getElementById('stepInfo').innerHTML += `<br><strong>→ Wähle crossing Ergebnis</strong>`;
             }
+
+            // Update Baum-Knoten mit Ergebnis
+            updateTreeNode(nodeId, result, resultType);
 
             displayArray(currentArray, { best: { start: result.left, end: result.right } });
             await sleep(800);
