@@ -1,0 +1,733 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Greedy-Verfahren</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #333;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .back-link:hover {
+            text-decoration: underline;
+        }
+
+        .description {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .section {
+            margin: 40px 0;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #28a745;
+            padding-bottom: 10px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment {
+            color: #5c6370;
+        }
+
+        .code-keyword {
+            color: #c678dd;
+        }
+
+        .code-function {
+            color: #61afef;
+        }
+
+        .code-number {
+            color: #d19a66;
+        }
+
+        .visualization-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px 0;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            width: 120px;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+            background: #28a745;
+            color: white;
+        }
+
+        button:hover {
+            background: #218838;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        button.secondary {
+            background: #667eea;
+        }
+
+        button.secondary:hover {
+            background: #5568d3;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #28a745;
+            margin: 20px 0;
+        }
+
+        .info-box h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .stat-card {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .coin-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin: 30px 0;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .coin {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .coin-visual {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #ffd700, #ffed4e);
+            border: 3px solid #daa520;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #8b6914;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        .coin-visual.selected {
+            background: linear-gradient(135deg, #28a745, #4caf50);
+            border-color: #1e7e34;
+            color: white;
+            transform: scale(1.1);
+        }
+
+        .coin-visual.disabled {
+            background: linear-gradient(135deg, #ccc, #ddd);
+            border-color: #999;
+            color: #666;
+            opacity: 0.5;
+        }
+
+        .coin-count {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #28a745;
+        }
+
+        .step-display {
+            background: #fff9e6;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            border: 2px solid #ffc107;
+        }
+
+        .step-item {
+            padding: 15px;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #28a745;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .activities-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin: 20px 0;
+        }
+
+        .activity-bar {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .activity-bar.selected {
+            background: #d4edda;
+            border: 2px solid #28a745;
+        }
+
+        .activity-bar.rejected {
+            background: #f8d7da;
+            opacity: 0.6;
+        }
+
+        .activity-label {
+            min-width: 100px;
+            font-weight: bold;
+        }
+
+        .timeline {
+            flex: 1;
+            position: relative;
+            height: 40px;
+            background: #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .timeline-bar {
+            position: absolute;
+            height: 100%;
+            background: linear-gradient(90deg, #28a745, #4caf50);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 768px) {
+            .coin-visual {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="index.html" class="back-link">← Zurück zur Übersicht</a>
+
+        <div class="header">
+            <h1>Greedy-Verfahren (Gieriger Algorithmus)</h1>
+        </div>
+
+        <div class="description">
+            <strong>Überblick:</strong> Das Greedy-Verfahren ist eine algorithmische Strategie, die in jedem Schritt
+            die lokal optimale Wahl trifft, in der Hoffnung, damit ein globales Optimum zu erreichen.
+            Der Begriff "greedy" (gierig) bezieht sich darauf, dass der Algorithmus immer die beste unmittelbare
+            Option wählt, ohne zukünftige Konsequenzen zu berücksichtigen. Obwohl diese Strategie nicht immer
+            die optimale Lösung garantiert, ist sie oft effizient und führt bei vielen Problemen zu guten Ergebnissen.
+        </div>
+
+        <div class="section">
+            <h2>Greedy-Prinzip</h2>
+
+            <div class="info-box">
+                <h3>Grundprinzip des Greedy-Verfahrens:</h3>
+                <ol style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Auswahl:</strong> Wähle die lokal beste Option aus den verfügbaren Möglichkeiten</li>
+                    <li><strong>Machbarkeit:</strong> Prüfe, ob diese Wahl zur aktuellen (Teil-)Lösung hinzugefügt werden kann</li>
+                    <li><strong>Lösung:</strong> Wenn ja, füge sie zur Lösung hinzu</li>
+                    <li><strong>Wiederholung:</strong> Wiederhole den Prozess, bis eine vollständige Lösung erreicht ist</li>
+                </ol>
+            </div>
+
+            <div class="info-box">
+                <h3>Eigenschaften:</h3>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Greedy Choice Property:</strong> Eine lokal optimale Wahl führt zu einer global optimalen Lösung</li>
+                    <li><strong>Optimal Substructure:</strong> Eine optimale Lösung enthält optimale Lösungen der Teilprobleme</li>
+                    <li><strong>Keine Rückkehr:</strong> Einmal getroffene Entscheidungen werden nicht rückgängig gemacht</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Beispiel 1: Münzwechselproblem</h2>
+
+            <div class="description">
+                Gegeben ist ein Geldbetrag und eine Menge von Münzwerten. Ziel ist es, den Betrag mit der
+                <strong>minimalen Anzahl von Münzen</strong> zu wechseln. Die Greedy-Strategie: Wähle immer
+                die größtmögliche Münze, die nicht den Restbetrag überschreitet.
+            </div>
+
+            <div class="visualization-container">
+                <div class="controls">
+                    <label for="amountInput">Betrag (Cent): </label>
+                    <input type="number" id="amountInput" min="1" max="999" value="87">
+                    <button onclick="solveCoinChange()">Greedy anwenden</button>
+                    <button class="secondary" onclick="resetCoinChange()">Zurücksetzen</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="targetAmount">-</div>
+                        <div class="stat-label">Zielbetrag (Cent)</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="remainingAmount">-</div>
+                        <div class="stat-label">Restbetrag</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalCoins">-</div>
+                        <div class="stat-label">Anzahl Münzen</div>
+                    </div>
+                </div>
+
+                <h3 style="text-align: center; margin: 20px 0;">Verfügbare Münzen</h3>
+                <div class="coin-container" id="coinDisplay"></div>
+
+                <h3 style="text-align: center; margin: 20px 0;">Lösungsschritte</h3>
+                <div class="step-display" id="stepsDisplay">
+                    <p style="text-align: center; color: #666;">Klicke auf "Greedy anwenden", um die Lösung zu sehen</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Beispiel 2: Aktivitätsauswahlproblem</h2>
+
+            <div class="description">
+                Gegeben sind mehrere Aktivitäten mit Start- und Endzeiten. Ziel ist es, die
+                <strong>maximale Anzahl nicht-überlappender Aktivitäten</strong> auszuwählen.
+                Die Greedy-Strategie: Wähle immer die Aktivität mit der frühesten Endzeit.
+            </div>
+
+            <div class="visualization-container">
+                <div class="controls">
+                    <button onclick="solveActivitySelection()">Greedy anwenden</button>
+                    <button class="secondary" onclick="resetActivitySelection()">Zurücksetzen</button>
+                </div>
+
+                <div class="stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="totalActivities">8</div>
+                        <div class="stat-label">Aktivitäten insgesamt</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="selectedActivities">-</div>
+                        <div class="stat-label">Ausgewählte Aktivitäten</div>
+                    </div>
+                </div>
+
+                <h3 style="text-align: center; margin: 20px 0;">Aktivitäten (sortiert nach Endzeit)</h3>
+                <div class="activities-container" id="activitiesDisplay"></div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Code-Implementierung</h2>
+
+            <div class="info-box">
+                <h3>Münzwechselproblem - Greedy-Ansatz</h3>
+                <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">coinChangeGreedy</span>(amount, coins) {
+    <span class="code-comment">// Sortiere Münzen absteigend</span>
+    coins.<span class="code-function">sort</span>((a, b) => b - a);
+
+    <span class="code-keyword">let</span> result = [];
+    <span class="code-keyword">let</span> remaining = amount;
+
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> coin <span class="code-keyword">of</span> coins) {
+        <span class="code-keyword">while</span> (remaining >= coin) {
+            result.<span class="code-function">push</span>(coin);
+            remaining -= coin;
+        }
+    }
+
+    <span class="code-keyword">return</span> result;
+}
+
+<span class="code-comment">// Zeitkomplexität: O(n log n) wegen Sortierung
+// Raumkomplexität: O(k) für k verwendete Münzen</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <h3>Aktivitätsauswahlproblem - Greedy-Ansatz</h3>
+                <div class="code-block">
+<span class="code-keyword">function</span> <span class="code-function">activitySelection</span>(activities) {
+    <span class="code-comment">// Sortiere nach Endzeit</span>
+    activities.<span class="code-function">sort</span>((a, b) => a.end - b.end);
+
+    <span class="code-keyword">let</span> selected = [activities[<span class="code-number">0</span>]];
+    <span class="code-keyword">let</span> lastEnd = activities[<span class="code-number">0</span>].end;
+
+    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">1</span>; i < activities.length; i++) {
+        <span class="code-comment">// Wähle Aktivität, die nach der letzten endet</span>
+        <span class="code-keyword">if</span> (activities[i].start >= lastEnd) {
+            selected.<span class="code-function">push</span>(activities[i]);
+            lastEnd = activities[i].end;
+        }
+    }
+
+    <span class="code-keyword">return</span> selected;
+}
+
+<span class="code-comment">// Zeitkomplexität: O(n log n) wegen Sortierung
+// Raumkomplexität: O(k) für k ausgewählte Aktivitäten</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Vor- und Nachteile</h2>
+
+            <div class="info-box">
+                <h3>Vorteile des Greedy-Verfahrens:</h3>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Einfachheit:</strong> Oft einfach zu implementieren und zu verstehen</li>
+                    <li><strong>Effizienz:</strong> Meist sehr schnelle Laufzeit (oft O(n log n))</li>
+                    <li><strong>Geringer Speicherbedarf:</strong> Benötigt wenig Speicher im Vergleich zu dynamischer Programmierung</li>
+                    <li><strong>Intuitive Lösung:</strong> Oft entspricht die Greedy-Strategie dem natürlichen Vorgehen</li>
+                </ul>
+            </div>
+
+            <div class="info-box">
+                <h3>Nachteile und Limitierungen:</h3>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Nicht immer optimal:</strong> Garantiert nicht immer die beste Lösung</li>
+                    <li><strong>Schwer zu beweisen:</strong> Korrektheit kann schwer zu zeigen sein</li>
+                    <li><strong>Problem-abhängig:</strong> Funktioniert nur für bestimmte Problemtypen</li>
+                    <li><strong>Keine Rückwärtskorrektur:</strong> Kann nicht von Fehlentscheidungen zurückkehren</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2>Praktische Anwendungen</h2>
+
+            <div class="info-box">
+                <h3>Wo werden Greedy-Algorithmen eingesetzt?</h3>
+                <ul style="margin-left: 20px; margin-top: 10px; line-height: 1.8;">
+                    <li><strong>Huffman-Kodierung:</strong> Optimale Präfixcodes für Datenkompression</li>
+                    <li><strong>Dijkstra-Algorithmus:</strong> Kürzeste Wege in Graphen</li>
+                    <li><strong>Prim/Kruskal-Algorithmus:</strong> Minimale Spannbäume</li>
+                    <li><strong>Job-Scheduling:</strong> Optimierung von Ausführungsreihenfolgen</li>
+                    <li><strong>Fraktionales Rucksackproblem:</strong> Maximierung des Wertes bei begrenzter Kapazität</li>
+                    <li><strong>Cache-Strategien:</strong> Verwaltung begrenzter Speicherressourcen</li>
+                    <li><strong>Netzwerk-Routing:</strong> Auswahl optimaler Pfade in Netzwerken</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const COINS = [200, 100, 50, 20, 10, 5, 2, 1]; // Euro-Münzen in Cent
+
+        const ACTIVITIES = [
+            { name: 'A1', start: 1, end: 3 },
+            { name: 'A2', start: 0, end: 4 },
+            { name: 'A3', start: 2, end: 6 },
+            { name: 'A4', start: 5, end: 7 },
+            { name: 'A5', start: 3, end: 8 },
+            { name: 'A6', start: 5, end: 9 },
+            { name: 'A7', start: 6, end: 10 },
+            { name: 'A8', start: 8, end: 11 }
+        ];
+
+        function initializeCoinDisplay() {
+            const coinDisplay = document.getElementById('coinDisplay');
+            coinDisplay.innerHTML = '';
+
+            COINS.forEach(coin => {
+                const coinDiv = document.createElement('div');
+                coinDiv.className = 'coin';
+                coinDiv.innerHTML = `
+                    <div class="coin-visual" id="coin-${coin}">
+                        ${coin}¢
+                    </div>
+                    <div class="coin-count" id="count-${coin}">0×</div>
+                `;
+                coinDisplay.appendChild(coinDiv);
+            });
+        }
+
+        function initializeActivitiesDisplay() {
+            const activitiesDisplay = document.getElementById('activitiesDisplay');
+            activitiesDisplay.innerHTML = '';
+
+            // Sortiere nach Endzeit für Anzeige
+            const sorted = [...ACTIVITIES].sort((a, b) => a.end - b.end);
+
+            sorted.forEach((activity, index) => {
+                const activityDiv = document.createElement('div');
+                activityDiv.className = 'activity-bar';
+                activityDiv.id = `activity-${activity.name}`;
+
+                const duration = activity.end - activity.start;
+                const maxTime = 11;
+                const startPercent = (activity.start / maxTime) * 100;
+                const widthPercent = (duration / maxTime) * 100;
+
+                activityDiv.innerHTML = `
+                    <div class="activity-label">${activity.name}</div>
+                    <div class="timeline">
+                        <div class="timeline-bar" style="left: ${startPercent}%; width: ${widthPercent}%;">
+                            ${activity.start}-${activity.end}
+                        </div>
+                    </div>
+                `;
+                activitiesDisplay.appendChild(activityDiv);
+            });
+        }
+
+        async function solveCoinChange() {
+            const amount = parseInt(document.getElementById('amountInput').value);
+
+            if (isNaN(amount) || amount < 1) {
+                alert('Bitte eine gültige Zahl >= 1 eingeben!');
+                return;
+            }
+
+            resetCoinChange();
+
+            document.getElementById('targetAmount').textContent = amount;
+            document.getElementById('remainingAmount').textContent = amount;
+
+            const stepsDisplay = document.getElementById('stepsDisplay');
+            stepsDisplay.innerHTML = '';
+
+            let remaining = amount;
+            let totalCoins = 0;
+            const usedCoins = {};
+
+            for (let coin of COINS) {
+                const count = Math.floor(remaining / coin);
+
+                if (count > 0) {
+                    await sleep(500);
+
+                    // Highlight coin
+                    document.getElementById(`coin-${coin}`).classList.add('selected');
+
+                    // Update count
+                    usedCoins[coin] = count;
+                    document.getElementById(`count-${count}`).textContent = `${count}×`;
+
+                    totalCoins += count;
+                    remaining -= count * coin;
+
+                    // Add step
+                    const step = document.createElement('div');
+                    step.className = 'step-item';
+                    step.innerHTML = `
+                        <strong>Schritt ${Object.keys(usedCoins).length}:</strong>
+                        Wähle ${count}× ${coin}¢-Münze(n)<br>
+                        Verbleibend: ${remaining}¢
+                    `;
+                    stepsDisplay.appendChild(step);
+
+                    // Update stats
+                    document.getElementById('remainingAmount').textContent = remaining;
+                    document.getElementById('totalCoins').textContent = totalCoins;
+
+                    await sleep(300);
+                } else {
+                    document.getElementById(`coin-${coin}`).classList.add('disabled');
+                }
+            }
+
+            // Final summary
+            await sleep(500);
+            const summary = document.createElement('div');
+            summary.className = 'step-item';
+            summary.style.borderColor = '#28a745';
+            summary.style.background = '#d4edda';
+            summary.innerHTML = `
+                <strong>Lösung gefunden!</strong><br>
+                ${amount}¢ mit ${totalCoins} Münzen gewechselt<br>
+                Verwendete Münzen: ${Object.entries(usedCoins).map(([coin, count]) => `${count}×${coin}¢`).join(', ')}
+            `;
+            stepsDisplay.appendChild(summary);
+        }
+
+        function resetCoinChange() {
+            initializeCoinDisplay();
+            document.getElementById('targetAmount').textContent = '-';
+            document.getElementById('remainingAmount').textContent = '-';
+            document.getElementById('totalCoins').textContent = '-';
+            document.getElementById('stepsDisplay').innerHTML = '<p style="text-align: center; color: #666;">Klicke auf "Greedy anwenden", um die Lösung zu sehen</p>';
+        }
+
+        async function solveActivitySelection() {
+            resetActivitySelection();
+
+            // Sortiere nach Endzeit
+            const sorted = [...ACTIVITIES].sort((a, b) => a.end - b.end);
+
+            const selected = [sorted[0]];
+            let lastEnd = sorted[0].end;
+            let selectedCount = 1;
+
+            // Highlight erste Aktivität
+            await sleep(500);
+            document.getElementById(`activity-${sorted[0].name}`).classList.add('selected');
+            document.getElementById('selectedActivities').textContent = selectedCount;
+
+            for (let i = 1; i < sorted.length; i++) {
+                await sleep(800);
+
+                const activity = sorted[i];
+                const activityElement = document.getElementById(`activity-${activity.name}`);
+
+                if (activity.start >= lastEnd) {
+                    // Aktivität passt
+                    selected.push(activity);
+                    activityElement.classList.add('selected');
+                    lastEnd = activity.end;
+                    selectedCount++;
+                    document.getElementById('selectedActivities').textContent = selectedCount;
+                } else {
+                    // Aktivität überschneidet sich
+                    activityElement.classList.add('rejected');
+                }
+            }
+        }
+
+        function resetActivitySelection() {
+            initializeActivitiesDisplay();
+            document.getElementById('selectedActivities').textContent = '-';
+        }
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            initializeCoinDisplay();
+            initializeActivitiesDisplay();
+        });
+    </script>
+</body>
+</html>
