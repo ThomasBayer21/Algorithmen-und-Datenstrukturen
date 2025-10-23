@@ -41,6 +41,11 @@ Interaktive Darstellung grundlegender Datenstrukturen:
 - **Rekursion** - Visualisierung rekursiver Aufrufe
 - **Backtracking** - N-Damen-Problem und andere Backtracking-Algorithmen
 
+### Grundalgorithmen
+Fundamentale algorithmische Konzepte und mathematische Prinzipien:
+- **Gaußsche Summenformel** - Elegante Berechnung der Summe 1 bis n in O(1)
+- **Vollständige Enumeration** - Maximum Subarray Problem durch systematisches Durchprobieren
+
 ## Verwendung
 
 Klonen Sie das Repository und doppelklicken Sie einfach auf die `index.html` Datei.

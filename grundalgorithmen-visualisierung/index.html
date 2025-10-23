@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grundalgorithmen-Visualisierungen</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f5f5;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 40px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            color: #666;
+            font-size: 1.1em;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 30px;
+            text-decoration: none;
+            color: #333;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+
+        .card-title {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .card-description {
+            color: #666;
+            line-height: 1.6;
+        }
+
+        .intro {
+            background: #f8f9fa;
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            line-height: 1.8;
+        }
+
+        .intro h2 {
+            color: #333;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Grundalgorithmen-Visualisierungen</h1>
+            <p class="subtitle">Interaktive Visualisierungen fundamentaler algorithmischer Konzepte</p>
+        </div>
+
+        <div class="intro">
+            <h2>Grundlegende Algorithmentechniken</h2>
+            <p>
+                Diese Kategorie zeigt fundamentale algorithmische Ansätze und mathematische Prinzipien,
+                die die Grundlage für viele komplexere Algorithmen bilden. Von eleganten mathematischen
+                Formeln bis hin zu systematischen Lösungsstrategien - hier werden die Bausteine
+                effizienter Problemlösungen vermittelt.
+            </p>
+        </div>
+
+        <div class="cards">
+            <a href="gauss-summenformel.html" class="card">
+                <div class="card-title">Gaußsche Summenformel</div>
+                <div class="card-description">
+                    Die elegante Formel zur Berechnung der Summe von 1 bis n. Visualisierung
+                    des Prinzips hinter der Formel n·(n+1)/2 und Vergleich mit der naiven
+                    iterativen Berechnung.
+                </div>
+            </a>
+
+            <a href="vollstaendige-enumeration.html" class="card">
+                <div class="card-title">Vollständige Enumeration</div>
+                <div class="card-description">
+                    Systematisches Durchprobieren aller Möglichkeiten. Am Beispiel des
+                    Maximum Subarray Problems wird gezeigt, wie durch vollständige Enumeration
+                    optimale Lösungen gefunden werden können.
+                </div>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
