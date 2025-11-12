@@ -43,12 +43,17 @@
         }
         .info-box {
             background: #e3f2fd;
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
             border-left: 4px solid #2196f3;
             margin: 20px 0;
+            font-size: 14px;
+            line-height: 1.4;
         }
-        .info-box h3 { color: #333; margin-bottom: 10px; }
+        .info-box h3 { color: #333; margin-bottom: 8px; font-size: 16px; }
+        .info-box p { margin: 4px 0; }
+        .info-box ul { margin: 4px 0 8px 20px; }
+        .info-box li { margin: 2px 0; }
         .visualization-container {
             background: white;
             border: 2px solid #e0e0e0;
@@ -300,6 +305,38 @@
             margin-bottom: 10px;
             font-weight: 600;
         }
+        .operations-log {
+            background: #f8f9fa;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .operations-log h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .operation-item {
+            padding: 8px 12px;
+            margin: 5px 0;
+            background: white;
+            border-left: 4px solid #667eea;
+            border-radius: 4px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+        .operation-item.rotation {
+            border-left-color: #ffc107;
+        }
+        .operation-item.found {
+            border-left-color: #28a745;
+        }
+        .operation-item.error {
+            border-left-color: #dc3545;
+        }
     </style>
 </head>
 <body>
@@ -318,11 +355,21 @@
         <div class="section">
             <h2>1. Interaktive AVL-Baum Visualisierung</h2>
             <div class="info-box">
-                <h3>Eigenschaften:</h3>
+                <h3>Eigenschaften</h3>
                 <p><strong>Balance-Faktor:</strong> |höhe(links) - höhe(rechts)| ≤ 1 für jeden Knoten</p>
-                <p><strong>Suche/Einfügen/Löschen:</strong> <span class="complexity-badge badge-good">O(log n)</span> garantiert</p>
-                <p><strong>Rotationen:</strong> Automatische Rebalancierung durch Links-/Rechtsrotationen</p>
-                <p><strong>Navigation:</strong> Mausrad zum Zoomen, Ziehen zum Verschieben</p>
+                <p><strong>Zeitkomplexität:</strong> <span class="complexity-badge badge-good">O(log n)</span> garantiert • <strong>Navigation:</strong> Mausrad zum Zoomen, Ziehen zum Verschieben</p>
+
+                <p style="margin-top: 8px;"><strong>Darstellung unter jedem Knoten:</strong></p>
+                <ul>
+                    <li><strong>h</strong> = Höhe • <strong>b</strong> = Balance-Faktor (h(links) - h(rechts))</li>
+                    <li>b = 0: perfekt balanciert | b = ±1: ok | |b| > 1: unbalanciert → Rotation</li>
+                </ul>
+
+                <p style="margin-top: 8px;"><strong>Knotenfarben:</strong></p>
+                <ul>
+                    <li><span style="color: #667eea;">⬤ Blau</span> = Normaler Knoten • <span style="color: #17a2b8;">⬤ Cyan</span> = Neu eingefügt • <span style="color: #28a745;">⬤ Grün</span> = Besucht/Hervorgehoben</li>
+                    <li><span style="color: #ffc107;">⬤ Gelb</span> = Rotation läuft • <span style="color: #dc3545;">⬤ Rot</span> = Unbalanciert (benötigt Rotation)</li>
+                </ul>
             </div>
 
             <div class="visualization-container">
@@ -333,6 +380,7 @@
                         <button onclick="insertNode()">Einfügen</button>
                         <button onclick="deleteNode()" class="danger">Löschen</button>
                         <button onclick="searchNode()" class="secondary">Suchen</button>
+                        <button onclick="clearTree()" class="secondary">Leerer Baum</button>
                         <button onclick="resetTree()" class="secondary">Reset</button>
                         <button onclick="randomTree()" class="secondary">Zufällig</button>
                     </div>
@@ -370,6 +418,13 @@
                     </div>
                     <div class="zoom-info" id="zoomInfo">Zoom: 100%</div>
                     <canvas id="treeCanvas" class="tree-canvas"></canvas>
+                </div>
+
+                <div class="operations-log">
+                    <h4>Operations-Historie (Aktueller Befehl)</h4>
+                    <div id="operationsLog">
+                        <p style="color: #999; font-style: italic;">Noch keine Operationen ausgeführt.</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -449,6 +504,7 @@
         let animationSpeed = 500;
         let isAnimating = false;
         let stepMode = false;
+        let operationsLog = [];
 
         // Zoom and Pan
         let scale = 1.0;
@@ -872,9 +928,52 @@
             return node;
         }
 
+        function addToOperationsLog(title, message, type = 'normal') {
+            operationsLog.push({ title, message, type });
+            updateOperationsLogDisplay();
+        }
+
+        function clearOperationsLog() {
+            operationsLog = [];
+            updateOperationsLogDisplay();
+        }
+
+        function updateOperationsLogDisplay() {
+            const logContainer = document.getElementById('operationsLog');
+            if (operationsLog.length === 0) {
+                logContainer.innerHTML = '<p style="color: #999; font-style: italic;">Noch keine Operationen ausgeführt.</p>';
+                return;
+            }
+
+            let html = '';
+            operationsLog.forEach((op, index) => {
+                const className = op.type === 'rotation' ? 'operation-item rotation' :
+                                 op.type === 'found' ? 'operation-item found' :
+                                 op.type === 'error' ? 'operation-item error' :
+                                 'operation-item';
+                html += `<div class="${className}"><strong>${index + 1}. ${op.title}:</strong> ${op.message}</div>`;
+            });
+            logContainer.innerHTML = html;
+
+            // Auto-scroll to bottom
+            logContainer.parentElement.scrollTop = logContainer.parentElement.scrollHeight;
+        }
+
         async function explain(title, message) {
             const box = document.getElementById('explanationBox');
             box.innerHTML = `<h4>${title}</h4><p>${message}</p>`;
+
+            // Determine operation type for color coding
+            let type = 'normal';
+            if (title.toLowerCase().includes('rotation')) {
+                type = 'rotation';
+            } else if (title.toLowerCase().includes('gefunden') || title.toLowerCase() === 'gefunden!') {
+                type = 'found';
+            } else if (title.toLowerCase().includes('nicht gefunden') || title.toLowerCase().includes('duplikat')) {
+                type = 'error';
+            }
+
+            addToOperationsLog(title, message, type);
 
             if (stepMode) {
                 await waitForNextStep();
@@ -925,6 +1024,7 @@
             }
 
             isAnimating = true;
+            clearOperationsLog();
             await explain('Start', `Füge Wert ${value} in den AVL-Baum ein.`);
             root = await insert(root, value);
             await animateTree();
@@ -941,6 +1041,7 @@
             }
 
             isAnimating = true;
+            clearOperationsLog();
             await explain('Start', `Lösche Wert ${value} aus dem AVL-Baum.`);
             root = await deleteNodeHelper(root, value);
             await animateTree();
@@ -957,6 +1058,7 @@
             }
 
             isAnimating = true;
+            clearOperationsLog();
             let current = root;
             let found = false;
 
@@ -990,8 +1092,16 @@
             isAnimating = false;
         }
 
+        function clearTree() {
+            root = null;
+            clearOperationsLog();
+            drawTree();
+            explain('Leerer Baum', 'Baum wurde geleert. Füge Werte ein, um einen neuen Baum aufzubauen.');
+        }
+
         function resetTree() {
             root = null;
+            clearOperationsLog();
             const values = [50, 25, 75, 10, 30, 60, 80, 5, 15];
             values.forEach(v => {
                 root = insertSync(root, v);
@@ -1003,6 +1113,7 @@
 
         function randomTree() {
             root = null;
+            clearOperationsLog();
             const count = 7 + Math.floor(Math.random() * 6);
             const values = new Set();
             while (values.size < count) {
@@ -1091,12 +1202,12 @@
             calculatePositions(root, 0, canvas.width, 0);
 
             // Animate smooth transition
-            const steps = 20;
+            const steps = 40;
             for (let i = 0; i <= steps; i++) {
                 const progress = i / steps;
                 interpolatePositions(root, 0.3);
                 drawTree();
-                await sleep(16); // ~60fps
+                await sleep(25); // Slower animation
             }
         }
 
