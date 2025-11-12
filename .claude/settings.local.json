@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Read(//home/thomas/Dokumente/GitHub/Signale-und-Systme/elementarfunktionen/**)",
+      "Read(//home/thomas/Dokumente/GitHub/Signale-und-Systme/systemklassifikation/**)"
     ],
     "deny": [],
     "ask": []
