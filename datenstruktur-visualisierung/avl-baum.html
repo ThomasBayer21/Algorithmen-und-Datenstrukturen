@@ -497,6 +497,7 @@
                 this.isNew = false;
                 this.isHighlighted = false;
                 this.isRotating = false;
+                this.isDeleting = false;
             }
         }
 
@@ -707,12 +708,42 @@
             return node === null ? 0 : height(node.left) - height(node.right);
         }
 
+        // Hilfsfunktion: Speichere alle Positionen eines Teilbaums
+        function savePositions(node) {
+            if (node === null) return null;
+            return {
+                x: node.x,
+                y: node.y,
+                left: savePositions(node.left),
+                right: savePositions(node.right)
+            };
+        }
+
+        // Hilfsfunktion: Stelle alle Positionen eines Teilbaums wieder her
+        function restorePositions(node, savedPos) {
+            if (node === null || savedPos === null) return;
+            node.x = savedPos.x;
+            node.y = savedPos.y;
+            if (node.left) restorePositions(node.left, savedPos.left);
+            if (node.right) restorePositions(node.right, savedPos.right);
+        }
+
         function rotateRight(y) {
             const x = y.left;
             const T2 = x.right;
 
+            // Speichere ALLE Positionen der beteiligten Teilbäume BEVOR die Struktur sich ändert
+            const savedY = savePositions(y);
+            const savedX = savePositions(x);
+            const savedT2 = savePositions(T2);
+
             x.right = y;
             y.left = T2;
+
+            // Stelle ALLE Positionen wieder her NACH der Struktur-Änderung
+            restorePositions(y, savedY);
+            restorePositions(x, savedX);
+            if (T2) restorePositions(T2, savedT2);
 
             updateHeight(y);
             updateHeight(x);
@@ -724,8 +755,18 @@
             const y = x.right;
             const T2 = y.left;
 
+            // Speichere ALLE Positionen der beteiligten Teilbäume BEVOR die Struktur sich ändert
+            const savedX = savePositions(x);
+            const savedY = savePositions(y);
+            const savedT2 = savePositions(T2);
+
             y.left = x;
             x.right = T2;
+
+            // Stelle ALLE Positionen wieder her NACH der Struktur-Änderung
+            restorePositions(x, savedX);
+            restorePositions(y, savedY);
+            if (T2) restorePositions(T2, savedT2);
 
             updateHeight(x);
             updateHeight(y);
@@ -735,24 +776,42 @@
 
         async function insert(node, value, path = []) {
             if (node === null) {
-                await explain('Neuer Knoten erstellt', `Wert ${value} wird als neuer Knoten eingefügt.`);
                 const newNode = new AVLNode(value);
                 newNode.isNew = true;
-                await animateTree();
-                newNode.isNew = false;
                 return newNode;
             }
 
             node.isHighlighted = true;
             await animateTree();
+            await sleep(animationSpeed / 2);
             node.isHighlighted = false;
 
             if (value < node.value) {
                 await explain('Navigation nach links', `${value} < ${node.value}, gehe zum linken Kind.`);
                 node.left = await insert(node.left, value, [...path, 'left']);
+
+                // Wenn neuer Knoten eingefügt wurde, zeige ihn in CYAN mit Animation
+                if (node.left && node.left.isNew) {
+                    await explain('Neuer Knoten eingefügt', `Wert ${value} wurde als neuer Knoten eingefügt (CYAN markiert).`);
+                    await animateTree(true);
+                    await sleep(animationSpeed * 2);
+                    node.left.isNew = false;
+                    await animateTree();
+                    await sleep(animationSpeed / 2);
+                }
             } else if (value > node.value) {
                 await explain('Navigation nach rechts', `${value} > ${node.value}, gehe zum rechten Kind.`);
                 node.right = await insert(node.right, value, [...path, 'right']);
+
+                // Wenn neuer Knoten eingefügt wurde, zeige ihn in CYAN mit Animation
+                if (node.right && node.right.isNew) {
+                    await explain('Neuer Knoten eingefügt', `Wert ${value} wurde als neuer Knoten eingefügt (CYAN markiert).`);
+                    await animateTree(true);
+                    await sleep(animationSpeed * 2);
+                    node.right.isNew = false;
+                    await animateTree();
+                    await sleep(animationSpeed / 2);
+                }
             } else {
                 await explain('Duplikat gefunden', `Wert ${value} existiert bereits. Keine Änderung.`);
                 return node;
@@ -761,71 +820,185 @@
             updateHeight(node);
             const balance = getBalance(node);
 
-            await explain('Balance prüfen', `Balance-Faktor von Knoten ${node.value}: ${balance}`);
-            await animateTree();
+            // Zeige aktuellen Knoten als "wird geprüft" (GRÜN)
+            node.isHighlighted = true;
+            await explain('Höhe & Balance aktualisieren', `Knoten ${node.value}: Höhe=${node.height}, Balance=${balance}`);
+            calculatePositions(root, 0, canvas.width, 0); // Berechne Positionen
+            drawTree(); // Zeichne SOFORT ohne lange Animation
+            await sleep(animationSpeed);
 
             // Links-Links Fall
             if (balance > 1 && value < node.left.value) {
+                // Knoten ist noch GRÜN - zeige ihn deutlich
+                await sleep(animationSpeed / 2);
+
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} > 1. Rotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
                 await explain('Links-Links Fall (LL)', `Balance: ${balance}. Führe Rechts-Rotation durch.`);
                 node.isRotating = true;
                 if (node.left) node.left.isRotating = true;
-                await animateTree();
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Rotation durchführen (Struktur ändert sich, Positionen bleiben erhalten)
                 const result = rotateRight(node);
+
+                // Animation der Rotation - Knoten bewegen sich zu neuen Positionen
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
                 if (result.right) result.right.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
             // Rechts-Rechts Fall
             if (balance < -1 && value > node.right.value) {
+                // Zeige Knoten nochmal GRÜN bevor er ROT wird
+                await sleep(animationSpeed / 2);
+
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} < -1. Rotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
                 await explain('Rechts-Rechts Fall (RR)', `Balance: ${balance}. Führe Links-Rotation durch.`);
                 node.isRotating = true;
                 if (node.right) node.right.isRotating = true;
-                await animateTree();
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Rotation durchführen (Struktur ändert sich, Positionen bleiben erhalten)
                 const result = rotateLeft(node);
+
+                // Animation der Rotation - Knoten bewegen sich zu neuen Positionen
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
                 if (result.left) result.left.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
             // Links-Rechts Fall
             if (balance > 1 && value > node.left.value) {
-                await explain('Links-Rechts Fall (LR)', `Balance: ${balance}. Schritt 1: Links-Rotation.`);
-                if (node.left) node.left.isRotating = true;
-                await animateTree();
-                node.left = rotateLeft(node.left);
-                if (node.left) node.left.isRotating = false;
-                await animateTree();
+                // Zeige Knoten nochmal GRÜN bevor er ROT wird
+                await sleep(animationSpeed / 2);
 
-                await explain('Links-Rechts Fall (LR)', `Schritt 2: Rechts-Rotation.`);
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} > 1. Doppelrotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
+                await explain('Links-Rechts Fall (LR)', `Balance: ${balance}. Schritt 1: Links-Rotation am linken Kind.`);
+                if (node.left) {
+                    node.left.isRotating = true;
+                    if (node.left.right) node.left.right.isRotating = true;
+                }
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Erste Rotation: Links (Positionen bleiben erhalten)
+                node.left = rotateLeft(node.left);
+
+                // Animation der ersten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
+                if (node.left) node.left.isRotating = false;
+
+                await explain('Links-Rechts Fall (LR)', `Schritt 2: Rechts-Rotation am aktuellen Knoten.`);
                 node.isRotating = true;
-                await animateTree();
+                if (node.left) node.left.isRotating = true;
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Zweite Rotation: Rechts (Positionen bleiben erhalten)
                 const result = rotateRight(node);
+
+                // Animation der zweiten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
+                if (result.left) result.left.isRotating = false;
+                if (result.right) result.right.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
             // Rechts-Links Fall
             if (balance < -1 && value < node.right.value) {
-                await explain('Rechts-Links Fall (RL)', `Balance: ${balance}. Schritt 1: Rechts-Rotation.`);
-                if (node.right) node.right.isRotating = true;
-                await animateTree();
-                node.right = rotateRight(node.right);
-                if (node.right) node.right.isRotating = false;
-                await animateTree();
+                // Zeige Knoten nochmal GRÜN bevor er ROT wird
+                await sleep(animationSpeed / 2);
 
-                await explain('Rechts-Links Fall (RL)', `Schritt 2: Links-Rotation.`);
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} < -1. Doppelrotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
+                await explain('Rechts-Links Fall (RL)', `Balance: ${balance}. Schritt 1: Rechts-Rotation am rechten Kind.`);
+                if (node.right) {
+                    node.right.isRotating = true;
+                    if (node.right.left) node.right.left.isRotating = true;
+                }
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Erste Rotation: Rechts (Positionen bleiben erhalten)
+                node.right = rotateRight(node.right);
+
+                // Animation der ersten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
+                if (node.right) node.right.isRotating = false;
+
+                await explain('Rechts-Links Fall (RL)', `Schritt 2: Links-Rotation am aktuellen Knoten.`);
                 node.isRotating = true;
-                await animateTree();
+                if (node.right) node.right.isRotating = true;
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Zweite Rotation: Links (Positionen bleiben erhalten)
                 const result = rotateLeft(node);
+
+                // Animation der zweiten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
+                if (result.left) result.left.isRotating = false;
+                if (result.right) result.right.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
+            // Knoten ist balanciert, entferne GRÜN-Markierung
+            node.isHighlighted = false;
             return node;
         }
 
@@ -844,6 +1017,7 @@
 
             node.isHighlighted = true;
             await animateTree();
+            await sleep(animationSpeed / 2);
             node.isHighlighted = false;
 
             if (value < node.value) {
@@ -853,16 +1027,31 @@
                 await explain('Suche rechts', `${value} > ${node.value}, suche im rechten Teilbaum.`);
                 node.right = await deleteNodeHelper(node.right, value);
             } else {
-                await explain('Knoten gefunden', `Knoten ${value} wird gelöscht.`);
+                // Knoten gefunden - markiere ihn ROT und zeige Animation
+                node.isHighlighted = false;
+                node.isDeleting = true;
+                await explain('Knoten gefunden', `Knoten ${value} wird gelöscht (ROT markiert).`);
+                drawTree();
+                await sleep(animationSpeed * 1.5);
 
                 if (node.left === null || node.right === null) {
-                    node = node.left !== null ? node.left : node.right;
-                    await explain('Einfacher Fall', 'Knoten hat maximal ein Kind.');
-                    await animateTree();
+                    const childNode = node.left !== null ? node.left : node.right;
+                    await explain('Einfacher Fall', 'Knoten hat maximal ein Kind. Entferne Knoten...');
+                    await sleep(animationSpeed / 2);
+                    node = childNode;
+                    await animateTree(true);
+                    await sleep(animationSpeed / 2);
                 } else {
                     const minNode = findMin(node.right);
-                    await explain('Zwei Kinder', `Ersetze mit Inorder-Nachfolger: ${minNode.value}`);
+                    minNode.isHighlighted = true;
+                    await explain('Zwei Kinder', `Ersetze mit Inorder-Nachfolger: ${minNode.value} (GRÜN markiert)`);
+                    await animateTree();
+                    await sleep(animationSpeed);
+                    minNode.isHighlighted = false;
+                    node.isDeleting = false;
                     node.value = minNode.value;
+                    await animateTree();
+                    await sleep(animationSpeed / 2);
                     node.right = await deleteNodeHelper(node.right, minNode.value);
                 }
             }
@@ -872,59 +1061,185 @@
             updateHeight(node);
             const balance = getBalance(node);
 
-            await explain('Rebalancierung prüfen', `Balance von Knoten ${node.value}: ${balance}`);
-            await animateTree();
+            // Zeige aktuellen Knoten als "wird geprüft" (GRÜN)
+            node.isHighlighted = true;
+            await explain('Höhe & Balance aktualisieren', `Knoten ${node.value}: Höhe=${node.height}, Balance=${balance}`);
+            calculatePositions(root, 0, canvas.width, 0); // Berechne Positionen
+            drawTree(); // Zeichne SOFORT ohne lange Animation
+            await sleep(animationSpeed);
 
             // Links-Links
             if (balance > 1 && getBalance(node.left) >= 0) {
+                // Knoten ist noch GRÜN - zeige ihn deutlich
+                await sleep(animationSpeed / 2);
+
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} > 1. Rotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
                 await explain('Links-Links (LL)', 'Führe Rechts-Rotation durch.');
                 node.isRotating = true;
-                await animateTree();
+                if (node.left) node.left.isRotating = true;
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Rotation durchführen (Positionen bleiben erhalten)
                 const result = rotateRight(node);
+
+                // Animation der Rotation - Knoten bewegen sich zu neuen Positionen
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
+                if (result.right) result.right.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
             // Links-Rechts
             if (balance > 1 && getBalance(node.left) < 0) {
-                await explain('Links-Rechts (LR)', 'Schritt 1: Links-Rotation.');
+                // Zeige Knoten nochmal GRÜN bevor er ROT wird
+                await sleep(animationSpeed / 2);
+
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} > 1. Doppelrotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
+                await explain('Links-Rechts (LR)', 'Schritt 1: Links-Rotation am linken Kind.');
+                if (node.left) {
+                    node.left.isRotating = true;
+                    if (node.left.right) node.left.right.isRotating = true;
+                }
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Erste Rotation: Links (Positionen bleiben erhalten)
                 node.left = rotateLeft(node.left);
-                await animateTree();
-                await explain('Links-Rechts (LR)', 'Schritt 2: Rechts-Rotation.');
+
+                // Animation der ersten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
+                if (node.left) node.left.isRotating = false;
+
+                await explain('Links-Rechts (LR)', 'Schritt 2: Rechts-Rotation am aktuellen Knoten.');
                 node.isRotating = true;
-                await animateTree();
+                if (node.left) node.left.isRotating = true;
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Zweite Rotation: Rechts (Positionen bleiben erhalten)
                 const result = rotateRight(node);
+
+                // Animation der zweiten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
+                if (result.left) result.left.isRotating = false;
+                if (result.right) result.right.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
             // Rechts-Rechts
             if (balance < -1 && getBalance(node.right) <= 0) {
+                // Zeige Knoten nochmal GRÜN bevor er ROT wird
+                await sleep(animationSpeed / 2);
+
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} < -1. Rotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
                 await explain('Rechts-Rechts (RR)', 'Führe Links-Rotation durch.');
                 node.isRotating = true;
-                await animateTree();
+                if (node.right) node.right.isRotating = true;
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Rotation durchführen (Positionen bleiben erhalten)
                 const result = rotateLeft(node);
+
+                // Animation der Rotation - Knoten bewegen sich zu neuen Positionen
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
+                if (result.left) result.left.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
             // Rechts-Links
             if (balance < -1 && getBalance(node.right) > 0) {
-                await explain('Rechts-Links (RL)', 'Schritt 1: Rechts-Rotation.');
+                // Zeige Knoten nochmal GRÜN bevor er ROT wird
+                await sleep(animationSpeed / 2);
+
+                // Jetzt wird Knoten ROT (unbalanciert)
+                node.isHighlighted = false;
+                await explain('Unbalanciert!', `Knoten ${node.value} hat Balance ${balance} < -1. Doppelrotation erforderlich!`);
+                await animateTree();
+                await sleep(animationSpeed);
+
+                await explain('Rechts-Links (RL)', 'Schritt 1: Rechts-Rotation am rechten Kind.');
+                if (node.right) {
+                    node.right.isRotating = true;
+                    if (node.right.left) node.right.left.isRotating = true;
+                }
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Erste Rotation: Rechts (Positionen bleiben erhalten)
                 node.right = rotateRight(node.right);
-                await animateTree();
-                await explain('Rechts-Links (RL)', 'Schritt 2: Links-Rotation.');
+
+                // Animation der ersten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
+                if (node.right) node.right.isRotating = false;
+
+                await explain('Rechts-Links (RL)', 'Schritt 2: Links-Rotation am aktuellen Knoten.');
                 node.isRotating = true;
-                await animateTree();
+                if (node.right) node.right.isRotating = true;
+                await animateTree(); // Zeige GELBE Markierung mit Animation
+                await sleep(animationSpeed * 1.5);
+
+                // Zweite Rotation: Links (Positionen bleiben erhalten)
                 const result = rotateLeft(node);
+
+                // Animation der zweiten Rotation
+                await animateTree(true);
+                await sleep(animationSpeed / 2);
+
+                // Markierungen entfernen
                 result.isRotating = false;
+                if (result.left) result.left.isRotating = false;
+                if (result.right) result.right.isRotating = false;
                 await animateTree();
+                await sleep(animationSpeed / 2);
+
                 return result;
             }
 
+            // Knoten ist balanciert, entferne GRÜN-Markierung
+            node.isHighlighted = false;
             return node;
         }
 
@@ -1027,6 +1342,17 @@
             clearOperationsLog();
             await explain('Start', `Füge Wert ${value} in den AVL-Baum ein.`);
             root = await insert(root, value);
+
+            // Falls root selbst neu ist (erster Knoten), zeige ihn in CYAN mit Animation
+            if (root && root.isNew) {
+                await explain('Neuer Knoten eingefügt', `Wert ${value} wurde als Wurzel eingefügt (CYAN markiert).`);
+                await animateTree(true);
+                await sleep(animationSpeed * 2);
+                root.isNew = false;
+                await animateTree();
+                await sleep(animationSpeed / 2);
+            }
+
             await animateTree();
             await explain('Abgeschlossen', `Wert ${value} erfolgreich eingefügt. Baum bleibt balanciert.`);
             isAnimating = false;
@@ -1184,30 +1510,44 @@
         function interpolatePositions(node, progress) {
             if (node === null) return;
 
-            // Smooth interpolation
+            // Smooth interpolation using actual progress
             const easeProgress = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-            node.x += (node.targetX - node.x) * easeProgress;
-            node.y += (node.targetY - node.y) * easeProgress;
+            node.x = node.x + (node.targetX - node.x) * easeProgress;
+            node.y = node.y + (node.targetY - node.y) * easeProgress;
 
             if (node.left) interpolatePositions(node.left, progress);
             if (node.right) interpolatePositions(node.right, progress);
         }
 
-        async function animateTree() {
+        function syncPositions(node) {
+            if (node === null) return;
+            node.x = node.targetX;
+            node.y = node.targetY;
+            if (node.left) syncPositions(node.left);
+            if (node.right) syncPositions(node.right);
+        }
+
+        async function animateTree(forceComplete = false) {
             if (root === null) {
                 drawTree();
                 return;
             }
 
+            // Berechne Ziel-Positionen basierend auf aktueller Struktur
             calculatePositions(root, 0, canvas.width, 0);
 
             // Animate smooth transition
-            const steps = 40;
+            const steps = forceComplete ? 25 : 20;
             for (let i = 0; i <= steps; i++) {
-                const progress = i / steps;
-                interpolatePositions(root, 0.3);
+                interpolatePositions(root, 0.35);
                 drawTree();
-                await sleep(25); // Slower animation
+                await sleep(18);
+            }
+
+            // Bei wichtigen Übergängen: Positionen vollständig synchronisieren
+            if (forceComplete) {
+                syncPositions(root);
+                drawTree();
             }
         }
 
@@ -1271,13 +1611,15 @@
             ctx.beginPath();
             ctx.arc(node.x, node.y, radius, 0, 2 * Math.PI);
 
-            // Color based on state
-            if (node.isRotating) {
+            // Color based on state (Priorität von hoch nach niedrig)
+            if (node.isDeleting) {
+                ctx.fillStyle = '#dc3545'; // Red for deleting
+            } else if (node.isRotating) {
                 ctx.fillStyle = '#ffc107'; // Yellow for rotating
+            } else if (node.isHighlighted) {
+                ctx.fillStyle = '#28a745'; // Green for highlighted (höhere Priorität als unbalanced!)
             } else if (Math.abs(balance) > 1) {
                 ctx.fillStyle = '#dc3545'; // Red for unbalanced
-            } else if (node.isHighlighted) {
-                ctx.fillStyle = '#28a745'; // Green for highlighted
             } else if (node.isNew) {
                 ctx.fillStyle = '#17a2b8'; // Cyan for new
             } else {
