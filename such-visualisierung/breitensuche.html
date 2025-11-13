@@ -323,6 +323,33 @@
             margin: 5px 0;
             font-weight: bold;
         }
+
+        .code-section {
+            margin: 30px 0;
+        }
+
+        .code-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
     </style>
 </head>
 <body>
@@ -399,6 +426,80 @@
                 <div class="stat-value" id="time">0.0s</div>
                 <div class="stat-label">Zeit</div>
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Breitensuche (BFS) Implementierung in Python</span>
+
+<span class="code-keyword">from</span> collections <span class="code-keyword">import</span> deque
+
+<span class="code-keyword">def</span> <span class="code-function">bfs</span>(graph, start):
+    <span class="code-string">"""
+    Breitensuche (Breadth-First Search) mit Queue.
+    Zeitkomplexität: O(V + E)
+    Platzkomplexität: O(V)
+
+    Args:
+        graph: Adjazenzliste als Dictionary
+        start: Startknoten
+
+    Returns:
+        Liste der besuchten Knoten in BFS-Reihenfolge
+    """</span>
+    visited = <span class="code-function">set</span>()
+    queue = deque([start])
+    visited.add(start)
+    result = []
+
+    <span class="code-keyword">while</span> queue:
+        <span class="code-comment"># Entferne ersten Knoten aus der Queue</span>
+        node = queue.popleft()
+        result.append(node)
+
+        <span class="code-comment"># Füge alle unbesuchten Nachbarn zur Queue hinzu</span>
+        <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> graph.get(node, []):
+            <span class="code-keyword">if</span> neighbor <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+
+    <span class="code-keyword">return</span> result
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+graph = {
+    <span class="code-string">'A'</span>: [<span class="code-string">'B'</span>, <span class="code-string">'C'</span>],
+    <span class="code-string">'B'</span>: [<span class="code-string">'A'</span>, <span class="code-string">'D'</span>, <span class="code-string">'E'</span>],
+    <span class="code-string">'C'</span>: [<span class="code-string">'A'</span>, <span class="code-string">'F'</span>],
+    <span class="code-string">'D'</span>: [<span class="code-string">'B'</span>],
+    <span class="code-string">'E'</span>: [<span class="code-string">'B'</span>, <span class="code-string">'F'</span>],
+    <span class="code-string">'F'</span>: [<span class="code-string">'C'</span>, <span class="code-string">'E'</span>]
+}
+
+<span class="code-function">print</span>(<span class="code-string">"BFS Traversierung ab A:"</span>, <span class="code-function">bfs</span>(graph, <span class="code-string">'A'</span>))
+
+<span class="code-comment"># Pfad zwischen zwei Knoten finden</span>
+<span class="code-keyword">def</span> <span class="code-function">bfs_path</span>(graph, start, goal):
+    <span class="code-string">"""Findet kürzesten Pfad zwischen zwei Knoten."""</span>
+    visited = <span class="code-function">set</span>()
+    queue = deque([[start]])
+
+    <span class="code-keyword">while</span> queue:
+        path = queue.popleft()
+        node = path[-<span class="code-number">1</span>]
+
+        <span class="code-keyword">if</span> node == goal:
+            <span class="code-keyword">return</span> path
+
+        <span class="code-keyword">if</span> node <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+            visited.add(node)
+            <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> graph.get(node, []):
+                new_path = <span class="code-function">list</span>(path)
+                new_path.append(neighbor)
+                queue.append(new_path)
+
+    <span class="code-keyword">return</span> <span class="code-keyword">None</span>
+
+<span class="code-function">print</span>(<span class="code-string">"Pfad von A nach F:"</span>, <span class="code-function">bfs_path</span>(graph, <span class="code-string">'A'</span>, <span class="code-string">'F'</span>))</div>
         </div>
     </div>
 

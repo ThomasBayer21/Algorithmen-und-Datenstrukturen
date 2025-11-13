@@ -302,6 +302,33 @@
             margin: 5px;
             font-weight: bold;
         }
+
+        .code-section {
+            margin: 30px 0;
+        }
+
+        .code-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
     </style>
 </head>
 <body>
@@ -375,6 +402,71 @@
                 <div class="stat-value" id="time">0.0s</div>
                 <div class="stat-label">Zeit</div>
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Tiefensuche (DFS) Implementierung in Python</span>
+
+<span class="code-comment"># Iterative Implementierung mit Stack</span>
+<span class="code-keyword">def</span> <span class="code-function">dfs_iterative</span>(graph, start):
+    <span class="code-string">"""
+    Tiefensuche (Depth-First Search) mit Stack.
+    Zeitkomplexität: O(V + E)
+    Platzkomplexität: O(V)
+
+    Args:
+        graph: Adjazenzliste als Dictionary
+        start: Startknoten
+
+    Returns:
+        Liste der besuchten Knoten in DFS-Reihenfolge
+    """</span>
+    visited = <span class="code-function">set</span>()
+    stack = [start]
+    result = []
+
+    <span class="code-keyword">while</span> stack:
+        <span class="code-comment"># Entferne obersten Knoten vom Stack</span>
+        node = stack.pop()
+
+        <span class="code-keyword">if</span> node <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+            visited.add(node)
+            result.append(node)
+
+            <span class="code-comment"># Füge Nachbarn in umgekehrter Reihenfolge hinzu</span>
+            <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> <span class="code-function">reversed</span>(graph.get(node, [])):
+                <span class="code-keyword">if</span> neighbor <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+                    stack.append(neighbor)
+
+    <span class="code-keyword">return</span> result
+
+<span class="code-comment"># Rekursive Implementierung</span>
+<span class="code-keyword">def</span> <span class="code-function">dfs_recursive</span>(graph, node, visited=<span class="code-keyword">None</span>):
+    <span class="code-string">"""Tiefensuche rekursiv."""</span>
+    <span class="code-keyword">if</span> visited <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        visited = <span class="code-function">set</span>()
+
+    visited.add(node)
+    <span class="code-function">print</span>(node, end=<span class="code-string">' '</span>)
+
+    <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> graph.get(node, []):
+        <span class="code-keyword">if</span> neighbor <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+            <span class="code-function">dfs_recursive</span>(graph, neighbor, visited)
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+graph = {
+    <span class="code-string">'A'</span>: [<span class="code-string">'B'</span>, <span class="code-string">'C'</span>],
+    <span class="code-string">'B'</span>: [<span class="code-string">'D'</span>, <span class="code-string">'E'</span>],
+    <span class="code-string">'C'</span>: [<span class="code-string">'F'</span>],
+    <span class="code-string">'D'</span>: [],
+    <span class="code-string">'E'</span>: [<span class="code-string">'F'</span>],
+    <span class="code-string">'F'</span>: []
+}
+
+<span class="code-function">print</span>(<span class="code-string">"DFS Iterativ:"</span>, <span class="code-function">dfs_iterative</span>(graph, <span class="code-string">'A'</span>))
+<span class="code-function">print</span>(<span class="code-string">"DFS Rekursiv:"</span>, end=<span class="code-string">' '</span>)
+<span class="code-function">dfs_recursive</span>(graph, <span class="code-string">'A'</span>)</div>
         </div>
     </div>
 
