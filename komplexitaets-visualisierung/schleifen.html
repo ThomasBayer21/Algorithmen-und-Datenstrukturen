@@ -133,6 +133,9 @@
         .code-number {
             color: #d19a66;
         }
+        .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
 
         .explanation {
             background: white;
@@ -341,10 +344,9 @@
                 </div>
 
                 <div class="code-block">
-<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {
-    <span class="code-comment">// Konstante Operation</span>
-    <span class="code-function">print</span>(i);  <span class="code-comment">// O(1)</span>
-}
+<span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n):
+    <span class="code-comment"># Konstante Operation</span>
+    <span class="code-function">print</span>(i)  <span class="code-comment"># O(1)</span>
                 </div>
 
                 <div class="explanation">
@@ -378,11 +380,9 @@
                 </div>
 
                 <div class="code-block">
-<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {          <span class="code-comment">// n Iterationen</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; n; j++) {      <span class="code-comment">// n Iterationen pro i</span>
-        <span class="code-function">print</span>(i, j);  <span class="code-comment">// O(1)</span>
-    }
-}
+<span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n):          <span class="code-comment"># n Iterationen</span>
+    <span class="code-keyword">for</span> j <span class="code-keyword">in</span> range(n):      <span class="code-comment"># n Iterationen pro i</span>
+        <span class="code-function">print</span>(i, j)  <span class="code-comment"># O(1)</span>
                 </div>
 
                 <div class="explanation">
@@ -433,13 +433,10 @@
                 </div>
 
                 <div class="code-block">
-<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {          <span class="code-comment">// n Iterationen</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = <span class="code-number">0</span>; j &lt; n; j++) {      <span class="code-comment">// n Iterationen pro i</span>
-        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> k = <span class="code-number">0</span>; k &lt; n; k++) {  <span class="code-comment">// n Iterationen pro (i,j)</span>
-            <span class="code-function">print</span>(i, j, k);  <span class="code-comment">// O(1)</span>
-        }
-    }
-}
+<span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n):          <span class="code-comment"># n Iterationen</span>
+    <span class="code-keyword">for</span> j <span class="code-keyword">in</span> range(n):      <span class="code-comment"># n Iterationen pro i</span>
+        <span class="code-keyword">for</span> k <span class="code-keyword">in</span> range(n):  <span class="code-comment"># n Iterationen pro (i,j)</span>
+            <span class="code-function">print</span>(i, j, k)  <span class="code-comment"># O(1)</span>
                 </div>
 
                 <div class="explanation">
@@ -483,13 +480,15 @@
                 </div>
 
                 <div class="code-block">
-<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = n; i &gt; <span class="code-number">0</span>; i = i / <span class="code-number">2</span>) {
-    <span class="code-function">print</span>(i);  <span class="code-comment">// O(1)</span>
-}
-<span class="code-comment">// oder äquivalent:</span>
-<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">1</span>; i &lt; n; i = i * <span class="code-number">2</span>) {
-    <span class="code-function">print</span>(i);
-}
+i = n
+<span class="code-keyword">while</span> i &gt; <span class="code-number">0</span>:
+    <span class="code-function">print</span>(i)  <span class="code-comment"># O(1)</span>
+    i = i // <span class="code-number">2</span>
+<span class="code-comment"># oder äquivalent:</span>
+i = <span class="code-number">1</span>
+<span class="code-keyword">while</span> i &lt; n:
+    <span class="code-function">print</span>(i)
+    i = i * <span class="code-number">2</span>
                 </div>
 
                 <div class="explanation">
@@ -520,11 +519,9 @@
                 </div>
 
                 <div class="code-block">
-<span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; n; i++) {          <span class="code-comment">// n Iterationen</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = i; j &lt; n; j++) {      <span class="code-comment">// (n-i) Iterationen</span>
-        <span class="code-function">print</span>(i, j);  <span class="code-comment">// O(1)</span>
-    }
-}
+<span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n):          <span class="code-comment"># n Iterationen</span>
+    <span class="code-keyword">for</span> j <span class="code-keyword">in</span> range(i, n):      <span class="code-comment"># (n-i) Iterationen</span>
+        <span class="code-function">print</span>(i, j)  <span class="code-comment"># O(1)</span>
                 </div>
 
                 <div class="explanation">
