@@ -95,6 +95,9 @@
         .code-number {
             color: #d19a66;
         }
+        .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
 
         .visualization-container {
             background: white;
@@ -437,40 +440,35 @@
             <h2>Code-Implementierung</h2>
 
             <div class="code-block">
-<span class="code-keyword">function</span> <span class="code-function">maxSubarrayBruteForce</span>(arr) {
-    <span class="code-keyword">let</span> maxSum = -Infinity;
-    <span class="code-keyword">let</span> bestStart = <span class="code-number">0</span>;
-    <span class="code-keyword">let</span> bestEnd = <span class="code-number">0</span>;
+<span class="code-keyword">def</span> <span class="code-function">max_subarray_brute_force</span>(arr):
+    max_sum = <span class="code-keyword">float</span>(<span class="code-string">'-inf'</span>)
+    best_start = <span class="code-number">0</span>
+    best_end = <span class="code-number">0</span>
 
-    <span class="code-comment">// Äußere Schleife: Startindex</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> start = <span class="code-number">0</span>; start < arr.length; start++) {
-        <span class="code-comment">// Innere Schleife: Endindex</span>
-        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> end = start; end < arr.length; end++) {
-            <span class="code-comment">// Berechne Summe des aktuellen Subarrays</span>
-            <span class="code-keyword">let</span> currentSum = <span class="code-number">0</span>;
-            <span class="code-keyword">for</span> (<span class="code-keyword">let</span> k = start; k <= end; k++) {
-                currentSum += arr[k];
-            }
+    <span class="code-comment"># Äußere Schleife: Startindex</span>
+    <span class="code-keyword">for</span> start <span class="code-keyword">in</span> range(len(arr)):
+        <span class="code-comment"># Innere Schleife: Endindex</span>
+        <span class="code-keyword">for</span> end <span class="code-keyword">in</span> range(start, len(arr)):
+            <span class="code-comment"># Berechne Summe des aktuellen Subarrays</span>
+            current_sum = <span class="code-number">0</span>
+            <span class="code-keyword">for</span> k <span class="code-keyword">in</span> range(start, end + <span class="code-number">1</span>):
+                current_sum += arr[k]
 
-            <span class="code-comment">// Update Maximum wenn größere Summe gefunden</span>
-            <span class="code-keyword">if</span> (currentSum > maxSum) {
-                maxSum = currentSum;
-                bestStart = start;
-                bestEnd = end;
-            }
-        }
-    }
+            <span class="code-comment"># Update Maximum wenn größere Summe gefunden</span>
+            <span class="code-keyword">if</span> current_sum > max_sum:
+                max_sum = current_sum
+                best_start = start
+                best_end = end
 
     <span class="code-keyword">return</span> {
-        sum: maxSum,
-        subarray: arr.slice(bestStart, bestEnd + <span class="code-number">1</span>),
-        start: bestStart,
-        end: bestEnd
-    };
-}
+        <span class="code-string">'sum'</span>: max_sum,
+        <span class="code-string">'subarray'</span>: arr[best_start:best_end + <span class="code-number">1</span>],
+        <span class="code-string">'start'</span>: best_start,
+        <span class="code-string">'end'</span>: best_end
+    }
 
-<span class="code-comment">// Zeitkomplexität: O(n³) - Drei verschachtelte Schleifen!
-// Raumkomplexität: O(1)</span>
+<span class="code-comment"># Zeitkomplexität: O(n³) - Drei verschachtelte Schleifen!
+# Raumkomplexität: O(1)</span>
             </div>
 
             <div class="info-box">
@@ -479,39 +477,35 @@
             </div>
 
             <div class="code-block">
-<span class="code-keyword">function</span> <span class="code-function">maxSubarrayOptimized</span>(arr) {
-    <span class="code-keyword">let</span> maxSum = -Infinity;
-    <span class="code-keyword">let</span> bestStart = <span class="code-number">0</span>;
-    <span class="code-keyword">let</span> bestEnd = <span class="code-number">0</span>;
+<span class="code-keyword">def</span> <span class="code-function">max_subarray_optimized</span>(arr):
+    max_sum = <span class="code-keyword">float</span>(<span class="code-string">'-inf'</span>)
+    best_start = <span class="code-number">0</span>
+    best_end = <span class="code-number">0</span>
 
-    <span class="code-comment">// Äußere Schleife: Startindex</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> start = <span class="code-number">0</span>; start < arr.length; start++) {
-        <span class="code-keyword">let</span> currentSum = <span class="code-number">0</span>;
+    <span class="code-comment"># Äußere Schleife: Startindex</span>
+    <span class="code-keyword">for</span> start <span class="code-keyword">in</span> range(len(arr)):
+        current_sum = <span class="code-number">0</span>
 
-        <span class="code-comment">// Innere Schleife: Endindex</span>
-        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> end = start; end < arr.length; end++) {
-            <span class="code-comment">// Füge nur das neue Element hinzu (inkrementell)</span>
-            currentSum += arr[end];
+        <span class="code-comment"># Innere Schleife: Endindex</span>
+        <span class="code-keyword">for</span> end <span class="code-keyword">in</span> range(start, len(arr)):
+            <span class="code-comment"># Füge nur das neue Element hinzu (inkrementell)</span>
+            current_sum += arr[end]
 
-            <span class="code-comment">// Update Maximum wenn größere Summe gefunden</span>
-            <span class="code-keyword">if</span> (currentSum > maxSum) {
-                maxSum = currentSum;
-                bestStart = start;
-                bestEnd = end;
-            }
-        }
-    }
+            <span class="code-comment"># Update Maximum wenn größere Summe gefunden</span>
+            <span class="code-keyword">if</span> current_sum > max_sum:
+                max_sum = current_sum
+                best_start = start
+                best_end = end
 
     <span class="code-keyword">return</span> {
-        sum: maxSum,
-        subarray: arr.slice(bestStart, bestEnd + <span class="code-number">1</span>),
-        start: bestStart,
-        end: bestEnd
-    };
-}
+        <span class="code-string">'sum'</span>: max_sum,
+        <span class="code-string">'subarray'</span>: arr[best_start:best_end + <span class="code-number">1</span>],
+        <span class="code-string">'start'</span>: best_start,
+        <span class="code-string">'end'</span>: best_end
+    }
 
-<span class="code-comment">// Zeitkomplexität: O(n²) - Zwei verschachtelte Schleifen
-// Raumkomplexität: O(1)</span>
+<span class="code-comment"># Zeitkomplexität: O(n²) - Zwei verschachtelte Schleifen
+# Raumkomplexität: O(1)</span>
             </div>
         </div>
 
@@ -566,38 +560,36 @@
             </div>
 
             <div class="code-block">
-<span class="code-keyword">function</span> <span class="code-function">maxSubarrayKadane</span>(arr) {
-    <span class="code-keyword">let</span> maxEndingHere = arr[<span class="code-number">0</span>];
-    <span class="code-keyword">let</span> maxSoFar = arr[<span class="code-number">0</span>];
-    <span class="code-keyword">let</span> start = <span class="code-number">0</span>, end = <span class="code-number">0</span>, s = <span class="code-number">0</span>;
+<span class="code-keyword">def</span> <span class="code-function">max_subarray_kadane</span>(arr):
+    max_ending_here = arr[<span class="code-number">0</span>]
+    max_so_far = arr[<span class="code-number">0</span>]
+    start = <span class="code-number">0</span>
+    end = <span class="code-number">0</span>
+    s = <span class="code-number">0</span>
 
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">1</span>; i < arr.length; i++) {
-        <span class="code-comment">// Entweder Element hinzufügen oder neu starten</span>
-        <span class="code-keyword">if</span> (maxEndingHere + arr[i] > arr[i]) {
-            maxEndingHere = maxEndingHere + arr[i];
-        } <span class="code-keyword">else</span> {
-            maxEndingHere = arr[i];
-            s = i;  <span class="code-comment">// Neuer Startpunkt</span>
-        }
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(<span class="code-number">1</span>, len(arr)):
+        <span class="code-comment"># Entweder Element hinzufügen oder neu starten</span>
+        <span class="code-keyword">if</span> max_ending_here + arr[i] > arr[i]:
+            max_ending_here = max_ending_here + arr[i]
+        <span class="code-keyword">else</span>:
+            max_ending_here = arr[i]
+            s = i  <span class="code-comment"># Neuer Startpunkt</span>
 
-        <span class="code-comment">// Update globales Maximum</span>
-        <span class="code-keyword">if</span> (maxEndingHere > maxSoFar) {
-            maxSoFar = maxEndingHere;
-            start = s;
-            end = i;
-        }
-    }
+        <span class="code-comment"># Update globales Maximum</span>
+        <span class="code-keyword">if</span> max_ending_here > max_so_far:
+            max_so_far = max_ending_here
+            start = s
+            end = i
 
     <span class="code-keyword">return</span> {
-        sum: maxSoFar,
-        subarray: arr.slice(start, end + <span class="code-number">1</span>),
-        start: start,
-        end: end
-    };
-}
+        <span class="code-string">'sum'</span>: max_so_far,
+        <span class="code-string">'subarray'</span>: arr[start:end + <span class="code-number">1</span>],
+        <span class="code-string">'start'</span>: start,
+        <span class="code-string">'end'</span>: end
+    }
 
-<span class="code-comment">// Zeitkomplexität: O(n) - Nur eine Schleife!
-// Raumkomplexität: O(1)</span>
+<span class="code-comment"># Zeitkomplexität: O(n) - Nur eine Schleife!
+# Raumkomplexität: O(1)</span>
             </div>
         </div>
 

@@ -95,6 +95,9 @@
         .code-number {
             color: #d19a66;
         }
+        .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
 
         .visualization-container {
             background: white;
@@ -485,71 +488,66 @@
             <h2>Code-Implementierung</h2>
 
             <div class="code-block">
-<span class="code-keyword">function</span> <span class="code-function">maxSubarrayDivideConquer</span>(arr, low = <span class="code-number">0</span>, high = arr.length - <span class="code-number">1</span>) {
-    <span class="code-comment">// Basisfall: Nur ein Element</span>
-    <span class="code-keyword">if</span> (low === high) {
+<span class="code-keyword">def</span> <span class="code-function">max_subarray_divide_conquer</span>(arr, low=<span class="code-number">0</span>, high=<span class="code-keyword">None</span>):
+    <span class="code-keyword">if</span> high <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        high = len(arr) - <span class="code-number">1</span>
+
+    <span class="code-comment"># Basisfall: Nur ein Element</span>
+    <span class="code-keyword">if</span> low == high:
         <span class="code-keyword">return</span> {
-            sum: arr[low],
-            left: low,
-            right: high
-        };
-    }
-
-    <span class="code-comment">// Teile: Finde die Mitte</span>
-    <span class="code-keyword">const</span> mid = Math.floor((low + high) / <span class="code-number">2</span>);
-
-    <span class="code-comment">// Beherrsche: Rekursive Aufrufe</span>
-    <span class="code-keyword">const</span> leftResult = <span class="code-function">maxSubarrayDivideConquer</span>(arr, low, mid);
-    <span class="code-keyword">const</span> rightResult = <span class="code-function">maxSubarrayDivideConquer</span>(arr, mid + <span class="code-number">1</span>, high);
-    <span class="code-keyword">const</span> crossResult = <span class="code-function">maxCrossingSubarray</span>(arr, low, mid, high);
-
-    <span class="code-comment">// Kombiniere: Wähle das Maximum</span>
-    <span class="code-keyword">if</span> (leftResult.sum >= rightResult.sum && leftResult.sum >= crossResult.sum) {
-        <span class="code-keyword">return</span> leftResult;
-    } <span class="code-keyword">else if</span> (rightResult.sum >= leftResult.sum && rightResult.sum >= crossResult.sum) {
-        <span class="code-keyword">return</span> rightResult;
-    } <span class="code-keyword">else</span> {
-        <span class="code-keyword">return</span> crossResult;
-    }
-}
-
-<span class="code-keyword">function</span> <span class="code-function">maxCrossingSubarray</span>(arr, low, mid, high) {
-    <span class="code-comment">// Finde bestes Subarray links von der Mitte</span>
-    <span class="code-keyword">let</span> leftSum = -Infinity;
-    <span class="code-keyword">let</span> sum = <span class="code-number">0</span>;
-    <span class="code-keyword">let</span> maxLeft = mid;
-
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = mid; i >= low; i--) {
-        sum += arr[i];
-        <span class="code-keyword">if</span> (sum > leftSum) {
-            leftSum = sum;
-            maxLeft = i;
+            <span class="code-string">'sum'</span>: arr[low],
+            <span class="code-string">'left'</span>: low,
+            <span class="code-string">'right'</span>: high
         }
-    }
 
-    <span class="code-comment">// Finde bestes Subarray rechts von der Mitte</span>
-    <span class="code-keyword">let</span> rightSum = -Infinity;
-    sum = <span class="code-number">0</span>;
-    <span class="code-keyword">let</span> maxRight = mid + <span class="code-number">1</span>;
+    <span class="code-comment"># Teile: Finde die Mitte</span>
+    mid = (low + high) // <span class="code-number">2</span>
 
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> j = mid + <span class="code-number">1</span>; j <= high; j++) {
-        sum += arr[j];
-        <span class="code-keyword">if</span> (sum > rightSum) {
-            rightSum = sum;
-            maxRight = j;
-        }
-    }
+    <span class="code-comment"># Beherrsche: Rekursive Aufrufe</span>
+    left_result = <span class="code-function">max_subarray_divide_conquer</span>(arr, low, mid)
+    right_result = <span class="code-function">max_subarray_divide_conquer</span>(arr, mid + <span class="code-number">1</span>, high)
+    cross_result = <span class="code-function">max_crossing_subarray</span>(arr, low, mid, high)
 
-    <span class="code-comment">// Kombiniere beide Seiten</span>
+    <span class="code-comment"># Kombiniere: Wähle das Maximum</span>
+    <span class="code-keyword">if</span> left_result[<span class="code-string">'sum'</span>] >= right_result[<span class="code-string">'sum'</span>] <span class="code-keyword">and</span> left_result[<span class="code-string">'sum'</span>] >= cross_result[<span class="code-string">'sum'</span>]:
+        <span class="code-keyword">return</span> left_result
+    <span class="code-keyword">elif</span> right_result[<span class="code-string">'sum'</span>] >= left_result[<span class="code-string">'sum'</span>] <span class="code-keyword">and</span> right_result[<span class="code-string">'sum'</span>] >= cross_result[<span class="code-string">'sum'</span>]:
+        <span class="code-keyword">return</span> right_result
+    <span class="code-keyword">else</span>:
+        <span class="code-keyword">return</span> cross_result
+
+<span class="code-keyword">def</span> <span class="code-function">max_crossing_subarray</span>(arr, low, mid, high):
+    <span class="code-comment"># Finde bestes Subarray links von der Mitte</span>
+    left_sum = <span class="code-keyword">float</span>(<span class="code-string">'-inf'</span>)
+    sum_val = <span class="code-number">0</span>
+    max_left = mid
+
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(mid, low - <span class="code-number">1</span>, -<span class="code-number">1</span>):
+        sum_val += arr[i]
+        <span class="code-keyword">if</span> sum_val > left_sum:
+            left_sum = sum_val
+            max_left = i
+
+    <span class="code-comment"># Finde bestes Subarray rechts von der Mitte</span>
+    right_sum = <span class="code-keyword">float</span>(<span class="code-string">'-inf'</span>)
+    sum_val = <span class="code-number">0</span>
+    max_right = mid + <span class="code-number">1</span>
+
+    <span class="code-keyword">for</span> j <span class="code-keyword">in</span> range(mid + <span class="code-number">1</span>, high + <span class="code-number">1</span>):
+        sum_val += arr[j]
+        <span class="code-keyword">if</span> sum_val > right_sum:
+            right_sum = sum_val
+            max_right = j
+
+    <span class="code-comment"># Kombiniere beide Seiten</span>
     <span class="code-keyword">return</span> {
-        sum: leftSum + rightSum,
-        left: maxLeft,
-        right: maxRight
-    };
-}
+        <span class="code-string">'sum'</span>: left_sum + right_sum,
+        <span class="code-string">'left'</span>: max_left,
+        <span class="code-string">'right'</span>: max_right
+    }
 
-<span class="code-comment">// Zeitkomplexität: O(n log n)
-// Raumkomplexität: O(log n) für Rekursionsstack</span>
+<span class="code-comment"># Zeitkomplexität: O(n log n)
+# Raumkomplexität: O(log n) für Rekursionsstack</span>
             </div>
 
             <div class="info-box">
