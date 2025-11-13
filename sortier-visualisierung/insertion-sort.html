@@ -173,6 +173,33 @@
             margin-top: 5px;
         }
 
+        .code-section {
+            margin: 30px 0;
+        }
+
+        .code-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
+
         .info-panel {
             background: #f8f9fa;
             color: #2c3e50;
@@ -284,6 +311,40 @@
                 <div class="stat-value" id="time">0.0s</div>
                 <div class="stat-label">Zeit</div>
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Insertion Sort Implementierung in Python</span>
+
+<span class="code-keyword">def</span> <span class="code-function">insertion_sort</span>(arr):
+    <span class="code-string">"""
+    Sortiert ein Array mit dem Insertion Sort Algorithmus.
+    Zeitkomplexität: O(n²)
+    Platzkomplexität: O(1)
+    """</span>
+    n = <span class="code-function">len</span>(arr)
+
+    <span class="code-comment"># Durchlaufe das Array ab dem zweiten Element</span>
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> <span class="code-function">range</span>(<span class="code-number">1</span>, n):
+        key = arr[i]  <span class="code-comment"># Aktuelles Element zum Einfügen</span>
+        j = i - <span class="code-number">1</span>
+
+        <span class="code-comment"># Verschiebe Elemente, die größer als key sind, nach rechts</span>
+        <span class="code-keyword">while</span> j >= <span class="code-number">0</span> <span class="code-keyword">and</span> arr[j] > key:
+            arr[j + <span class="code-number">1</span>] = arr[j]
+            j -= <span class="code-number">1</span>
+
+        <span class="code-comment"># Füge key an der richtigen Position ein</span>
+        arr[j + <span class="code-number">1</span>] = key
+
+    <span class="code-keyword">return</span> arr
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+array = [<span class="code-number">64</span>, <span class="code-number">34</span>, <span class="code-number">25</span>, <span class="code-number">12</span>, <span class="code-number">22</span>, <span class="code-number">11</span>, <span class="code-number">90</span>]
+<span class="code-function">print</span>(<span class="code-string">"Unsortiert:"</span>, array)
+<span class="code-function">insertion_sort</span>(array)
+<span class="code-function">print</span>(<span class="code-string">"Sortiert:"</span>, array)</div>
         </div>
     </div>
 

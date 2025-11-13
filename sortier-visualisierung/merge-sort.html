@@ -173,6 +173,33 @@
             margin-top: 5px;
         }
 
+        .code-section {
+            margin: 30px 0;
+        }
+
+        .code-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
+        .code-block {
+            background: #282c34;
+            color: #abb2bf;
+            padding: 20px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            line-height: 1.8;
+            white-space: pre-wrap;
+        }
+
+        .code-comment { color: #5c6370; }
+        .code-keyword { color: #c678dd; }
+        .code-function { color: #61afef; }
+        .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
+
         .info-panel {
             background: #f8f9fa;
             color: #2c3e50;
@@ -404,6 +431,58 @@
                 <div class="stat-value" id="time">0.0s</div>
                 <div class="stat-label">Zeit</div>
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Merge Sort Implementierung in Python</span>
+
+<span class="code-keyword">def</span> <span class="code-function">merge_sort</span>(arr):
+    <span class="code-string">"""
+    Sortiert ein Array mit dem Merge Sort Algorithmus.
+    Zeitkomplexität: O(n log n)
+    Platzkomplexität: O(n)
+    """</span>
+    <span class="code-keyword">if</span> <span class="code-function">len</span>(arr) <= <span class="code-number">1</span>:
+        <span class="code-keyword">return</span> arr
+
+    <span class="code-comment"># Teile das Array in zwei Hälften</span>
+    mid = <span class="code-function">len</span>(arr) // <span class="code-number">2</span>
+    left = arr[:mid]
+    right = arr[mid:]
+
+    <span class="code-comment"># Rekursiv sortieren</span>
+    left = <span class="code-function">merge_sort</span>(left)
+    right = <span class="code-function">merge_sort</span>(right)
+
+    <span class="code-comment"># Merge die sortierten Hälften</span>
+    <span class="code-keyword">return</span> <span class="code-function">merge</span>(left, right)
+
+<span class="code-keyword">def</span> <span class="code-function">merge</span>(left, right):
+    <span class="code-string">"""Führt zwei sortierte Arrays zusammen."""</span>
+    result = []
+    i = j = <span class="code-number">0</span>
+
+    <span class="code-comment"># Vergleiche Elemente und füge das kleinere hinzu</span>
+    <span class="code-keyword">while</span> i < <span class="code-function">len</span>(left) <span class="code-keyword">and</span> j < <span class="code-function">len</span>(right):
+        <span class="code-keyword">if</span> left[i] <= right[j]:
+            result.append(left[i])
+            i += <span class="code-number">1</span>
+        <span class="code-keyword">else</span>:
+            result.append(right[j])
+            j += <span class="code-number">1</span>
+
+    <span class="code-comment"># Füge verbleibende Elemente hinzu</span>
+    result.extend(left[i:])
+    result.extend(right[j:])
+
+    <span class="code-keyword">return</span> result
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+array = [<span class="code-number">64</span>, <span class="code-number">34</span>, <span class="code-number">25</span>, <span class="code-number">12</span>, <span class="code-number">22</span>, <span class="code-number">11</span>, <span class="code-number">90</span>]
+<span class="code-function">print</span>(<span class="code-string">"Unsortiert:"</span>, array)
+sorted_array = <span class="code-function">merge_sort</span>(array)
+<span class="code-function">print</span>(<span class="code-string">"Sortiert:"</span>, sorted_array)</div>
         </div>
     </div>
 
