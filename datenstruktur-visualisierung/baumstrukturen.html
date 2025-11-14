@@ -201,7 +201,7 @@
                     <input type="number" id="treeValue" placeholder="Wert" value="50">
                     <button onclick="insertNode()">Einfügen</button>
                     <button onclick="searchNode()">Suchen</button>
-                    <button onclick="deleteNode()">Löschen</button>
+                    <button onclick="handleDeleteNode()">Löschen</button>
                     <button onclick="resetTree()">Reset</button>
                 </div>
                 <div class="canvas-wrapper">
@@ -525,7 +525,7 @@
             }
         }
 
-        function deleteNode() {
+        function handleDeleteNode() {
             const value = parseInt(document.getElementById('treeValue').value);
             if (!isNaN(value)) {
                 root = deleteNode(root, value);

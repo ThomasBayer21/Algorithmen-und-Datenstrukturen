@@ -228,6 +228,10 @@
         <div class="chart-container">
             <canvas id="complexityChart" width="1200" height="600"></canvas>
             <div class="axis-label">Eingabegröße (n) →</div>
+            <div style="background: #fff3cd; padding: 12px; border-radius: 8px; margin-top: 15px; border-left: 4px solid #ffc107; font-size: 0.9em;">
+                <strong>⚠️ Hinweis:</strong> Gestrichelte Linien zeigen an, dass die Komplexität den darstellbaren Bereich überschreitet.
+                Dies passiert besonders bei O(2ⁿ) und O(n²) bei größeren n-Werten - ein Zeichen ihrer schlechten Skalierbarkeit!
+            </div>
         </div>
 
         <div class="legend" id="legend"></div>
@@ -377,25 +381,61 @@
 
                 ctx.strokeStyle = complexity.color;
                 ctx.lineWidth = 3;
-                ctx.beginPath();
 
                 let started = false;
+                let wasClipped = false;
+                let lastValidN = 0;
+
                 for (let n = 1; n <= maxN; n++) {
                     const value = complexity.fn(n);
-                    if (value > maxValue || value > 1000000) continue;
+
+                    if (value > 1000000) {
+                        wasClipped = true;
+                        break;
+                    }
+
+                    if (value > maxValue) {
+                        wasClipped = true;
+                        break;
+                    }
 
                     const x = padding + (n / maxN) * chartWidth;
                     const y = canvas.height - padding - (value / maxValue) * chartHeight;
 
                     if (!started) {
+                        ctx.beginPath();
                         ctx.moveTo(x, y);
                         started = true;
                     } else {
                         ctx.lineTo(x, y);
                     }
+                    lastValidN = n;
                 }
 
                 ctx.stroke();
+
+                // Draw dashed line if clipped
+                if (wasClipped && lastValidN > 0) {
+                    const lastValue = complexity.fn(lastValidN);
+                    const x1 = padding + (lastValidN / maxN) * chartWidth;
+                    const y1 = canvas.height - padding - (lastValue / maxValue) * chartHeight;
+                    const x2 = canvas.width - padding;
+                    const y2 = y1;  // Keep same y-coordinate for horizontal line
+
+                    ctx.beginPath();
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeStyle = complexity.color;
+                    ctx.moveTo(x1, y1);
+                    ctx.lineTo(x2, y2);
+                    ctx.stroke();
+                    ctx.setLineDash([]);
+
+                    // Add warning symbol
+                    ctx.fillStyle = complexity.color;
+                    ctx.font = 'bold 16px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText('⚠', x2 - 15, y2 - 5);
+                }
 
                 // Draw label at the end of the curve
                 const labelX = canvas.width - padding - 10;

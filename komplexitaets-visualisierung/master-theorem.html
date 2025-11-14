@@ -496,6 +496,12 @@
                         als die Summe aller rekursiven Aufrufe.
                     </p>
 
+                    <div style="background: #fff3cd; padding: 12px; border-radius: 6px; margin: 15px 0; border: 2px solid #ffc107; font-size: 0.85em;">
+                        <strong>⚠️ Wichtig - Regularitätsbedingung:</strong><br>
+                        Zusätzlich muss gelten: a·f(n/b) ≤ c·f(n)<br>
+                        für eine Konstante c &lt; 1 und ausreichend große n
+                    </div>
+
                     <div class="case-result">
                         T(n) = Θ(f(n))
                     </div>
@@ -705,7 +711,7 @@
                     <li><strong>Variable Anzahl von Aufrufen:</strong> T(n) = T(n-1) + T(n-2) + 1 (Fibonacci-Muster)</li>
                     <li><strong>Nicht-polynomiale f(n):</strong> T(n) = 2T(n/2) + n log n (log-Term stört)</li>
                     <li><strong>Komplexe Kombinationsfunktionen:</strong> T(n) = 2T(n/2) + n/log(n)</li>
-                    <li><strong>Fall 3 Regularitätsbedingung verletzt:</strong> Zusätzliche Bedingung nicht erfüllt</li>
+                    <li><strong>Fall 3 Regularitätsbedingung verletzt:</strong> z.B. T(n) = 2T(n/2) + n(2 - cos n) (die Bedingung a·f(n/b) ≤ c·f(n) ist nicht erfüllt, da f(n) oszilliert)</li>
                 </ul>
                 <p style="margin-top: 15px;"><strong>Alternative Methoden:</strong> Rekursionsbaum-Methode, Substitutionsmethode, oder direkte Analyse.</p>
             </div>

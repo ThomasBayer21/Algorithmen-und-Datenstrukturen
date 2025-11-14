@@ -662,6 +662,18 @@ result = <span class="code-function">binary_search</span>(array, target)
                 return;
             }
 
+            // Validate that target is in reasonable range
+            const minValue = Math.min(...array);
+            const maxValue = Math.max(...array);
+            if (target < minValue || target > maxValue) {
+                const proceed = confirm(
+                    `⚠️ Hinweis: Der Suchwert ${target} liegt außerhalb des Array-Bereichs [${minValue}, ${maxValue}].\n\n` +
+                    `Die Suche wird erfolglos sein, aber Sie können den Algorithmus trotzdem beobachten.\n\n` +
+                    `Möchten Sie trotzdem fortfahren?`
+                );
+                if (!proceed) return;
+            }
+
             isSearching = true;
             comparisons = 0;
             steps = 0;
