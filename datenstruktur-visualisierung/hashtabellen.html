@@ -21,6 +21,8 @@
         .code-function { color: #61afef; }
         .code-number { color: #d19a66; }
         .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
         .visualization-container { background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 30px; margin: 20px 0; }
         .hash-table { display: flex; flex-direction: column; gap: 10px; margin: 20px 0; }
         .hash-bucket { border: 2px solid #667eea; border-radius: 8px; padding: 15px; background: #f8f9fa; min-height: 60px; }
@@ -68,49 +70,41 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Einfache Hash-Funktion</span>
-<span class="code-keyword">function</span> <span class="code-function">hash</span>(key, size) {
-    <span class="code-keyword">let</span> hash = <span class="code-number">0</span>;
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; key.length; i++) {
-        hash = (hash + key.charCodeAt(i)) % size;
-    }
-    <span class="code-keyword">return</span> hash;
-}
+<span class="code-comment"># Einfache Hash-Funktion</span>
+<span class="code-keyword">def</span> <span class="code-function">hash_function</span>(key, size):
+    hash_val = <span class="code-number">0</span>
+    <span class="code-keyword">for</span> char <span class="code-keyword">in</span> key:
+        hash_val = (hash_val + ord(char)) % size
+    <span class="code-keyword">return</span> hash_val
 
-<span class="code-comment">// Hash Table mit Chaining</span>
-<span class="code-keyword">class</span> <span class="code-function">HashTable</span> {
-    <span class="code-function">constructor</span>(size = <span class="code-number">10</span>) {
-        <span class="code-keyword">this</span>.size = size;
-        <span class="code-keyword">this</span>.table = <span class="code-keyword">new</span> <span class="code-function">Array</span>(size).fill(<span class="code-keyword">null</span>).map(() =&gt; []);
-    }
+<span class="code-comment"># Hash Table mit Chaining</span>
+<span class="code-keyword">class</span> <span class="code-function">HashTable</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, size=<span class="code-number">10</span>):
+        self.size = size
+        self.table = [[] <span class="code-keyword">for</span> _ <span class="code-keyword">in</span> range(size)]
 
-    <span class="code-function">set</span>(key, value) {
-        <span class="code-keyword">const</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
-        <span class="code-keyword">const</span> bucket = <span class="code-keyword">this</span>.table[index];
+    <span class="code-keyword">def</span> <span class="code-function">set</span>(self, key, value):
+        index = hash_function(key, self.size)
+        bucket = self.table[index]
 
-        <span class="code-comment">// Prüfe ob Key schon existiert</span>
-        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; bucket.length; i++) {
-            <span class="code-keyword">if</span> (bucket[i][<span class="code-number">0</span>] === key) {
-                bucket[i][<span class="code-number">1</span>] = value;  <span class="code-comment">// Update</span>
-                <span class="code-keyword">return</span>;
-            }
-        }
+        <span class="code-comment"># Prüfe ob Key schon existiert</span>
+        <span class="code-keyword">for</span> i, (k, v) <span class="code-keyword">in</span> enumerate(bucket):
+            <span class="code-keyword">if</span> k == key:
+                bucket[i] = (key, value)  <span class="code-comment"># Update</span>
+                <span class="code-keyword">return</span>
 
-        <span class="code-comment">// Neues Key-Value Paar</span>
-        bucket.push([key, value]);
-    }
+        <span class="code-comment"># Neues Key-Value Paar</span>
+        bucket.append((key, value))
 
-    <span class="code-function">get</span>(key) {
-        <span class="code-keyword">const</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
-        <span class="code-keyword">const</span> bucket = <span class="code-keyword">this</span>.table[index];
+    <span class="code-keyword">def</span> <span class="code-function">get</span>(self, key):
+        index = hash_function(key, self.size)
+        bucket = self.table[index]
 
-        <span class="code-keyword">for</span> (<span class="code-keyword">const</span> [k, v] <span class="code-keyword">of</span> bucket) {
-            <span class="code-keyword">if</span> (k === key) <span class="code-keyword">return</span> v;
-        }
+        <span class="code-keyword">for</span> k, v <span class="code-keyword">in</span> bucket:
+            <span class="code-keyword">if</span> k == key:
+                <span class="code-keyword">return</span> v
 
-        <span class="code-keyword">return</span> <span class="code-keyword">undefined</span>;
-    }
-}
+        <span class="code-keyword">return</span> <span class="code-keyword">None</span>
             </div>
 
             <div class="visualization-container">
@@ -156,45 +150,126 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Linear Probing (Open Addressing)</span>
-<span class="code-keyword">class</span> <span class="code-function">LinearProbingHashTable</span> {
-    <span class="code-function">constructor</span>(size = <span class="code-number">10</span>) {
-        <span class="code-keyword">this</span>.size = size;
-        <span class="code-keyword">this</span>.table = <span class="code-keyword">new</span> <span class="code-function">Array</span>(size).fill(<span class="code-keyword">null</span>);
-    }
+<span class="code-comment"># Linear Probing (Open Addressing)</span>
+<span class="code-keyword">class</span> <span class="code-function">LinearProbingHashTable</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, size=<span class="code-number">10</span>):
+        self.size = size
+        self.table = [<span class="code-keyword">None</span>] * size
 
-    <span class="code-function">set</span>(key, value) {
-        <span class="code-keyword">let</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
+    <span class="code-keyword">def</span> <span class="code-function">set</span>(self, key, value):
+        index = hash_function(key, self.size)
 
-        <span class="code-comment">// Suche nächsten freien Platz</span>
-        <span class="code-keyword">while</span> (<span class="code-keyword">this</span>.table[index] !== <span class="code-keyword">null</span>) {
-            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.table[index][<span class="code-number">0</span>] === key) {
-                <span class="code-keyword">this</span>.table[index] = [key, value];  <span class="code-comment">// Update</span>
-                <span class="code-keyword">return</span>;
-            }
-            index = (index + <span class="code-number">1</span>) % <span class="code-keyword">this</span>.size;  <span class="code-comment">// Linear probe</span>
-        }
+        <span class="code-comment"># Suche nächsten freien Platz</span>
+        <span class="code-keyword">while</span> self.table[index] <span class="code-keyword">is</span> <span class="code-keyword">not</span> <span class="code-keyword">None</span>:
+            <span class="code-keyword">if</span> self.table[index][<span class="code-number">0</span>] == key:
+                self.table[index] = (key, value)  <span class="code-comment"># Update</span>
+                <span class="code-keyword">return</span>
+            index = (index + <span class="code-number">1</span>) % self.size  <span class="code-comment"># Linear probe</span>
 
-        <span class="code-keyword">this</span>.table[index] = [key, value];
-    }
+        self.table[index] = (key, value)
 
-    <span class="code-function">get</span>(key) {
-        <span class="code-keyword">let</span> index = <span class="code-function">hash</span>(key, <span class="code-keyword">this</span>.size);
-        <span class="code-keyword">let</span> startIndex = index;
+    <span class="code-keyword">def</span> <span class="code-function">get</span>(self, key):
+        index = hash_function(key, self.size)
+        start_index = index
 
-        <span class="code-keyword">while</span> (<span class="code-keyword">this</span>.table[index] !== <span class="code-keyword">null</span>) {
-            <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.table[index][<span class="code-number">0</span>] === key) {
-                <span class="code-keyword">return</span> <span class="code-keyword">this</span>.table[index][<span class="code-number">1</span>];
-            }
-            index = (index + <span class="code-number">1</span>) % <span class="code-keyword">this</span>.size;
+        <span class="code-keyword">while</span> self.table[index] <span class="code-keyword">is</span> <span class="code-keyword">not</span> <span class="code-keyword">None</span>:
+            <span class="code-keyword">if</span> self.table[index][<span class="code-number">0</span>] == key:
+                <span class="code-keyword">return</span> self.table[index][<span class="code-number">1</span>]
+            index = (index + <span class="code-number">1</span>) % self.size
 
-            <span class="code-keyword">if</span> (index === startIndex) <span class="code-keyword">break</span>;  <span class="code-comment">// Voll durchlaufen</span>
-        }
+            <span class="code-keyword">if</span> index == start_index:
+                <span class="code-keyword">break</span>  <span class="code-comment"># Voll durchlaufen</span>
 
-        <span class="code-keyword">return</span> <span class="code-keyword">undefined</span>;
-    }
-}
+        <span class="code-keyword">return</span> <span class="code-keyword">None</span>
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Hash-Tabelle mit Chaining in Python</span>
+
+<span class="code-keyword">class</span> <span class="code-function">HashTable</span>:
+    <span class="code-string">"""Hash-Tabelle mit Chaining für Kollisionsbehandlung"""</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, size=<span class="code-number">10</span>):
+        <span class="code-string">"""
+        Initialisiere Hash-Tabelle mit gegebener Größe
+        Zeitkomplexität: O(n) wobei n = size
+        """</span>
+        self.size = size
+        self.table = [[] <span class="code-keyword">for</span> _ <span class="code-keyword">in</span> range(size)]
+
+    <span class="code-keyword">def</span> <span class="code-function">_hash</span>(self, key):
+        <span class="code-string">"""
+        Einfache Hash-Funktion
+        Zeitkomplexität: O(k) wobei k = Länge des Strings
+        """</span>
+        hash_value = <span class="code-number">0</span>
+        <span class="code-keyword">for</span> char <span class="code-keyword">in</span> str(key):
+            hash_value = (hash_value + ord(char)) % self.size
+        <span class="code-keyword">return</span> hash_value
+
+    <span class="code-keyword">def</span> <span class="code-function">set</span>(self, key, value):
+        <span class="code-string">"""
+        Schlüssel-Wert-Paar einfügen oder aktualisieren
+        Zeitkomplexität: O(1) im Durchschnitt, O(n) im schlechtesten Fall
+        """</span>
+        index = self._hash(key)
+        bucket = self.table[index]
+
+        <span class="code-comment"># Prüfe ob Key schon existiert</span>
+        <span class="code-keyword">for</span> i, (k, v) <span class="code-keyword">in</span> enumerate(bucket):
+            <span class="code-keyword">if</span> k == key:
+                bucket[i] = (key, value)  <span class="code-comment"># Update</span>
+                <span class="code-keyword">return</span>
+
+        <span class="code-comment"># Neues Paar hinzufügen</span>
+        bucket.append((key, value))
+
+    <span class="code-keyword">def</span> <span class="code-function">get</span>(self, key):
+        <span class="code-string">"""
+        Wert für Schlüssel abrufen
+        Zeitkomplexität: O(1) im Durchschnitt, O(n) im schlechtesten Fall
+        """</span>
+        index = self._hash(key)
+        bucket = self.table[index]
+
+        <span class="code-keyword">for</span> k, v <span class="code-keyword">in</span> bucket:
+            <span class="code-keyword">if</span> k == key:
+                <span class="code-keyword">return</span> v
+
+        <span class="code-keyword">raise</span> KeyError(<span class="code-string">f'Key </span>{key}<span class="code-string"> nicht gefunden'</span>)
+
+    <span class="code-keyword">def</span> <span class="code-function">delete</span>(self, key):
+        <span class="code-string">"""
+        Schlüssel-Wert-Paar löschen
+        Zeitkomplexität: O(1) im Durchschnitt, O(n) im schlechtesten Fall
+        """</span>
+        index = self._hash(key)
+        bucket = self.table[index]
+
+        <span class="code-keyword">for</span> i, (k, v) <span class="code-keyword">in</span> enumerate(bucket):
+            <span class="code-keyword">if</span> k == key:
+                <span class="code-keyword">del</span> bucket[i]
+                <span class="code-keyword">return</span>
+
+        <span class="code-keyword">raise</span> KeyError(<span class="code-string">f'Key </span>{key}<span class="code-string"> nicht gefunden'</span>)
+
+    <span class="code-keyword">def</span> <span class="code-function">load_factor</span>(self):
+        <span class="code-string">"""
+        Berechne Load Factor (n/m)
+        n = Anzahl Elemente, m = Anzahl Buckets
+        """</span>
+        total_items = sum(len(bucket) <span class="code-keyword">for</span> bucket <span class="code-keyword">in</span> self.table)
+        <span class="code-keyword">return</span> total_items / self.size
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+hash_table = HashTable(size=<span class="code-number">7</span>)
+hash_table.set(<span class="code-string">'apple'</span>, <span class="code-string">'red'</span>)
+hash_table.set(<span class="code-string">'banana'</span>, <span class="code-string">'yellow'</span>)
+hash_table.set(<span class="code-string">'grape'</span>, <span class="code-string">'purple'</span>)
+
+print(hash_table.get(<span class="code-string">'apple'</span>))      <span class="code-comment"># 'red'</span>
+print(<span class="code-string">f"Load Factor: </span>{hash_table.load_factor():.2f}<span class="code-string">"</span>)  <span class="code-comment"># ca. 0.43</span></div>
         </div>
     </div>
 

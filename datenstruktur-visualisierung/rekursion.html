@@ -95,6 +95,9 @@
         .code-number {
             color: #d19a66;
         }
+        .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
 
         .visualization-container {
             background: white;
@@ -317,17 +320,15 @@
             </div>
 
             <div class="code-block">
-<span class="code-keyword">function</span> <span class="code-function">factorial</span>(n) {
-    <span class="code-comment">// Basisfall: Rekursion stoppen</span>
-    <span class="code-keyword">if</span> (n === <span class="code-number">0</span> || n === <span class="code-number">1</span>) {
-        <span class="code-keyword">return</span> <span class="code-number">1</span>;
-    }
+<span class="code-keyword">def</span> <span class="code-function">factorial</span>(n):
+    <span class="code-comment"># Basisfall: Rekursion stoppen</span>
+    <span class="code-keyword">if</span> n == <span class="code-number">0</span> <span class="code-keyword">or</span> n == <span class="code-number">1</span>:
+        <span class="code-keyword">return</span> <span class="code-number">1</span>
 
-    <span class="code-comment">// Rekursiver Aufruf</span>
-    <span class="code-keyword">return</span> n * <span class="code-function">factorial</span>(n - <span class="code-number">1</span>);
-}
+    <span class="code-comment"># Rekursiver Aufruf</span>
+    <span class="code-keyword">return</span> n * factorial(n - <span class="code-number">1</span>)
 
-<span class="code-comment">// Beispiel: factorial(5) = 5 × 4 × 3 × 2 × 1 = 120</span>
+<span class="code-comment"># Beispiel: factorial(5) = 5 × 4 × 3 × 2 × 1 = 120</span>
             </div>
 
             <div class="visualization-container">
@@ -371,16 +372,17 @@
             </div>
 
             <div class="code-block">
-<span class="code-keyword">function</span> <span class="code-function">fibonacci</span>(n) {
-    <span class="code-comment">// Basisfälle</span>
-    <span class="code-keyword">if</span> (n === <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-number">0</span>;
-    <span class="code-keyword">if</span> (n === <span class="code-number">1</span>) <span class="code-keyword">return</span> <span class="code-number">1</span>;
+<span class="code-keyword">def</span> <span class="code-function">fibonacci</span>(n):
+    <span class="code-comment"># Basisfälle</span>
+    <span class="code-keyword">if</span> n == <span class="code-number">0</span>:
+        <span class="code-keyword">return</span> <span class="code-number">0</span>
+    <span class="code-keyword">if</span> n == <span class="code-number">1</span>:
+        <span class="code-keyword">return</span> <span class="code-number">1</span>
 
-    <span class="code-comment">// Zwei rekursive Aufrufe!</span>
-    <span class="code-keyword">return</span> <span class="code-function">fibonacci</span>(n - <span class="code-number">1</span>) + <span class="code-function">fibonacci</span>(n - <span class="code-number">2</span>);
-}
+    <span class="code-comment"># Zwei rekursive Aufrufe!</span>
+    <span class="code-keyword">return</span> fibonacci(n - <span class="code-number">1</span>) + fibonacci(n - <span class="code-number">2</span>)
 
-<span class="code-comment">// Achtung: Exponentiell viele Aufrufe! O(2^n)</span>
+<span class="code-comment"># Achtung: Exponentiell viele Aufrufe! O(2^n)</span>
             </div>
 
             <div class="visualization-container">
@@ -419,17 +421,15 @@
             <h2>3. Rekursive Summe eines Arrays</h2>
 
             <div class="code-block">
-<span class="code-keyword">function</span> <span class="code-function">arraySum</span>(arr, index = <span class="code-number">0</span>) {
-    <span class="code-comment">// Basisfall: Ende des Arrays erreicht</span>
-    <span class="code-keyword">if</span> (index === arr.length) {
-        <span class="code-keyword">return</span> <span class="code-number">0</span>;
-    }
+<span class="code-keyword">def</span> <span class="code-function">array_sum</span>(arr, index=<span class="code-number">0</span>):
+    <span class="code-comment"># Basisfall: Ende des Arrays erreicht</span>
+    <span class="code-keyword">if</span> index == len(arr):
+        <span class="code-keyword">return</span> <span class="code-number">0</span>
 
-    <span class="code-comment">// Aktuelles Element + Summe des Rests</span>
-    <span class="code-keyword">return</span> arr[index] + <span class="code-function">arraySum</span>(arr, index + <span class="code-number">1</span>);
-}
+    <span class="code-comment"># Aktuelles Element + Summe des Rests</span>
+    <span class="code-keyword">return</span> arr[index] + array_sum(arr, index + <span class="code-number">1</span>)
 
-<span class="code-comment">// Beispiel: arraySum([1, 2, 3, 4]) = 1 + 2 + 3 + 4 = 10</span>
+<span class="code-comment"># Beispiel: array_sum([1, 2, 3, 4]) = 1 + 2 + 3 + 4 = 10</span>
             </div>
 
             <div class="visualization-container">
@@ -455,6 +455,34 @@
             </div>
         </div>
     </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Rekursion Beispiele</span>
+
+<span class="code-keyword">def</span> <span class="code-function">factorial</span>(n):
+    <span class="code-string">"""Fakultät rekursiv - O(n)"""</span>
+    <span class="code-keyword">return</span> <span class="code-number">1</span> <span class="code-keyword">if</span> n <= <span class="code-number">1</span> <span class="code-keyword">else</span> n * factorial(n - <span class="code-number">1</span>)
+
+<span class="code-keyword">def</span> <span class="code-function">fibonacci</span>(n):
+    <span class="code-string">"""Fibonacci rekursiv - O(2^n)"""</span>
+    <span class="code-keyword">return</span> n <span class="code-keyword">if</span> n <= <span class="code-number">1</span> <span class="code-keyword">else</span> fibonacci(n-<span class="code-number">1</span>) + fibonacci(n-<span class="code-number">2</span>)
+
+<span class="code-keyword">def</span> <span class="code-function">fibonacci_dp</span>(n, memo=<span class="code-keyword">None</span>):
+    <span class="code-string">"""Fibonacci mit Memoization - O(n)"""</span>
+    <span class="code-keyword">if</span> memo <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        memo = {}
+    <span class="code-keyword">if</span> n <span class="code-keyword">in</span> memo:
+        <span class="code-keyword">return</span> memo[n]
+    <span class="code-keyword">if</span> n <= <span class="code-number">1</span>:
+        <span class="code-keyword">return</span> n
+    memo[n] = fibonacci_dp(n-<span class="code-number">1</span>, memo) + fibonacci_dp(n-<span class="code-number">2</span>, memo)
+    <span class="code-keyword">return</span> memo[n]
+
+<span class="code-keyword">def</span> <span class="code-function">array_sum</span>(arr, index=<span class="code-number">0</span>):
+    <span class="code-string">"""Summe eines Arrays rekursiv"""</span>
+    <span class="code-keyword">return</span> <span class="code-number">0</span> <span class="code-keyword">if</span> index == len(arr) <span class="code-keyword">else</span> arr[index] + array_sum(arr, index + <span class="code-number">1</span>)</div>
+        </div>
 
     <script>
         // Zoom and Pan variables

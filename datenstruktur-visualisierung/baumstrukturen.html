@@ -59,6 +59,9 @@
         .code-keyword { color: #c678dd; }
         .code-function { color: #61afef; }
         .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
         .visualization-container {
             background: white;
             border: 2px solid #e0e0e0;
@@ -162,42 +165,34 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Tree Node</span>
-<span class="code-keyword">class</span> <span class="code-function">TreeNode</span> {
-    <span class="code-function">constructor</span>(value) {
-        <span class="code-keyword">this</span>.value = value;
-        <span class="code-keyword">this</span>.left = <span class="code-keyword">null</span>;
-        <span class="code-keyword">this</span>.right = <span class="code-keyword">null</span>;
-    }
-}
+<span class="code-comment"># Tree Node</span>
+<span class="code-keyword">class</span> <span class="code-function">TreeNode</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, value):
+        self.value = value
+        self.left = <span class="code-keyword">None</span>
+        self.right = <span class="code-keyword">None</span>
 
-<span class="code-comment">// BST Einfügen - O(log n)</span>
-<span class="code-keyword">function</span> <span class="code-function">insert</span>(root, value) {
-    <span class="code-keyword">if</span> (root === <span class="code-keyword">null</span>) {
-        <span class="code-keyword">return</span> <span class="code-keyword">new</span> <span class="code-function">TreeNode</span>(value);
-    }
+<span class="code-comment"># BST Einfügen - O(log n)</span>
+<span class="code-keyword">def</span> <span class="code-function">insert</span>(root, value):
+    <span class="code-keyword">if</span> root <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        <span class="code-keyword">return</span> TreeNode(value)
 
-    <span class="code-keyword">if</span> (value &lt; root.value) {
-        root.left = <span class="code-function">insert</span>(root.left, value);
-    } <span class="code-keyword">else</span> <span class="code-keyword">if</span> (value &gt; root.value) {
-        root.right = <span class="code-function">insert</span>(root.right, value);
-    }
+    <span class="code-keyword">if</span> value &lt; root.value:
+        root.left = insert(root.left, value)
+    <span class="code-keyword">elif</span> value &gt; root.value:
+        root.right = insert(root.right, value)
 
-    <span class="code-keyword">return</span> root;
-}
+    <span class="code-keyword">return</span> root
 
-<span class="code-comment">// BST Suche - O(log n)</span>
-<span class="code-keyword">function</span> <span class="code-function">search</span>(root, value) {
-    <span class="code-keyword">if</span> (root === <span class="code-keyword">null</span> || root.value === value) {
-        <span class="code-keyword">return</span> root;
-    }
+<span class="code-comment"># BST Suche - O(log n)</span>
+<span class="code-keyword">def</span> <span class="code-function">search</span>(root, value):
+    <span class="code-keyword">if</span> root <span class="code-keyword">is</span> <span class="code-keyword">None</span> <span class="code-keyword">or</span> root.value == value:
+        <span class="code-keyword">return</span> root
 
-    <span class="code-keyword">if</span> (value &lt; root.value) {
-        <span class="code-keyword">return</span> <span class="code-function">search</span>(root.left, value);
-    }
+    <span class="code-keyword">if</span> value &lt; root.value:
+        <span class="code-keyword">return</span> search(root.left, value)
 
-    <span class="code-keyword">return</span> <span class="code-function">search</span>(root.right, value);
-}
+    <span class="code-keyword">return</span> search(root.right, value)
             </div>
 
             <div class="visualization-container">
@@ -220,54 +215,109 @@
             <div class="info-box">
                 <h3>Traversierungs-Arten:</h3>
                 <ul style="margin-left: 20px; line-height: 2;">
-                    <li><strong>Inorder (LNR):</strong> Links → Node → Rechts (ergibt sortierte Reihenfolge)</li>
-                    <li><strong>Preorder (NLR):</strong> Node → Links → Rechts</li>
-                    <li><strong>Postorder (LRN):</strong> Links → Rechts → Node</li>
-                    <li><strong>Level-Order (BFS):</strong> Ebenenweise von oben nach unten</li>
+                    <li><strong>Preorder (WLR):</strong> Wurzel → Links → Rechts • Verwendet für Präfix-Notation</li>
+                    <li><strong>Inorder (LWR):</strong> Links → Wurzel → Rechts • Ergibt sortierte Reihenfolge bei BST</li>
+                    <li><strong>Postorder (LRW):</strong> Links → Rechts → Wurzel • Verwendet für Postfix-Notation</li>
+                    <li><strong>Level-Order (Breitensuche):</strong> Ebenenweise von oben nach unten, links nach rechts</li>
                 </ul>
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Inorder: Links → Node → Rechts</span>
-<span class="code-keyword">function</span> <span class="code-function">inorder</span>(node) {
-    <span class="code-keyword">if</span> (node === <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;
+<span class="code-comment"># Preorder (WLR): Wurzel → Links → Rechts</span>
+<span class="code-keyword">def</span> <span class="code-function">preorder</span>(node):
+    <span class="code-keyword">if</span> node <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        <span class="code-keyword">return</span>
 
-    <span class="code-function">inorder</span>(node.left);
-    <span class="code-function">console.log</span>(node.value);
-    <span class="code-function">inorder</span>(node.right);
-}
+    print(node.value)      <span class="code-comment"># Wurzel</span>
+    preorder(node.left)    <span class="code-comment"># Links</span>
+    preorder(node.right)   <span class="code-comment"># Rechts</span>
 
-<span class="code-comment">// Preorder: Node → Links → Rechts</span>
-<span class="code-keyword">function</span> <span class="code-function">preorder</span>(node) {
-    <span class="code-keyword">if</span> (node === <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;
+<span class="code-comment"># Inorder (LWR): Links → Wurzel → Rechts</span>
+<span class="code-keyword">def</span> <span class="code-function">inorder</span>(node):
+    <span class="code-keyword">if</span> node <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        <span class="code-keyword">return</span>
 
-    <span class="code-function">console.log</span>(node.value);
-    <span class="code-function">preorder</span>(node.left);
-    <span class="code-function">preorder</span>(node.right);
-}
+    inorder(node.left)     <span class="code-comment"># Links</span>
+    print(node.value)      <span class="code-comment"># Wurzel</span>
+    inorder(node.right)    <span class="code-comment"># Rechts</span>
 
-<span class="code-comment">// Postorder: Links → Rechts → Node</span>
-<span class="code-keyword">function</span> <span class="code-function">postorder</span>(node) {
-    <span class="code-keyword">if</span> (node === <span class="code-keyword">null</span>) <span class="code-keyword">return</span>;
+<span class="code-comment"># Postorder (LRW): Links → Rechts → Wurzel</span>
+<span class="code-keyword">def</span> <span class="code-function">postorder</span>(node):
+    <span class="code-keyword">if</span> node <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        <span class="code-keyword">return</span>
 
-    <span class="code-function">postorder</span>(node.left);
-    <span class="code-function">postorder</span>(node.right);
-    <span class="code-function">console.log</span>(node.value);
-}
+    postorder(node.left)   <span class="code-comment"># Links</span>
+    postorder(node.right)  <span class="code-comment"># Rechts</span>
+    print(node.value)      <span class="code-comment"># Wurzel</span>
+
+<span class="code-comment"># Level-Order (Breitensuche): Ebenenweise</span>
+<span class="code-keyword">def</span> <span class="code-function">level_order</span>(root):
+    <span class="code-keyword">if</span> root <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        <span class="code-keyword">return</span>
+
+    queue = [root]
+
+    <span class="code-keyword">while</span> queue:
+        node = queue.pop(<span class="code-number">0</span>)
+        print(node.value)
+
+        <span class="code-keyword">if</span> node.left:
+            queue.append(node.left)
+        <span class="code-keyword">if</span> node.right:
+            queue.append(node.right)
             </div>
 
             <div class="visualization-container">
                 <h3>Traversierungs-Demo</h3>
                 <div class="controls">
-                    <button onclick="traverseInorder()">Inorder</button>
-                    <button onclick="traversePreorder()">Preorder</button>
-                    <button onclick="traversePostorder()">Postorder</button>
+                    <button onclick="traversePreorder()">Preorder (WLR)</button>
+                    <button onclick="traverseInorder()">Inorder (LWR)</button>
+                    <button onclick="traversePostorder()">Postorder (LRW)</button>
                     <button onclick="traverseLevelOrder()">Level-Order</button>
                 </div>
                 <div class="traversal-output" id="traversalOutput">Wähle eine Traversierungs-Methode...</div>
             </div>
         </div>
     </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Binary Search Tree in Python</span>
+
+<span class="code-keyword">class</span> <span class="code-function">TreeNode</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, value):
+        self.value, self.left, self.right = value, <span class="code-keyword">None</span>, <span class="code-keyword">None</span>
+
+<span class="code-keyword">class</span> <span class="code-function">BST</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.root = <span class="code-keyword">None</span>
+
+    <span class="code-keyword">def</span> <span class="code-function">insert</span>(self, value):
+        <span class="code-string">"""Einfügen - O(log n)"""</span>
+        self.root = self._insert(self.root, value)
+
+    <span class="code-keyword">def</span> <span class="code-function">_insert</span>(self, node, value):
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> node:
+            <span class="code-keyword">return</span> TreeNode(value)
+        <span class="code-keyword">if</span> value < node.value:
+            node.left = self._insert(node.left, value)
+        <span class="code-keyword">elif</span> value > node.value:
+            node.right = self._insert(node.right, value)
+        <span class="code-keyword">return</span> node
+
+    <span class="code-keyword">def</span> <span class="code-function">search</span>(self, value):
+        <span class="code-string">"""Suchen - O(log n)"""</span>
+        <span class="code-keyword">return</span> self._search(self.root, value)
+
+    <span class="code-keyword">def</span> <span class="code-function">_search</span>(self, node, value):
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> node <span class="code-keyword">or</span> node.value == value:
+            <span class="code-keyword">return</span> node
+        <span class="code-keyword">return</span> self._search(node.left, value) <span class="code-keyword">if</span> value < node.value <span class="code-keyword">else</span> self._search(node.right, value)
+
+    <span class="code-keyword">def</span> <span class="code-function">inorder</span>(self, node):
+        <span class="code-string">"""Inorder: Links -> Wurzel -> Rechts"""</span>
+        <span class="code-keyword">return</span> self.inorder(node.left) + [node.value] + self.inorder(node.right) <span class="code-keyword">if</span> node <span class="code-keyword">else</span> []</div>
+        </div>
 
     <script>
         class TreeNode {
@@ -535,22 +585,22 @@
             return result;
         }
 
-        function traverseInorder() {
-            const result = [];
-            inorderTraversal(root, result);
-            document.getElementById('traversalOutput').textContent = 'Inorder: ' + result.join(' → ');
-        }
-
         function traversePreorder() {
             const result = [];
             preorderTraversal(root, result);
-            document.getElementById('traversalOutput').textContent = 'Preorder: ' + result.join(' → ');
+            document.getElementById('traversalOutput').textContent = 'Preorder (WLR): ' + result.join(' → ');
+        }
+
+        function traverseInorder() {
+            const result = [];
+            inorderTraversal(root, result);
+            document.getElementById('traversalOutput').textContent = 'Inorder (LWR): ' + result.join(' → ');
         }
 
         function traversePostorder() {
             const result = [];
             postorderTraversal(root, result);
-            document.getElementById('traversalOutput').textContent = 'Postorder: ' + result.join(' → ');
+            document.getElementById('traversalOutput').textContent = 'Postorder (LRW): ' + result.join(' → ');
         }
 
         function traverseLevelOrder() {

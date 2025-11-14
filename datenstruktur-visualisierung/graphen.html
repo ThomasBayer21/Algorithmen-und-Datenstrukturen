@@ -20,6 +20,9 @@
         .code-keyword { color: #c678dd; }
         .code-function { color: #61afef; }
         .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
         .visualization-container { background: white; border: 2px solid #e0e0e0; border-radius: 10px; padding: 30px; margin: 20px 0; }
         .canvas-wrapper {
             position: relative;
@@ -82,30 +85,24 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Graph mit Adjazenzliste</span>
-<span class="code-keyword">class</span> <span class="code-function">Graph</span> {
-    <span class="code-function">constructor</span>() {
-        <span class="code-keyword">this</span>.adjacencyList = <span class="code-keyword">new</span> <span class="code-function">Map</span>();
-    }
+<span class="code-comment"># Graph mit Adjazenzliste</span>
+<span class="code-keyword">class</span> <span class="code-function">Graph</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.adjacency_list = {}
 
-    <span class="code-comment">// Knoten hinzufügen</span>
-    <span class="code-function">addVertex</span>(vertex) {
-        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.adjacencyList.has(vertex)) {
-            <span class="code-keyword">this</span>.adjacencyList.set(vertex, []);
-        }
-    }
+    <span class="code-comment"># Knoten hinzufügen</span>
+    <span class="code-keyword">def</span> <span class="code-function">add_vertex</span>(self, vertex):
+        <span class="code-keyword">if</span> vertex <span class="code-keyword">not</span> <span class="code-keyword">in</span> self.adjacency_list:
+            self.adjacency_list[vertex] = []
 
-    <span class="code-comment">// Kante hinzufügen (ungerichtet)</span>
-    <span class="code-function">addEdge</span>(v1, v2) {
-        <span class="code-keyword">this</span>.adjacencyList.get(v1).push(v2);
-        <span class="code-keyword">this</span>.adjacencyList.get(v2).push(v1);
-    }
+    <span class="code-comment"># Kante hinzufügen (ungerichtet)</span>
+    <span class="code-keyword">def</span> <span class="code-function">add_edge</span>(self, v1, v2):
+        self.adjacency_list[v1].append(v2)
+        self.adjacency_list[v2].append(v1)
 
-    <span class="code-comment">// Kante hinzufügen (gerichtet)</span>
-    <span class="code-function">addDirectedEdge</span>(from, to) {
-        <span class="code-keyword">this</span>.adjacencyList.get(from).push(to);
-    }
-}
+    <span class="code-comment"># Kante hinzufügen (gerichtet)</span>
+    <span class="code-keyword">def</span> <span class="code-function">add_directed_edge</span>(self, from_vertex, to_vertex):
+        self.adjacency_list[from_vertex].append(to_vertex)
             </div>
 
             <div class="visualization-container">
@@ -138,42 +135,40 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// BFS - Breadth-First Search</span>
-<span class="code-keyword">function</span> <span class="code-function">bfs</span>(graph, start) {
-    <span class="code-keyword">const</span> visited = <span class="code-keyword">new</span> <span class="code-function">Set</span>();
-    <span class="code-keyword">const</span> queue = [start];
-    <span class="code-keyword">const</span> result = [];
+<span class="code-comment"># BFS - Breadth-First Search</span>
+<span class="code-keyword">def</span> <span class="code-function">bfs</span>(graph, start):
+    visited = set()
+    queue = [start]
+    result = []
 
-    visited.add(start);
+    visited.add(start)
 
-    <span class="code-keyword">while</span> (queue.length &gt; <span class="code-number">0</span>) {
-        <span class="code-keyword">const</span> vertex = queue.shift();
-        result.push(vertex);
+    <span class="code-keyword">while</span> queue:
+        vertex = queue.pop(<span class="code-number">0</span>)
+        result.append(vertex)
 
-        <span class="code-keyword">for</span> (<span class="code-keyword">const</span> neighbor <span class="code-keyword">of</span> graph.adjacencyList.get(vertex)) {
-            <span class="code-keyword">if</span> (!visited.has(neighbor)) {
-                visited.add(neighbor);
-                queue.push(neighbor);
-            }
-        }
-    }
+        <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> graph.adjacency_list[vertex]:
+            <span class="code-keyword">if</span> neighbor <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
 
-    <span class="code-keyword">return</span> result;
-}
+    <span class="code-keyword">return</span> result
 
-<span class="code-comment">// DFS - Depth-First Search</span>
-<span class="code-keyword">function</span> <span class="code-function">dfs</span>(graph, start, visited = <span class="code-keyword">new</span> <span class="code-function">Set</span>(), result = []) {
-    visited.add(start);
-    result.push(start);
+<span class="code-comment"># DFS - Depth-First Search</span>
+<span class="code-keyword">def</span> <span class="code-function">dfs</span>(graph, start, visited=<span class="code-keyword">None</span>, result=<span class="code-keyword">None</span>):
+    <span class="code-keyword">if</span> visited <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        visited = set()
+    <span class="code-keyword">if</span> result <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+        result = []
 
-    <span class="code-keyword">for</span> (<span class="code-keyword">const</span> neighbor <span class="code-keyword">of</span> graph.adjacencyList.get(start)) {
-        <span class="code-keyword">if</span> (!visited.has(neighbor)) {
-            <span class="code-function">dfs</span>(graph, neighbor, visited, result);
-        }
-    }
+    visited.add(start)
+    result.append(start)
 
-    <span class="code-keyword">return</span> result;
-}
+    <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> graph.adjacency_list[start]:
+        <span class="code-keyword">if</span> neighbor <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+            dfs(graph, neighbor, visited, result)
+
+    <span class="code-keyword">return</span> result
             </div>
 
             <div class="visualization-container">
@@ -187,6 +182,48 @@
             </div>
         </div>
     </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Graph mit Adjazenzliste</span>
+
+<span class="code-keyword">from</span> collections <span class="code-keyword">import</span> defaultdict, deque
+
+<span class="code-keyword">class</span> <span class="code-function">Graph</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.graph = defaultdict(list)
+
+    <span class="code-keyword">def</span> <span class="code-function">add_edge</span>(self, u, v):
+        <span class="code-string">"""Kante hinzufügen (ungerichtet)"""</span>
+        self.graph[u].append(v)
+        self.graph[v].append(u)
+
+    <span class="code-keyword">def</span> <span class="code-function">bfs</span>(self, start):
+        <span class="code-string">"""BFS - O(V + E)"""</span>
+        visited = set([start])
+        queue = deque([start])
+        result = []
+
+        <span class="code-keyword">while</span> queue:
+            vertex = queue.popleft()
+            result.append(vertex)
+            <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> self.graph[vertex]:
+                <span class="code-keyword">if</span> neighbor <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+                    visited.add(neighbor)
+                    queue.append(neighbor)
+        <span class="code-keyword">return</span> result
+
+    <span class="code-keyword">def</span> <span class="code-function">dfs</span>(self, start, visited=<span class="code-keyword">None</span>):
+        <span class="code-string">"""DFS - O(V + E)"""</span>
+        <span class="code-keyword">if</span> visited <span class="code-keyword">is</span> <span class="code-keyword">None</span>:
+            visited = set()
+        visited.add(start)
+        result = [start]
+        <span class="code-keyword">for</span> neighbor <span class="code-keyword">in</span> self.graph[start]:
+            <span class="code-keyword">if</span> neighbor <span class="code-keyword">not</span> <span class="code-keyword">in</span> visited:
+                result.extend(self.dfs(neighbor, visited))
+        <span class="code-keyword">return</span> result</div>
+        </div>
 
     <script>
         const canvas = document.getElementById('graphCanvas');

@@ -59,6 +59,9 @@
         .code-keyword { color: #c678dd; }
         .code-function { color: #61afef; }
         .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
+        .code-section { margin: 30px 0; }
+        .code-section h2 { color: #2c3e50; margin-bottom: 15px; }
         .visualization-container {
             background: white;
             border: 2px solid #e0e0e0;
@@ -186,66 +189,56 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Max-Heap Klasse</span>
-<span class="code-keyword">class</span> <span class="code-function">MaxHeap</span> {
-    <span class="code-function">constructor</span>() {
-        <span class="code-keyword">this</span>.heap = [];
-    }
+<span class="code-comment"># Max-Heap Klasse</span>
+<span class="code-keyword">class</span> <span class="code-function">MaxHeap</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.heap = []
 
-    <span class="code-comment">// Einfügen - O(log n)</span>
-    <span class="code-function">insert</span>(value) {
-        <span class="code-keyword">this</span>.heap.push(value);
-        <span class="code-keyword">this</span>.<span class="code-function">heapifyUp</span>(<span class="code-keyword">this</span>.heap.length - <span class="code-number">1</span>);
-    }
+    <span class="code-comment"># Einfügen - O(log n)</span>
+    <span class="code-keyword">def</span> <span class="code-function">insert</span>(self, value):
+        self.heap.append(value)
+        self._heapify_up(len(self.heap) - <span class="code-number">1</span>)
 
-    <span class="code-comment">// Nach oben "bubblen"</span>
-    <span class="code-function">heapifyUp</span>(index) {
-        <span class="code-keyword">let</span> parentIndex = Math.floor((index - <span class="code-number">1</span>) / <span class="code-number">2</span>);
+    <span class="code-comment"># Nach oben "bubblen"</span>
+    <span class="code-keyword">def</span> <span class="code-function">_heapify_up</span>(self, index):
+        parent_index = (index - <span class="code-number">1</span>) // <span class="code-number">2</span>
 
-        <span class="code-keyword">if</span> (index &gt; <span class="code-number">0</span> && <span class="code-keyword">this</span>.heap[index] &gt; <span class="code-keyword">this</span>.heap[parentIndex]) {
-            [<span class="code-keyword">this</span>.heap[index], <span class="code-keyword">this</span>.heap[parentIndex]] =
-                [<span class="code-keyword">this</span>.heap[parentIndex], <span class="code-keyword">this</span>.heap[index]];
+        <span class="code-keyword">if</span> index &gt; <span class="code-number">0</span> <span class="code-keyword">and</span> self.heap[index] &gt; self.heap[parent_index]:
+            self.heap[index], self.heap[parent_index] = \
+                self.heap[parent_index], self.heap[index]
 
-            <span class="code-keyword">this</span>.<span class="code-function">heapifyUp</span>(parentIndex);
-        }
-    }
+            self._heapify_up(parent_index)
 
-    <span class="code-comment">// Maximum entfernen - O(log n)</span>
-    <span class="code-function">extractMax</span>() {
-        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.heap.length === <span class="code-number">0</span>) <span class="code-keyword">return</span> <span class="code-keyword">null</span>;
+    <span class="code-comment"># Maximum entfernen - O(log n)</span>
+    <span class="code-keyword">def</span> <span class="code-function">extract_max</span>(self):
+        <span class="code-keyword">if</span> len(self.heap) == <span class="code-number">0</span>:
+            <span class="code-keyword">return</span> <span class="code-keyword">None</span>
 
-        <span class="code-keyword">const</span> max = <span class="code-keyword">this</span>.heap[<span class="code-number">0</span>];
-        <span class="code-keyword">this</span>.heap[<span class="code-number">0</span>] = <span class="code-keyword">this</span>.heap.<span class="code-function">pop</span>();
+        max_val = self.heap[<span class="code-number">0</span>]
+        self.heap[<span class="code-number">0</span>] = self.heap.pop()
 
-        <span class="code-keyword">if</span> (<span class="code-keyword">this</span>.heap.length &gt; <span class="code-number">0</span>) {
-            <span class="code-keyword">this</span>.<span class="code-function">heapifyDown</span>(<span class="code-number">0</span>);
-        }
+        <span class="code-keyword">if</span> len(self.heap) &gt; <span class="code-number">0</span>:
+            self._heapify_down(<span class="code-number">0</span>)
 
-        <span class="code-keyword">return</span> max;
-    }
+        <span class="code-keyword">return</span> max_val
 
-    <span class="code-comment">// Nach unten "bubblen"</span>
-    <span class="code-function">heapifyDown</span>(index) {
-        <span class="code-keyword">let</span> largest = index;
-        <span class="code-keyword">const</span> left = <span class="code-number">2</span> * index + <span class="code-number">1</span>;
-        <span class="code-keyword">const</span> right = <span class="code-number">2</span> * index + <span class="code-number">2</span>;
+    <span class="code-comment"># Nach unten "bubblen"</span>
+    <span class="code-keyword">def</span> <span class="code-function">_heapify_down</span>(self, index):
+        largest = index
+        left = <span class="code-number">2</span> * index + <span class="code-number">1</span>
+        right = <span class="code-number">2</span> * index + <span class="code-number">2</span>
 
-        <span class="code-keyword">if</span> (left &lt; <span class="code-keyword">this</span>.heap.length && <span class="code-keyword">this</span>.heap[left] &gt; <span class="code-keyword">this</span>.heap[largest]) {
-            largest = left;
-        }
+        <span class="code-keyword">if</span> left &lt; len(self.heap) <span class="code-keyword">and</span> self.heap[left] &gt; self.heap[largest]:
+            largest = left
 
-        <span class="code-keyword">if</span> (right &lt; <span class="code-keyword">this</span>.heap.length && <span class="code-keyword">this</span>.heap[right] &gt; <span class="code-keyword">this</span>.heap[largest]) {
-            largest = right;
-        }
+        <span class="code-keyword">if</span> right &lt; len(self.heap) <span class="code-keyword">and</span> self.heap[right] &gt; self.heap[largest]:
+            largest = right
 
-        <span class="code-keyword">if</span> (largest !== index) {
-            [<span class="code-keyword">this</span>.heap[index], <span class="code-keyword">this</span>.heap[largest]] =
-                [<span class="code-keyword">this</span>.heap[largest], <span class="code-keyword">this</span>.heap[index]];
+        <span class="code-keyword">if</span> largest != index:
+            self.heap[index], self.heap[largest] = \
+                self.heap[largest], self.heap[index]
 
-            <span class="code-keyword">this</span>.<span class="code-function">heapifyDown</span>(largest);
-        }
-    }
-}
+            self._heapify_down(largest)
             </div>
 
             <div class="visualization-container">
@@ -282,24 +275,129 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Heap Sort - O(n log n)</span>
-<span class="code-keyword">function</span> <span class="code-function">heapSort</span>(arr) {
-    <span class="code-keyword">const</span> n = arr.length;
+<span class="code-comment"># Heap Sort - O(n log n)</span>
+<span class="code-keyword">def</span> <span class="code-function">heap_sort</span>(arr):
+    n = len(arr)
 
-    <span class="code-comment">// 1. Build max heap</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = Math.floor(n / <span class="code-number">2</span>) - <span class="code-number">1</span>; i &gt;= <span class="code-number">0</span>; i--) {
-        <span class="code-function">heapify</span>(arr, n, i);
-    }
+    <span class="code-comment"># 1. Build max heap</span>
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n // <span class="code-number">2</span> - <span class="code-number">1</span>, -<span class="code-number">1</span>, -<span class="code-number">1</span>):
+        heapify(arr, n, i)
 
-    <span class="code-comment">// 2. Extract elements one by one</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = n - <span class="code-number">1</span>; i &gt; <span class="code-number">0</span>; i--) {
-        [arr[<span class="code-number">0</span>], arr[i]] = [arr[i], arr[<span class="code-number">0</span>]];
-        <span class="code-function">heapify</span>(arr, i, <span class="code-number">0</span>);
-    }
+    <span class="code-comment"># 2. Extract elements one by one</span>
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n - <span class="code-number">1</span>, <span class="code-number">0</span>, -<span class="code-number">1</span>):
+        arr[<span class="code-number">0</span>], arr[i] = arr[i], arr[<span class="code-number">0</span>]
+        heapify(arr, i, <span class="code-number">0</span>)
 
-    <span class="code-keyword">return</span> arr;
-}
+    <span class="code-keyword">return</span> arr
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Max-Heap in Python mit heapq (für Min-Heap)</span>
+
+<span class="code-keyword">class</span> <span class="code-function">MaxHeap</span>:
+    <span class="code-string">"""Max-Heap Implementation"""</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.heap = []
+
+    <span class="code-keyword">def</span> <span class="code-function">insert</span>(self, value):
+        <span class="code-string">"""
+        Element einfügen und Heap-Eigenschaft wiederherstellen
+        Zeitkomplexität: O(log n)
+        """</span>
+        self.heap.append(value)
+        self._heapify_up(len(self.heap) - <span class="code-number">1</span>)
+
+    <span class="code-keyword">def</span> <span class="code-function">_heapify_up</span>(self, index):
+        <span class="code-string">"""Element nach oben 'bubblen' bis Heap-Eigenschaft erfüllt"""</span>
+        parent_index = (index - <span class="code-number">1</span>) // <span class="code-number">2</span>
+
+        <span class="code-keyword">if</span> index > <span class="code-number">0</span> <span class="code-keyword">and</span> self.heap[index] > self.heap[parent_index]:
+            self.heap[index], self.heap[parent_index] = \
+                self.heap[parent_index], self.heap[index]
+            self._heapify_up(parent_index)
+
+    <span class="code-keyword">def</span> <span class="code-function">extract_max</span>(self):
+        <span class="code-string">"""
+        Maximum entfernen und zurückgeben
+        Zeitkomplexität: O(log n)
+        """</span>
+        <span class="code-keyword">if</span> len(self.heap) == <span class="code-number">0</span>:
+            <span class="code-keyword">return</span> <span class="code-keyword">None</span>
+
+        max_value = self.heap[<span class="code-number">0</span>]
+        self.heap[<span class="code-number">0</span>] = self.heap.pop()
+
+        <span class="code-keyword">if</span> len(self.heap) > <span class="code-number">0</span>:
+            self._heapify_down(<span class="code-number">0</span>)
+
+        <span class="code-keyword">return</span> max_value
+
+    <span class="code-keyword">def</span> <span class="code-function">_heapify_down</span>(self, index):
+        <span class="code-string">"""Element nach unten 'bubblen' bis Heap-Eigenschaft erfüllt"""</span>
+        largest = index
+        left = <span class="code-number">2</span> * index + <span class="code-number">1</span>
+        right = <span class="code-number">2</span> * index + <span class="code-number">2</span>
+
+        <span class="code-keyword">if</span> left < len(self.heap) <span class="code-keyword">and</span> self.heap[left] > self.heap[largest]:
+            largest = left
+
+        <span class="code-keyword">if</span> right < len(self.heap) <span class="code-keyword">and</span> self.heap[right] > self.heap[largest]:
+            largest = right
+
+        <span class="code-keyword">if</span> largest != index:
+            self.heap[index], self.heap[largest] = \
+                self.heap[largest], self.heap[index]
+            self._heapify_down(largest)
+
+    <span class="code-keyword">def</span> <span class="code-function">peek</span>(self):
+        <span class="code-string">"""
+        Maximum ansehen ohne zu entfernen
+        Zeitkomplexität: O(1)
+        """</span>
+        <span class="code-keyword">return</span> self.heap[<span class="code-number">0</span>] <span class="code-keyword">if</span> self.heap <span class="code-keyword">else</span> <span class="code-keyword">None</span>
+
+<span class="code-comment"># Heap Sort mit Python</span>
+<span class="code-keyword">def</span> <span class="code-function">heap_sort</span>(arr):
+    <span class="code-string">"""
+    Array sortieren mit Heap Sort
+    Zeitkomplexität: O(n log n) in allen Fällen
+    """</span>
+    n = len(arr)
+
+    <span class="code-comment"># Build Max-Heap</span>
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n // <span class="code-number">2</span> - <span class="code-number">1</span>, -<span class="code-number">1</span>, -<span class="code-number">1</span>):
+        heapify(arr, n, i)
+
+    <span class="code-comment"># Extrahiere Elemente eins nach dem anderen</span>
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(n - <span class="code-number">1</span>, <span class="code-number">0</span>, -<span class="code-number">1</span>):
+        arr[<span class="code-number">0</span>], arr[i] = arr[i], arr[<span class="code-number">0</span>]
+        heapify(arr, i, <span class="code-number">0</span>)
+
+    <span class="code-keyword">return</span> arr
+
+<span class="code-keyword">def</span> <span class="code-function">heapify</span>(arr, n, i):
+    <span class="code-string">"""Heapify Teilbaum mit Wurzel an Index i"""</span>
+    largest = i
+    left = <span class="code-number">2</span> * i + <span class="code-number">1</span>
+    right = <span class="code-number">2</span> * i + <span class="code-number">2</span>
+
+    <span class="code-keyword">if</span> left < n <span class="code-keyword">and</span> arr[left] > arr[largest]:
+        largest = left
+
+    <span class="code-keyword">if</span> right < n <span class="code-keyword">and</span> arr[right] > arr[largest]:
+        largest = right
+
+    <span class="code-keyword">if</span> largest != i:
+        arr[i], arr[largest] = arr[largest], arr[i]
+        heapify(arr, n, largest)
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+heap = MaxHeap()
+<span class="code-keyword">for</span> value <span class="code-keyword">in</span> [<span class="code-number">50</span>, <span class="code-number">30</span>, <span class="code-number">70</span>, <span class="code-number">20</span>, <span class="code-number">40</span>]:
+    heap.insert(value)
+print(<span class="code-string">f"Maximum: </span>{heap.extract_max()}<span class="code-string">"</span>)  <span class="code-comment"># 70</span></div>
         </div>
     </div>
 

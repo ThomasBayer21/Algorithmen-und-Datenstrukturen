@@ -442,43 +442,39 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// AVL Node mit Höhe und Balance-Faktor</span>
-<span class="code-keyword">class</span> <span class="code-function">AVLNode</span> {
-    <span class="code-function">constructor</span>(value) {
-        <span class="code-keyword">this</span>.value = value;
-        <span class="code-keyword">this</span>.left = <span class="code-keyword">null</span>;
-        <span class="code-keyword">this</span>.right = <span class="code-keyword">null</span>;
-        <span class="code-keyword">this</span>.height = <span class="code-number">1</span>;
-    }
-}
+<span class="code-comment"># AVL Node mit Höhe und Balance-Faktor</span>
+<span class="code-keyword">class</span> <span class="code-function">AVLNode</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, value):
+        self.value = value
+        self.left = <span class="code-keyword">None</span>
+        self.right = <span class="code-keyword">None</span>
+        self.height = <span class="code-number">1</span>
 
-<span class="code-comment">// Rechts-Rotation (LL)</span>
-<span class="code-keyword">function</span> <span class="code-function">rotateRight</span>(y) {
-    <span class="code-keyword">const</span> x = y.left;
-    <span class="code-keyword">const</span> T2 = x.right;
+<span class="code-comment"># Rechts-Rotation (LL)</span>
+<span class="code-keyword">def</span> <span class="code-function">rotate_right</span>(y):
+    x = y.left
+    T2 = x.right
 
-    x.right = y;
-    y.left = T2;
+    x.right = y
+    y.left = T2
 
-    y.height = <span class="code-function">Math.max</span>(<span class="code-function">height</span>(y.left), <span class="code-function">height</span>(y.right)) + <span class="code-number">1</span>;
-    x.height = <span class="code-function">Math.max</span>(<span class="code-function">height</span>(x.left), <span class="code-function">height</span>(x.right)) + <span class="code-number">1</span>;
+    y.height = max(height(y.left), height(y.right)) + <span class="code-number">1</span>
+    x.height = max(height(x.left), height(x.right)) + <span class="code-number">1</span>
 
-    <span class="code-keyword">return</span> x;
-}
+    <span class="code-keyword">return</span> x
 
-<span class="code-comment">// Links-Rotation (RR)</span>
-<span class="code-keyword">function</span> <span class="code-function">rotateLeft</span>(x) {
-    <span class="code-keyword">const</span> y = x.right;
-    <span class="code-keyword">const</span> T2 = y.left;
+<span class="code-comment"># Links-Rotation (RR)</span>
+<span class="code-keyword">def</span> <span class="code-function">rotate_left</span>(x):
+    y = x.right
+    T2 = y.left
 
-    y.left = x;
-    x.right = T2;
+    y.left = x
+    x.right = T2
 
-    x.height = <span class="code-function">Math.max</span>(<span class="code-function">height</span>(x.left), <span class="code-function">height</span>(x.right)) + <span class="code-number">1</span>;
-    y.height = <span class="code-function">Math.max</span>(<span class="code-function">height</span>(y.left), <span class="code-function">height</span>(y.right)) + <span class="code-number">1</span>;
+    x.height = max(height(x.left), height(x.right)) + <span class="code-number">1</span>
+    y.height = max(height(y.left), height(y.right)) + <span class="code-number">1</span>
 
-    <span class="code-keyword">return</span> y;
-}
+    <span class="code-keyword">return</span> y
             </div>
         </div>
     </div>

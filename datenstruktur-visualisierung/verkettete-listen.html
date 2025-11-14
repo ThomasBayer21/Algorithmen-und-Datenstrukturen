@@ -69,6 +69,16 @@
         .code-keyword { color: #c678dd; }
         .code-function { color: #61afef; }
         .code-number { color: #d19a66; }
+        .code-string { color: #98c379; }
+
+        .code-section {
+            margin: 30px 0;
+        }
+
+        .code-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
 
         .visualization-container {
             background: white;
@@ -222,42 +232,34 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Node-Klasse</span>
-<span class="code-keyword">class</span> <span class="code-function">Node</span> {
-    <span class="code-function">constructor</span>(value) {
-        <span class="code-keyword">this</span>.value = value;
-        <span class="code-keyword">this</span>.next = <span class="code-keyword">null</span>;
-    }
-}
+<span class="code-comment"># Node-Klasse</span>
+<span class="code-keyword">class</span> <span class="code-function">Node</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, value):
+        self.value = value
+        self.next = <span class="code-keyword">None</span>
 
-<span class="code-comment">// Einfach verkettete Liste</span>
-<span class="code-keyword">class</span> <span class="code-function">LinkedList</span> {
-    <span class="code-function">constructor</span>() {
-        <span class="code-keyword">this</span>.head = <span class="code-keyword">null</span>;
-    }
+<span class="code-comment"># Einfach verkettete Liste</span>
+<span class="code-keyword">class</span> <span class="code-function">LinkedList</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.head = <span class="code-keyword">None</span>
 
-    <span class="code-comment">// Am Anfang einfügen - O(1)</span>
-    <span class="code-function">insertAtHead</span>(value) {
-        <span class="code-keyword">const</span> newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(value);
-        newNode.next = <span class="code-keyword">this</span>.head;
-        <span class="code-keyword">this</span>.head = newNode;
-    }
+    <span class="code-comment"># Am Anfang einfügen - O(1)</span>
+    <span class="code-keyword">def</span> <span class="code-function">insert_at_head</span>(self, value):
+        new_node = Node(value)
+        new_node.next = self.head
+        self.head = new_node
 
-    <span class="code-comment">// Am Ende einfügen - O(n)</span>
-    <span class="code-function">insertAtTail</span>(value) {
-        <span class="code-keyword">const</span> newNode = <span class="code-keyword">new</span> <span class="code-function">Node</span>(value);
-        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.head) {
-            <span class="code-keyword">this</span>.head = newNode;
-            <span class="code-keyword">return</span>;
-        }
+    <span class="code-comment"># Am Ende einfügen - O(n)</span>
+    <span class="code-keyword">def</span> <span class="code-function">insert_at_tail</span>(self, value):
+        new_node = Node(value)
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> self.head:
+            self.head = new_node
+            <span class="code-keyword">return</span>
 
-        <span class="code-keyword">let</span> current = <span class="code-keyword">this</span>.head;
-        <span class="code-keyword">while</span> (current.next) {
-            current = current.next;
-        }
-        current.next = newNode;
-    }
-}
+        current = self.head
+        <span class="code-keyword">while</span> current.next:
+            current = current.next
+        current.next = new_node
             </div>
 
             <div class="visualization-container">
@@ -287,33 +289,27 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Doppelt verketteter Knoten</span>
-<span class="code-keyword">class</span> <span class="code-function">DoublyNode</span> {
-    <span class="code-function">constructor</span>(value) {
-        <span class="code-keyword">this</span>.value = value;
-        <span class="code-keyword">this</span>.next = <span class="code-keyword">null</span>;
-        <span class="code-keyword">this</span>.prev = <span class="code-keyword">null</span>;  <span class="code-comment">// Zeiger zum vorherigen</span>
-    }
-}
+<span class="code-comment"># Doppelt verketteter Knoten</span>
+<span class="code-keyword">class</span> <span class="code-function">DoublyNode</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, value):
+        self.value = value
+        self.next = <span class="code-keyword">None</span>
+        self.prev = <span class="code-keyword">None</span>  <span class="code-comment"># Zeiger zum vorherigen</span>
 
-<span class="code-keyword">class</span> <span class="code-function">DoublyLinkedList</span> {
-    <span class="code-function">constructor</span>() {
-        <span class="code-keyword">this</span>.head = <span class="code-keyword">null</span>;
-        <span class="code-keyword">this</span>.tail = <span class="code-keyword">null</span>;
-    }
+<span class="code-keyword">class</span> <span class="code-function">DoublyLinkedList</span>:
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.head = <span class="code-keyword">None</span>
+        self.tail = <span class="code-keyword">None</span>
 
-    <span class="code-function">insertAtHead</span>(value) {
-        <span class="code-keyword">const</span> newNode = <span class="code-keyword">new</span> <span class="code-function">DoublyNode</span>(value);
+    <span class="code-keyword">def</span> <span class="code-function">insert_at_head</span>(self, value):
+        new_node = DoublyNode(value)
 
-        <span class="code-keyword">if</span> (!<span class="code-keyword">this</span>.head) {
-            <span class="code-keyword">this</span>.head = <span class="code-keyword">this</span>.tail = newNode;
-        } <span class="code-keyword">else</span> {
-            newNode.next = <span class="code-keyword">this</span>.head;
-            <span class="code-keyword">this</span>.head.prev = newNode;
-            <span class="code-keyword">this</span>.head = newNode;
-        }
-    }
-}
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> self.head:
+            self.head = self.tail = new_node
+        <span class="code-keyword">else</span>:
+            new_node.next = self.head
+            self.head.prev = new_node
+            self.head = new_node
             </div>
 
             <div class="visualization-container">
@@ -367,6 +363,117 @@
                     </tr>
                 </table>
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Einfach verkettete Liste in Python</span>
+
+<span class="code-keyword">class</span> <span class="code-function">Node</span>:
+    <span class="code-string">"""Knoten für einfach verkettete Liste"""</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, value):
+        self.value = value
+        self.next = <span class="code-keyword">None</span>
+
+<span class="code-keyword">class</span> <span class="code-function">LinkedList</span>:
+    <span class="code-string">"""Einfach verkettete Liste"""</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.head = <span class="code-keyword">None</span>
+
+    <span class="code-keyword">def</span> <span class="code-function">insert_at_head</span>(self, value):
+        <span class="code-string">"""
+        Einfügen am Anfang - O(1)
+        Sehr effizient, nur Zeiger umhängen
+        """</span>
+        new_node = Node(value)
+        new_node.next = self.head
+        self.head = new_node
+
+    <span class="code-keyword">def</span> <span class="code-function">insert_at_tail</span>(self, value):
+        <span class="code-string">"""
+        Einfügen am Ende - O(n)
+        Muss bis zum Ende durchlaufen
+        """</span>
+        new_node = Node(value)
+
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> self.head:
+            self.head = new_node
+            <span class="code-keyword">return</span>
+
+        current = self.head
+        <span class="code-keyword">while</span> current.next:
+            current = current.next
+        current.next = new_node
+
+    <span class="code-keyword">def</span> <span class="code-function">delete_at_head</span>(self):
+        <span class="code-string">"""
+        Löschen am Anfang - O(1)
+        Nur Zeiger umhängen
+        """</span>
+        <span class="code-keyword">if</span> self.head:
+            self.head = self.head.next
+
+    <span class="code-keyword">def</span> <span class="code-function">search</span>(self, value):
+        <span class="code-string">"""
+        Suche nach Wert - O(n)
+        Muss linear durchsuchen
+        """</span>
+        current = self.head
+        index = <span class="code-number">0</span>
+
+        <span class="code-keyword">while</span> current:
+            <span class="code-keyword">if</span> current.value == value:
+                <span class="code-keyword">return</span> index
+            current = current.next
+            index += <span class="code-number">1</span>
+        <span class="code-keyword">return</span> -<span class="code-number">1</span>
+
+    <span class="code-keyword">def</span> <span class="code-function">reverse</span>(self):
+        <span class="code-string">"""
+        Liste umkehren - O(n)
+        Zeiger in umgekehrte Richtung setzen
+        """</span>
+        prev = <span class="code-keyword">None</span>
+        current = self.head
+
+        <span class="code-keyword">while</span> current:
+            next_node = current.next
+            current.next = prev
+            prev = current
+            current = next_node
+
+        self.head = prev
+
+<span class="code-comment"># Doppelt verkettete Liste</span>
+<span class="code-keyword">class</span> <span class="code-function">DoublyNode</span>:
+    <span class="code-string">"""Knoten für doppelt verkettete Liste"""</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self, value):
+        self.value = value
+        self.next = <span class="code-keyword">None</span>
+        self.prev = <span class="code-keyword">None</span>
+
+<span class="code-keyword">class</span> <span class="code-function">DoublyLinkedList</span>:
+    <span class="code-string">"""Doppelt verkettete Liste mit Vor- und Rückwärtszeigern"""</span>
+    <span class="code-keyword">def</span> <span class="code-function">__init__</span>(self):
+        self.head = <span class="code-keyword">None</span>
+        self.tail = <span class="code-keyword">None</span>
+
+    <span class="code-keyword">def</span> <span class="code-function">insert_at_head</span>(self, value):
+        <span class="code-string">"""Einfügen am Anfang - O(1)"""</span>
+        new_node = DoublyNode(value)
+
+        <span class="code-keyword">if</span> <span class="code-keyword">not</span> self.head:
+            self.head = self.tail = new_node
+        <span class="code-keyword">else</span>:
+            new_node.next = self.head
+            self.head.prev = new_node
+            self.head = new_node
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+linked_list = LinkedList()
+linked_list.insert_at_tail(<span class="code-number">10</span>)
+linked_list.insert_at_tail(<span class="code-number">20</span>)
+linked_list.insert_at_head(<span class="code-number">5</span>)  <span class="code-comment"># Liste: 5 -> 10 -> 20</span></div>
         </div>
     </div>
 

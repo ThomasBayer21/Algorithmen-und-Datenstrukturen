@@ -210,6 +210,19 @@
             color: #d19a66;
         }
 
+        .code-string {
+            color: #98c379;
+        }
+
+        .code-section {
+            margin: 30px 0;
+        }
+
+        .code-section h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+
         .matrix-container {
             display: inline-block;
             margin: 20px;
@@ -341,27 +354,22 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// Array-Zugriff - O(1)</span>
-<span class="code-keyword">function</span> <span class="code-function">accessElement</span>(arr, index) {
-    <span class="code-keyword">return</span> arr[index];  <span class="code-comment">// Konstante Zeit</span>
-}
+<span class="code-comment"># Array-Zugriff - O(1)</span>
+<span class="code-keyword">def</span> <span class="code-function">access_element</span>(arr, index):
+    <span class="code-keyword">return</span> arr[index]  <span class="code-comment"># Konstante Zeit</span>
 
-<span class="code-comment">// Array-Suche - O(n)</span>
-<span class="code-keyword">function</span> <span class="code-function">searchElement</span>(arr, value) {
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = <span class="code-number">0</span>; i &lt; arr.length; i++) {
-        <span class="code-keyword">if</span> (arr[i] === value) <span class="code-keyword">return</span> i;
-    }
-    <span class="code-keyword">return</span> -<span class="code-number">1</span>;
-}
+<span class="code-comment"># Array-Suche - O(n)</span>
+<span class="code-keyword">def</span> <span class="code-function">search_element</span>(arr, value):
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(len(arr)):
+        <span class="code-keyword">if</span> arr[i] == value:
+            <span class="code-keyword">return</span> i
+    <span class="code-keyword">return</span> -<span class="code-number">1</span>
 
-<span class="code-comment">// Element einfügen - O(n)</span>
-<span class="code-keyword">function</span> <span class="code-function">insertAt</span>(arr, index, value) {
-    <span class="code-comment">// Alle Elemente ab index nach rechts verschieben</span>
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> i = arr.length; i &gt; index; i--) {
-        arr[i] = arr[i - <span class="code-number">1</span>];
-    }
-    arr[index] = value;
-}
+<span class="code-comment"># Element einfügen - O(n)</span>
+<span class="code-keyword">def</span> <span class="code-function">insert_at</span>(arr, index, value):
+    <span class="code-comment"># Alle Elemente ab index nach rechts verschieben</span>
+    arr.insert(index, value)
+    <span class="code-keyword">return</span> arr
             </div>
         </div>
 
@@ -393,24 +401,21 @@
             </div>
 
             <div class="code-block">
-<span class="code-comment">// 2D Array erstellen</span>
-<span class="code-keyword">const</span> matrix = [
+<span class="code-comment"># 2D Array erstellen</span>
+matrix = [
     [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>],
     [<span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>],
     [<span class="code-number">7</span>, <span class="code-number">8</span>, <span class="code-number">9</span>]
-];
+]
 
-<span class="code-comment">// Zugriff auf Element</span>
-<span class="code-keyword">const</span> element = matrix[<span class="code-number">1</span>][<span class="code-number">2</span>];  <span class="code-comment">// 6</span>
+<span class="code-comment"># Zugriff auf Element</span>
+element = matrix[<span class="code-number">1</span>][<span class="code-number">2</span>]  <span class="code-comment"># 6</span>
 
-<span class="code-comment">// Matrix traversieren - O(n × m)</span>
-<span class="code-keyword">function</span> <span class="code-function">traverseMatrix</span>(matrix) {
-    <span class="code-keyword">for</span> (<span class="code-keyword">let</span> row = <span class="code-number">0</span>; row &lt; matrix.length; row++) {
-        <span class="code-keyword">for</span> (<span class="code-keyword">let</span> col = <span class="code-number">0</span>; col &lt; matrix[row].length; col++) {
-            <span class="code-function">console.log</span>(matrix[row][col]);
-        }
-    }
-}
+<span class="code-comment"># Matrix traversieren - O(n × m)</span>
+<span class="code-keyword">def</span> <span class="code-function">traverse_matrix</span>(matrix):
+    <span class="code-keyword">for</span> row <span class="code-keyword">in</span> matrix:
+        <span class="code-keyword">for</span> element <span class="code-keyword">in</span> row:
+            print(element)
             </div>
         </div>
 
@@ -452,6 +457,74 @@
                     </tr>
                 </table>
             </div>
+        </div>
+
+        <div class="code-section">
+            <h2>Implementierung in Python</h2>
+            <div class="code-block"><span class="code-comment"># Arrays in Python (Listen)</span>
+
+<span class="code-comment"># Array erstellen</span>
+arr = [<span class="code-number">10</span>, <span class="code-number">25</span>, <span class="code-number">33</span>, <span class="code-number">47</span>, <span class="code-number">52</span>]
+
+<span class="code-comment"># Zugriff auf Element - O(1)</span>
+<span class="code-keyword">def</span> <span class="code-function">access_element</span>(arr, index):
+    <span class="code-string">"""
+    Direkter Zugriff auf Element per Index
+    Zeitkomplexität: O(1)
+    """</span>
+    <span class="code-keyword">return</span> arr[index]
+
+<span class="code-comment"># Element suchen - O(n)</span>
+<span class="code-keyword">def</span> <span class="code-function">search_element</span>(arr, value):
+    <span class="code-string">"""
+    Lineare Suche nach einem Element
+    Zeitkomplexität: O(n)
+    """</span>
+    <span class="code-keyword">for</span> i <span class="code-keyword">in</span> range(len(arr)):
+        <span class="code-keyword">if</span> arr[i] == value:
+            <span class="code-keyword">return</span> i
+    <span class="code-keyword">return</span> -<span class="code-number">1</span>
+
+<span class="code-comment"># Element einfügen - O(n)</span>
+<span class="code-keyword">def</span> <span class="code-function">insert_at</span>(arr, index, value):
+    <span class="code-string">"""
+    Element an bestimmter Position einfügen
+    Zeitkomplexität: O(n) - Alle Elemente ab index müssen verschoben werden
+    """</span>
+    arr.insert(index, value)
+    <span class="code-keyword">return</span> arr
+
+<span class="code-comment"># Element löschen - O(n)</span>
+<span class="code-keyword">def</span> <span class="code-function">delete_at</span>(arr, index):
+    <span class="code-string">"""
+    Element an bestimmter Position löschen
+    Zeitkomplexität: O(n) - Alle Elemente nach index müssen verschoben werden
+    """</span>
+    <span class="code-keyword">del</span> arr[index]
+    <span class="code-keyword">return</span> arr
+
+<span class="code-comment"># 2D Array (Matrix) erstellen und verwenden</span>
+matrix = [
+    [<span class="code-number">1</span>, <span class="code-number">2</span>, <span class="code-number">3</span>],
+    [<span class="code-number">4</span>, <span class="code-number">5</span>, <span class="code-number">6</span>],
+    [<span class="code-number">7</span>, <span class="code-number">8</span>, <span class="code-number">9</span>]
+]
+
+<span class="code-comment"># Matrix traversieren - O(n × m)</span>
+<span class="code-keyword">def</span> <span class="code-function">traverse_matrix</span>(matrix):
+    <span class="code-string">"""
+    Alle Elemente einer Matrix durchlaufen
+    Zeitkomplexität: O(n × m) wobei n = Zeilen, m = Spalten
+    """</span>
+    <span class="code-keyword">for</span> row <span class="code-keyword">in</span> matrix:
+        <span class="code-keyword">for</span> element <span class="code-keyword">in</span> row:
+            print(element, end=<span class="code-string">' '</span>)
+        print()
+
+<span class="code-comment"># Verwendungsbeispiel</span>
+arr = [<span class="code-number">10</span>, <span class="code-number">25</span>, <span class="code-number">33</span>, <span class="code-number">47</span>, <span class="code-number">52</span>]
+print(<span class="code-string">f"Element an Index 2: </span>{access_element(arr, <span class="code-number">2</span>)}<span class="code-string">"</span>)  <span class="code-comment"># 33</span>
+print(<span class="code-string">f"Index von 47: </span>{search_element(arr, <span class="code-number">47</span>)}<span class="code-string">"</span>)      <span class="code-comment"># 3</span></div>
         </div>
     </div>
 
