@@ -496,7 +496,7 @@
         <div class="controls">
             <label>
                 Berechne Fibonacci von:
-                <input type="number" id="nInput" value="10" min="0" max="20">
+                <input type="number" id="nInput" value="10" min="0" max="40">
             </label>
             <button class="btn-primary" onclick="visualizeNaive()">Naive Rekursion</button>
             <button class="btn-primary" onclick="visualizeMemoization()">Mit Memoization</button>
@@ -574,6 +574,7 @@
     <script>
         let callCount = 0;
         let isRunning = false;
+        let currentRunId = 0;  // Unique ID for each visualization run
         let treeNodeCounter = 0;
         let memo = {};
         let memoNodeIds = {};  // Track first nodeId for each memoized value
@@ -584,6 +585,7 @@
 
         function resetVisualization() {
             isRunning = false;
+            currentRunId++;  // Invalidate any running visualizations
             callCount = 0;
             treeNodeCounter = 0;
             memo = {};
@@ -597,12 +599,22 @@
             resetVisualization();
             const n = parseInt(document.getElementById('nInput').value);
 
-            if (n < 0 || n > 15) {
-                alert('Bitte wähle eine Zahl zwischen 0 und 15 für naive Rekursion (sonst dauert es zu lange).');
+            if (n < 0 || n > 20) {
+                alert('Bitte wähle eine Zahl zwischen 0 und 20 für naive Rekursion.');
                 return;
             }
 
+            if (n > 18) {
+                const proceed = confirm(
+                    `⚠️ Warnung: Bei n=${n} werden ${Math.pow(2, n).toLocaleString()} Funktionsaufrufe benötigt!\n\n` +
+                    `Die Visualisierung kann einige Sekunden dauern.\n\n` +
+                    `Möchten Sie fortfahren?`
+                );
+                if (!proceed) return;
+            }
+
             isRunning = true;
+            const myRunId = currentRunId;  // Capture current run ID
             document.getElementById('currentMethod').textContent = 'Methode: Naive Rekursion';
 
             const visualArea = document.getElementById('visualizationArea');
@@ -611,7 +623,9 @@
             document.getElementById('stats').style.display = 'block';
             const startTime = performance.now();
 
-            const result = await fibNaive(n, 0);
+            const result = await fibNaive(n, 0, myRunId);
+
+            if (myRunId !== currentRunId) return;  // Check if still valid
 
             const endTime = performance.now();
             document.getElementById('statCalls').textContent = callCount;
@@ -619,8 +633,8 @@
             document.getElementById('statResult').textContent = result;
         }
 
-        async function fibNaive(n, depth) {
-            if (!isRunning) return 0;
+        async function fibNaive(n, depth, runId) {
+            if (!isRunning || runId !== currentRunId) return 0;
 
             callCount++;
             const nodeId = treeNodeCounter++;
@@ -637,8 +651,8 @@
             if (n <= 1) {
                 result = n;
             } else {
-                const left = await fibNaive(n - 1, depth + 1);
-                const right = await fibNaive(n - 2, depth + 1);
+                const left = await fibNaive(n - 1, depth + 1, runId);
+                const right = await fibNaive(n - 2, depth + 1, runId);
                 result = left + right;
             }
 
@@ -690,12 +704,13 @@
             resetVisualization();
             const n = parseInt(document.getElementById('nInput').value);
 
-            if (n < 0 || n > 20) {
-                alert('Bitte wähle eine Zahl zwischen 0 und 20.');
+            if (n < 0 || n > 40) {
+                alert('Bitte wähle eine Zahl zwischen 0 und 40.');
                 return;
             }
 
             isRunning = true;
+            const myRunId = currentRunId;  // Capture current run ID
             memo = {};
             document.getElementById('currentMethod').textContent = 'Methode: Top-Down mit Memoization';
 
@@ -705,7 +720,9 @@
             document.getElementById('stats').style.display = 'block';
             const startTime = performance.now();
 
-            const result = await fibMemoization(n, 0);
+            const result = await fibMemoization(n, 0, myRunId);
+
+            if (myRunId !== currentRunId) return;  // Check if still valid
 
             const endTime = performance.now();
             document.getElementById('statCalls').textContent = callCount;
@@ -713,8 +730,8 @@
             document.getElementById('statResult').textContent = result;
         }
 
-        async function fibMemoization(n, depth) {
-            if (!isRunning) return 0;
+        async function fibMemoization(n, depth, runId) {
+            if (!isRunning || runId !== currentRunId) return 0;
 
             const nodeId = treeNodeCounter++;
 
@@ -749,8 +766,8 @@
             if (n <= 1) {
                 result = n;
             } else {
-                const left = await fibMemoization(n - 1, depth + 1);
-                const right = await fibMemoization(n - 2, depth + 1);
+                const left = await fibMemoization(n - 1, depth + 1, runId);
+                const right = await fibMemoization(n - 2, depth + 1, runId);
                 result = left + right;
             }
 
@@ -795,12 +812,13 @@
             resetVisualization();
             const n = parseInt(document.getElementById('nInput').value);
 
-            if (n < 0 || n > 20) {
-                alert('Bitte wähle eine Zahl zwischen 0 und 20.');
+            if (n < 0 || n > 40) {
+                alert('Bitte wähle eine Zahl zwischen 0 und 40.');
                 return;
             }
 
             isRunning = true;
+            const myRunId = currentRunId;  // Capture current run ID
             document.getElementById('currentMethod').textContent = 'Methode: Bottom-Up Iterativ';
 
             const visualArea = document.getElementById('visualizationArea');
@@ -809,7 +827,9 @@
             document.getElementById('stats').style.display = 'block';
             const startTime = performance.now();
 
-            const result = await fibBottomUp(n);
+            const result = await fibBottomUp(n, myRunId);
+
+            if (myRunId !== currentRunId) return;  // Check if still valid
 
             const endTime = performance.now();
             document.getElementById('statCalls').textContent = n + 1;
@@ -817,8 +837,8 @@
             document.getElementById('statResult').textContent = result;
         }
 
-        async function fibBottomUp(n) {
-            if (!isRunning) return 0;
+        async function fibBottomUp(n, runId) {
+            if (!isRunning || runId !== currentRunId) return 0;
 
             const dp = [];
             const treeContainer = document.getElementById('treeContainer');
@@ -831,6 +851,7 @@
 
             // Base cases
             for (let i = 0; i <= Math.min(1, n); i++) {
+                if (runId !== currentRunId) return 0;
                 dp[i] = i;
                 const nodeId = createBottomUpNode(i, i, levelContainer);
                 nodeIdMap[i] = nodeId;
@@ -840,7 +861,7 @@
 
             // Build up from bottom
             for (let i = 2; i <= n; i++) {
-                if (!isRunning) return 0;
+                if (!isRunning || runId !== currentRunId) return 0;
 
                 // Temporarily highlight cells being used
                 highlightNode(nodeIdMap[i - 1], 'computing');
